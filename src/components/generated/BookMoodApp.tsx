@@ -49,7 +49,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
     moodCardUrl: '/api/mood-cards/1',
-    mpid: "f9af91f0-1d0c-48df-9f05-1e7991f7e2ed"
+    mpid: "7e7179c3-c8a0-45a6-b537-72c899aa250a"
   }, {
     id: '2',
     bookId: '2',
@@ -59,7 +59,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
     moodCardUrl: '/api/mood-cards/2',
-    mpid: "39cb399b-3a74-45d8-98f0-39908405f1c7"
+    mpid: "77223924-cd73-4d8c-b169-4d0d3ef9a57e"
   }];
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
