@@ -53,7 +53,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'high',
       tags: ['개발', '코딩', '실무'],
       notes: '팀 리더가 추천한 필독서',
-      mpid: "41655d36-802c-45bc-99e8-5ceb0a53d187"
+      mpid: "d15555c2-0398-436f-84e1-db2a43189532"
     }, {
       id: '2',
       title: '사피엔스',
@@ -68,7 +68,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'medium',
       tags: ['역사', '인문학', '철학'],
       notes: '친구가 강력 추천',
-      mpid: "62041224-9b02-418f-884e-67a8525080ae"
+      mpid: "7e41ec69-c630-4651-99fe-30455f9383c9"
     }, {
       id: '3',
       title: '원피스 1권',
@@ -83,7 +83,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'low',
       tags: ['만화', '모험', '우정'],
       notes: '휴식용 독서',
-      mpid: "123d682e-2f1b-4f5c-9304-35bfa484590c"
+      mpid: "10166d9d-0dea-4f17-acc2-6f7cea6626de"
     }, {
       id: '4',
       title: '데미안',
@@ -98,7 +98,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'high',
       tags: ['고전', '성장', '철학'],
       notes: '고등학교 때 읽다가 중단한 책',
-      mpid: "fb257cd8-f730-4528-a505-4d6d483196ab"
+      mpid: "fc1e3bf5-30b4-40a3-a820-31b6df59b87d"
     }, {
       id: '5',
       title: '아토믹 해빗',
@@ -113,7 +113,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'medium',
       tags: ['습관', '자기계발', '실용'],
       notes: '새해 목표 달성을 위해',
-      mpid: "97e00285-1f0e-429c-b5c9-3cfed5598659"
+      mpid: "ca610654-fd51-41e7-bd67-76b7792f8902"
     }];
     setWishlistBooks(mockWishlist);
   }, []);
