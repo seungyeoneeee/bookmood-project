@@ -57,7 +57,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
     moodCardUrl: '/api/mood-cards/1',
-    mpid: "7c50bf89-ce8e-4531-9295-4c0f05a4592e"
+    mpid: "8ecf5156-48e3-4e58-ba42-fa51e1ff1b0b"
   }, {
     id: '2',
     bookId: '2',
@@ -67,7 +67,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
     moodCardUrl: '/api/mood-cards/2',
-    mpid: "07b42a00-e608-4e59-ade2-a90373583782"
+    mpid: "3deee7ad-9beb-4a83-83e1-fbbcc32dcab9"
   }];
   const mockBookEmotionData = {
     bookId: '1',
@@ -79,27 +79,27 @@ const BookMoodApp: React.FC = () => {
       emotion: '기쁨',
       count: 450,
       percentage: 36,
-      mpid: "76a6564d-ace0-4201-943d-2ab5c6c172e2"
+      mpid: "6822e169-ca8a-4886-b9fc-f579c2a0fd71"
     }, {
       emotion: '평온',
       count: 380,
       percentage: 30,
-      mpid: "1dee2a6c-8244-4cf3-8652-7c5711df7030"
+      mpid: "2c7c04df-c885-487e-b0e8-197efea1589d"
     }, {
       emotion: '영감',
       count: 250,
       percentage: 20,
-      mpid: "de4b19f1-8619-4530-aedc-e48c15d8c081"
+      mpid: "fd098263-4811-441b-b958-6f568115a915"
     }, {
       emotion: '사랑',
       count: 120,
       percentage: 10,
-      mpid: "2e9fb03b-04b9-434f-8e21-3ded4aee89ac"
+      mpid: "b8b11a10-dbf3-4494-ad56-620e16825b12"
     }, {
       emotion: '그리움',
       count: 50,
       percentage: 4,
-      mpid: "6518bd6b-28f3-4f7a-b800-8d0579eae27a"
+      mpid: "eaae3fd0-6a67-413b-960d-2a27efe48cb2"
     }],
     averageRating: 4.5,
     recentReviews: [{
@@ -109,7 +109,7 @@ const BookMoodApp: React.FC = () => {
       rating: 5,
       snippet: '정말 따뜻하고 아름다운 이야기였어요. 꿈이라는 소재를 이렇게 잘 풀어낼 수 있다니...',
       createdAt: new Date('2024-01-20'),
-      mpid: "018c97cf-a2c4-4761-abed-2c4ce4a51872"
+      mpid: "e426f032-57f9-4a11-bc8e-5ed3323d9454"
     }, {
       id: '2',
       userName: '책벌레',
@@ -117,28 +117,28 @@ const BookMoodApp: React.FC = () => {
       rating: 4,
       snippet: '상상력이 풍부한 작품이에요. 읽는 내내 미소가 지어졌습니다.',
       createdAt: new Date('2024-01-18'),
-      mpid: "7b904ac6-f42a-4967-98ca-2c3825824d16"
+      mpid: "ec908e63-cac5-4012-9967-a74e7bfe33d0"
     }],
     trendData: [{
       month: '10월',
       readers: 200,
       avgRating: 4.3,
-      mpid: "df0cc543-25a6-41ed-a7ad-e89f0723e1a9"
+      mpid: "ba1e8eca-861c-4e89-b963-46db3f1f6773"
     }, {
       month: '11월',
       readers: 350,
       avgRating: 4.4,
-      mpid: "41d77f2e-53ed-4a04-a482-10278b4f0d58"
+      mpid: "afeb9ccd-a995-47e4-8f07-b712af8c7dec"
     }, {
       month: '12월',
       readers: 450,
       avgRating: 4.5,
-      mpid: "3999e165-fe9b-4db7-83a4-cf24a28e4920"
+      mpid: "b2fad7ef-e280-40ea-a023-5cc27b5d27e4"
     }, {
       month: '1월',
       readers: 250,
       avgRating: 4.6,
-      mpid: "f22c6420-7d9c-4876-aa08-641c74a410af"
+      mpid: "a8dde662-7aa4-4fc8-a4a0-473b762724f4"
     }]
   };
   const handleViewChange = (view: ViewType) => {
