@@ -8,7 +8,7 @@ interface User {
   avatar?: string;
   mpid?: string;
 }
-type ViewType = 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter';
+type ViewType = 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter' | 'reading-progress';
 interface AppLayoutProps {
   children: React.ReactNode;
   currentView: ViewType;
@@ -27,25 +27,25 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     label: '홈',
     icon: Home,
     color: '#A8B5E8',
-    mpid: "c51b3bac-2257-4b0c-bc83-090a265a95e4"
+    mpid: "799b6ebd-d8ae-4fe2-b38b-ad26fd2ab052"
   }, {
     id: 'search',
     label: '검색',
     icon: BookOpen,
     color: '#8BB5E8',
-    mpid: "ee150d94-bda9-44ce-bc04-b63ad762bb0c"
+    mpid: "07f68456-c122-405e-882b-23f8d50119d0"
   }, {
     id: 'archive',
     label: '아카이브',
     icon: Bookmark,
     color: '#B5D4C8',
-    mpid: "473e223b-df1d-41a4-8057-b9c440afe2b4"
+    mpid: "62e957f3-1ed8-45f2-b0ae-1bc98899db71"
   }, {
     id: 'settings',
     label: '설정',
     icon: Settings,
     color: '#F4E4B8',
-    mpid: "879587dc-d99b-40cc-8cca-da2cdb320da0"
+    mpid: "0db41a36-42f9-49ac-9b03-906734c87764"
   }] as any[];
   const handleLogin = () => {
     // Mock login - in real app, this would integrate with Firebase Auth

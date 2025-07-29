@@ -377,22 +377,22 @@ const BookEmotionStats: React.FC<BookEmotionStatsProps> = ({
           key: 'overview',
           label: '개요',
           icon: BarChart3,
-          mpid: "0c14321b-9c89-4565-89db-40e4a3e4e8ee"
+          mpid: "52da2cf5-e94e-4078-b083-f2bda67d7aba"
         }, {
           key: 'emotions',
           label: '감정',
           icon: Heart,
-          mpid: "16c99184-8cc6-4de0-8a18-bfb944d32bda"
+          mpid: "876ed4c2-0c64-4cde-a817-622ada8d92ff"
         }, {
           key: 'trends',
           label: '추이',
           icon: TrendingUp,
-          mpid: "440886df-d852-481c-9d44-5d11f87a4888"
+          mpid: "1801582d-8274-49db-b9b1-fe89e1438cfc"
         }, {
           key: 'reviews',
           label: '리뷰',
           icon: Users,
-          mpid: "5be7e535-b7c4-4f52-bb95-046e7a9c3054"
+          mpid: "b3803518-c4d8-41dc-a086-d924cd317a23"
         }].map(({
           key,
           label,

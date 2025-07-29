@@ -8,6 +8,7 @@ import MoodCardDetail from './MoodCardDetail';
 import WishlistManager from './WishlistManager';
 import BookEmotionStats from './BookEmotionStats';
 import EmotionFilterView from './EmotionFilterView';
+import ReadingProgressTracker from './ReadingProgressTracker';
 export interface BookData {
   id: string;
   title: string;
@@ -35,11 +36,12 @@ export interface User {
   avatar?: string;
   mpid?: string;
 }
-type ViewType = 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter';
+type ViewType = 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter' | 'reading-progress';
 const BookMoodApp: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewType>('home');
   const [selectedMoodCard, setSelectedMoodCard] = useState<ReviewData | null>(null);
   const [selectedBookForStats, setSelectedBookForStats] = useState<any>(null);
+  const [selectedBookForReading, setSelectedBookForReading] = useState<any>(null);
   const [user, setUser] = useState<User | null>(null);
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [wishlistBooks, setWishlistBooks] = useState<any[]>([]);
@@ -54,7 +56,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
     moodCardUrl: '/api/mood-cards/1',
-    mpid: "69b1efaf-5914-4a31-8b71-ef0d13ec001d"
+    mpid: "19d33fd4-5c3c-4657-aab6-57b2992cd56d"
   }, {
     id: '2',
     bookId: '2',
@@ -64,7 +66,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
     moodCardUrl: '/api/mood-cards/2',
-    mpid: "dc4a5035-7e84-4986-88f7-67afdb2b2e6d"
+    mpid: "e84ac5fc-72fa-4e80-ada1-eb5723ae57a1"
   }];
   // Mock data for emotion filtering and stats
   const mockFilterableBooks = [{
@@ -89,7 +91,7 @@ const BookMoodApp: React.FC = () => {
     readerCount: 1250,
     averageRating: 4.5,
     tags: ['판타지', '힐링', '꿈'],
-    mpid: "eb441c3c-d30d-4669-bfa4-72e7f516fbcc"
+    mpid: "ea524902-602e-49e2-ac6c-1ac3337fb293"
   }, {
     id: '2',
     title: '아몬드',
@@ -112,7 +114,7 @@ const BookMoodApp: React.FC = () => {
     readerCount: 2100,
     averageRating: 4.7,
     tags: ['성장', '감정', '청소년'],
-    mpid: "b8cad3fc-38b2-4825-8632-aa13bd0a19a4"
+    mpid: "0133342f-8f5d-4163-8a8b-a04b6b61e51f"
   }] as any[];
   const mockBookEmotionData = {
     bookId: '1',
@@ -124,27 +126,27 @@ const BookMoodApp: React.FC = () => {
       emotion: '기쁨',
       count: 450,
       percentage: 36,
-      mpid: "5c7bd0fc-8307-4c7b-ad8e-72e4da4bb249"
+      mpid: "948a7af2-980f-4814-820b-921920c194cd"
     }, {
       emotion: '평온',
       count: 380,
       percentage: 30,
-      mpid: "e9ba63f5-da73-405a-8840-189a44d6ca26"
+      mpid: "bab04a6b-bd80-43b6-bc15-3cf3b51d6a7b"
     }, {
       emotion: '영감',
       count: 250,
       percentage: 20,
-      mpid: "29eccf0c-1c76-4c14-952a-3744f4266b45"
+      mpid: "b1db25ca-c39a-41a2-9798-3babba53defe"
     }, {
       emotion: '사랑',
       count: 120,
       percentage: 10,
-      mpid: "22d6b06e-83aa-4ac6-ad11-83be7b783fe4"
+      mpid: "ad7b0917-6a97-455e-a159-eecdfdd0794b"
     }, {
       emotion: '그리움',
       count: 50,
       percentage: 4,
-      mpid: "60b06b7c-a76d-4015-8235-9934b910158c"
+      mpid: "a3e09751-2f8a-41c8-8f1a-9859511e3195"
     }],
     averageRating: 4.5,
     recentReviews: [{
@@ -154,7 +156,7 @@ const BookMoodApp: React.FC = () => {
       rating: 5,
       snippet: '정말 따뜻하고 아름다운 이야기였어요. 꿈이라는 소재를 이렇게 잘 풀어낼 수 있다니...',
       createdAt: new Date('2024-01-20'),
-      mpid: "68f5008e-85bc-4961-baa6-c2fc18d278aa"
+      mpid: "07fe1a3d-5aad-43f7-b646-ee51a5d49e3a"
     }, {
       id: '2',
       userName: '책벌레',
@@ -162,28 +164,28 @@ const BookMoodApp: React.FC = () => {
       rating: 4,
       snippet: '상상력이 풍부한 작품이에요. 읽는 내내 미소가 지어졌습니다.',
       createdAt: new Date('2024-01-18'),
-      mpid: "2cc32048-5329-4293-94d3-bfca507775b1"
+      mpid: "38bcdc77-6b1b-4efa-acfb-d4c184bbd150"
     }],
     trendData: [{
       month: '10월',
       readers: 200,
       avgRating: 4.3,
-      mpid: "36058f5b-6cc5-4707-9ef3-2bfeca2a78a9"
+      mpid: "051aa6f6-6eaf-41cd-806a-792aca551304"
     }, {
       month: '11월',
       readers: 350,
       avgRating: 4.4,
-      mpid: "17feeecc-6c10-4876-a871-211acc2f0ffc"
+      mpid: "5de72ca8-1a85-4605-b098-46c786418e46"
     }, {
       month: '12월',
       readers: 450,
       avgRating: 4.5,
-      mpid: "2eef5aa7-6e14-447f-9a4c-dc858c62e7c2"
+      mpid: "57022290-013d-4b5b-8c28-fef49e4035ee"
     }, {
       month: '1월',
       readers: 250,
       avgRating: 4.6,
-      mpid: "64edfe84-503f-42ad-a45c-81b0e490fa28"
+      mpid: "1d36ac8e-c070-42cd-9272-5514616f36f4"
     }]
   };
   const handleViewChange = (view: ViewType) => {
@@ -194,6 +196,9 @@ const BookMoodApp: React.FC = () => {
     if (view !== 'emotion-stats') {
       setSelectedBookForStats(null);
     }
+    if (view !== 'reading-progress') {
+      setSelectedBookForReading(null);
+    }
   };
   const handleMoodCardSelect = (review: ReviewData) => {
     setSelectedMoodCard(review);
@@ -202,6 +207,14 @@ const BookMoodApp: React.FC = () => {
   const handleBookStatsSelect = (book: any) => {
     setSelectedBookForStats(book);
     setCurrentView('emotion-stats');
+  };
+  const handleStartReading = (book: any) => {
+    setSelectedBookForReading(book);
+    setCurrentView('reading-progress');
+  };
+  const handleCompleteReading = (progress: any) => {
+    // Handle reading completion - could trigger review flow
+    setCurrentView('search');
   };
   const handleWishlistToggle = (book: any) => {
     setWishlistBooks(prev => {
@@ -420,7 +433,7 @@ const BookMoodApp: React.FC = () => {
             </div>
           </motion.div>;
       case 'search':
-        return <BookSearchFlow onReviewSubmit={handleReviewSubmit} onBack={() => handleViewChange('home')} onWishlistToggle={handleWishlistToggle} data-magicpath-id="55" data-magicpath-path="BookMoodApp.tsx" />;
+        return <BookSearchFlow onReviewSubmit={handleReviewSubmit} onBack={() => handleViewChange('home')} onWishlistToggle={handleWishlistToggle} onStartReading={handleStartReading} wishlistBooks={wishlistBooks.map(book => book.id)} data-magicpath-id="55" data-magicpath-path="BookMoodApp.tsx" />;
       case 'archive':
         return <ArchiveDashboard reviews={reviews.length > 0 ? reviews : mockReviews} onMoodCardSelect={handleMoodCardSelect} onBack={() => handleViewChange('home')} data-magicpath-id="56" data-magicpath-path="BookMoodApp.tsx" />;
       case 'mood-detail':
@@ -441,7 +454,7 @@ const BookMoodApp: React.FC = () => {
       case 'wishlist':
         return <WishlistManager onBack={() => handleViewChange('home')} onBookSelect={book => {
           // Convert wishlist book to search flow format and start reading
-          setCurrentView('search');
+          handleStartReading(book);
         }} data-magicpath-id="63" data-magicpath-path="BookMoodApp.tsx" />;
       case 'emotion-filter':
         return <EmotionFilterView books={mockFilterableBooks} onBack={() => handleViewChange('home')} onBookSelect={book => {
@@ -450,12 +463,14 @@ const BookMoodApp: React.FC = () => {
         }} onViewEmotionStats={handleBookStatsSelect} data-magicpath-id="64" data-magicpath-path="BookMoodApp.tsx" />;
       case 'emotion-stats':
         return selectedBookForStats ? <BookEmotionStats bookData={mockBookEmotionData} onBack={() => handleViewChange('emotion-filter')} data-magicpath-id="65" data-magicpath-path="BookMoodApp.tsx" /> : null;
+      case 'reading-progress':
+        return selectedBookForReading ? <ReadingProgressTracker bookData={selectedBookForReading} onBack={() => handleViewChange('search')} onComplete={handleCompleteReading} data-magicpath-id="66" data-magicpath-path="BookMoodApp.tsx" /> : null;
       default:
         return null;
     }
   };
-  return <AppLayout currentView={currentView} onViewChange={handleViewChange} user={user} data-magicpath-id="66" data-magicpath-path="BookMoodApp.tsx">
-      <AnimatePresence mode="wait" data-magicpath-id="67" data-magicpath-path="BookMoodApp.tsx">
+  return <AppLayout currentView={currentView} onViewChange={handleViewChange} user={user} data-magicpath-id="67" data-magicpath-path="BookMoodApp.tsx">
+      <AnimatePresence mode="wait" data-magicpath-id="68" data-magicpath-path="BookMoodApp.tsx">
         {renderContent()}
       </AnimatePresence>
     </AppLayout>;

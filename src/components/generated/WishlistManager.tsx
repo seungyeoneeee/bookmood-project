@@ -53,7 +53,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'high',
       tags: ['개발', '코딩', '실무'],
       notes: '팀 리더가 추천한 필독서',
-      mpid: "a589bf3c-f25f-45d9-bbf2-32d79e18303a"
+      mpid: "d2d4b409-32aa-4f89-8d3b-41825809b656"
     }, {
       id: '2',
       title: '사피엔스',
@@ -68,7 +68,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'medium',
       tags: ['역사', '인문학', '철학'],
       notes: '친구가 강력 추천',
-      mpid: "004266ec-df5e-44f1-bdce-a67d0f38a06f"
+      mpid: "1cdf2947-b5e5-4646-a25b-9859b971f17a"
     }, {
       id: '3',
       title: '원피스 1권',
@@ -83,7 +83,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'low',
       tags: ['만화', '모험', '우정'],
       notes: '휴식용 독서',
-      mpid: "d3b82f6f-b0c1-48a1-a364-34b774cb11d9"
+      mpid: "c81dbcac-f1f3-46dc-b8e0-69b318c3d185"
     }, {
       id: '4',
       title: '데미안',
@@ -98,7 +98,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'high',
       tags: ['고전', '성장', '철학'],
       notes: '고등학교 때 읽다가 중단한 책',
-      mpid: "0c763841-9195-4085-b1c5-aa44a7bd00af"
+      mpid: "ca187785-3b94-415e-ba93-40babca1608a"
     }, {
       id: '5',
       title: '아토믹 해빗',
@@ -113,7 +113,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       priority: 'medium',
       tags: ['습관', '자기계발', '실용'],
       notes: '새해 목표 달성을 위해',
-      mpid: "af311290-9124-472f-9d78-b5f0ac332fa6"
+      mpid: "a9100b2d-4e59-4ecb-a3e9-0aaebb93a68c"
     }];
     setWishlistBooks(mockWishlist);
   }, []);
@@ -357,7 +357,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
                         {onBookSelect && <button onClick={() => onBookSelect(book)} className="px-3 py-1 text-xs bg-[#A8B5E8] text-white rounded-lg hover:bg-[#8BB5E8] transition-colors" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="67" data-magicpath-path="WishlistManager.tsx">
                             읽기 시작
                           </button>}
-                        {!isSelectionMode && <button onClick={() => removeFromWishlist(book.id)} className="p-1 text-gray-400 hover:text-red-500 transition-colors" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="68" data-magicpath-path="WishlistManager.tsx">
+                        {!isSelectionMode && <button onClick={() => removeFromWishlist(book.id)} className="p-1 text-red-400 hover:text-red-500 transition-colors" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="68" data-magicpath-path="WishlistManager.tsx">
                             <Heart className="w-4 h-4 fill-current" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="69" data-magicpath-path="WishlistManager.tsx" />
                           </button>}
                       </div>

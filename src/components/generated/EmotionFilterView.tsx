@@ -49,92 +49,92 @@ const EmotionFilterView: React.FC<EmotionFilterViewProps> = ({
       name: '기쁨',
       color: '#F4E4B8',
       count: 0,
-      mpid: "3ecbe6db-94ed-446b-a873-7328e8234aed"
+      mpid: "cad58719-a9c1-410b-a951-15f41b25bab4"
     }, {
       name: '사랑',
       color: '#E91E63',
       count: 0,
-      mpid: "7656e33f-14bb-49a2-af8a-24d19cb0d805"
+      mpid: "131d1f5d-86df-49fb-b315-7e9f56c04085"
     }, {
       name: '평온',
       color: '#B5D4C8',
       count: 0,
-      mpid: "ffd0c755-12ba-474c-8dd5-4ca5f4572c3e"
+      mpid: "a72cba86-a55d-4c83-81b8-b58f989ff48b"
     }, {
       name: '영감',
       color: '#00D4AA',
       count: 0,
-      mpid: "4ff3b98d-403d-4ee6-87b9-da5421eb5802"
+      mpid: "76201f83-3833-47ad-ad48-b5e98472e25f"
     }, {
       name: '흥미진진',
       color: '#FF9500',
       count: 0,
-      mpid: "8cbf26a9-f95c-4b91-88be-56e3d8592939"
+      mpid: "9caaca86-8158-4f6f-9fe5-db6e3c6691bf"
     }, {
       name: '희망',
       color: '#4CAF50',
       count: 0,
-      mpid: "f788b009-3288-4724-baae-4af3dd892048"
+      mpid: "b93107aa-818f-4c54-b992-7bcea70b870d"
     }],
-    mpid: "f23d0719-5263-49f9-8f6e-134c236564f0"
+    mpid: "cd13cb00-abae-4135-8baf-3670b3ed53d5"
   }, {
     category: '복합적 감정',
     emotions: [{
       name: '그리움',
       color: '#9C27B0',
       count: 0,
-      mpid: "7b65352f-a4f8-4aaa-9a58-ad388ddcd112"
+      mpid: "e3d1f173-ad72-4a53-ba3c-7c54595d92e3"
     }, {
       name: '향수',
       color: '#795548',
       count: 0,
-      mpid: "63e6f72b-e90f-413f-8446-25f9480edfec"
+      mpid: "a0ca4385-33ff-4624-b250-b62229da7147"
     }, {
       name: '경이로움',
       color: '#FF5722',
       count: 0,
-      mpid: "abf4430e-c188-4d07-94a9-973a3385ca65"
+      mpid: "3788ab44-9cf4-4172-a705-e518445b3e0d"
     }, {
       name: '감동',
       color: '#E91E63',
       count: 0,
-      mpid: "a19d6fb3-517f-4fbe-a871-542bdbf8c43a"
+      mpid: "7b971741-cba4-4bea-8d5c-83e9113e199d"
     }, {
       name: '깨달음',
       color: '#607D8B',
       count: 0,
-      mpid: "9af3f57d-76a0-47a8-90a3-af997cd6a656"
+      mpid: "46de9fcf-0fd9-45c9-84b4-17c4059965be"
     }],
-    mpid: "5a2c7ce0-3a0a-4139-b58f-fc971f77edf6"
+    mpid: "8b945e37-fdae-412b-97ab-0db3338dc440"
   }, {
     category: '내성적 감정',
     emotions: [{
       name: '슬픔',
       color: '#A8B5E8',
       count: 0,
-      mpid: "d8c42059-6c47-4db7-99f3-175de0eea5fd"
+      mpid: "1befe421-0cc0-4af6-8c99-e84db3383958"
     }, {
       name: '우울감',
       color: '#6C7CE0',
       count: 0,
-      mpid: "37f22f34-40b5-4a98-b9e7-bb445fed6224"
+      mpid: "0e639cf0-4d58-4754-a617-620d34b4c6cd"
     }, {
       name: '고독',
       color: '#95A5A6',
       count: 0,
-      mpid: "eef56444-8be2-41a4-9473-539eed8aaf90"
+      mpid: "549a956b-1de8-4e41-b4ee-57ecc27f3f3f"
     }, {
       name: '두려움',
       color: '#95A5A6',
       count: 0,
-      mpid: "d28103ea-9695-4c2b-8fce-810e1f70c5a4"
+      mpid: "6324b67b-2285-44a5-880e-1bce36bb4b09"
     }, {
       name: '불안',
       color: '#FF6B6B',
       count: 0,
-      mpid: "8126f740-f1db-4164-aff4-d47025485cca"
+      mpid: "4e3c9fb8-87ef-48b3-804a-9929f71a9e51"
     }],
-    mpid: "bd8f34ee-de6d-4758-8f38-a8f66fb98c25"
+    mpid: "4878f62b-04b2-48b7-8fd5-d70b3c93f28f"
   }] as any[];
 
   // Calculate emotion counts from books
