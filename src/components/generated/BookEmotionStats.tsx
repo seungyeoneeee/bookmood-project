@@ -302,22 +302,22 @@ const BookEmotionStats: React.FC<BookEmotionStatsProps> = ({
     id: 'overview',
     label: '개요',
     icon: Target,
-    mpid: "e285bc9a-6b93-4f6f-a6b1-d6651b9d952b"
+    mpid: "d65864b8-a4ac-4b29-bf6b-d1048ec04574"
   }, {
     id: 'emotions',
     label: '감정',
     icon: Heart,
-    mpid: "34135500-daca-4877-892e-ce8a433a133e"
+    mpid: "d9313c9f-461b-4d3e-8816-de6f2e6a490a"
   }, {
     id: 'trends',
     label: '트렌드',
     icon: TrendingUp,
-    mpid: "5ce64377-2e75-462a-a8ab-8c1bbe022a72"
+    mpid: "e4611343-490e-4a83-9d39-6eef0edfea18"
   }, {
     id: 'reviews',
     label: '리뷰',
     icon: Users,
-    mpid: "8b040eb3-7cb0-4cf7-b224-1690289cb9b1"
+    mpid: "8fb309a2-464d-441f-97f7-23f867ddcc61"
   }] as any[];
   return <motion.div initial={{
     opacity: 0,
@@ -347,7 +347,7 @@ const BookEmotionStats: React.FC<BookEmotionStatsProps> = ({
             const isActive = activeTab === tab.id;
             return <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`relative flex flex-col items-center space-y-1 px-3 py-3 rounded-xl transition-all duration-200 ${isActive ? 'bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}`} data-magicpath-uuid={(tab as any)["mpid"] ?? "unsafe"} data-magicpath-id="120" data-magicpath-path="BookEmotionStats.tsx">
                   <Icon className="w-4 h-4" data-magicpath-uuid={(tab as any)["mpid"] ?? "unsafe"} data-magicpath-id="121" data-magicpath-path="BookEmotionStats.tsx" />
-                  <span className="text-xs font-medium" data-magicpath-uuid={(tab as any)["mpid"] ?? "unsafe"} data-magicpath-field="label:string" data-magicpath-id="122" data-magicpath-path="BookEmotionStats.tsx">{tab.label}</span>
+                  <span className="text-xs font-medium" data-magicpath-uuid={(tab as any)["mpid"] ?? "unsafe"} data-magicpath-field="label:unknown" data-magicpath-id="122" data-magicpath-path="BookEmotionStats.tsx">{tab.label}</span>
                 </button>;
           })}
           </div>
