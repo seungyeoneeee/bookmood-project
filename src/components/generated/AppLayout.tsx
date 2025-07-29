@@ -27,25 +27,25 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     label: '홈',
     icon: Home,
     color: '#A8B5E8',
-    mpid: "10b16e82-3352-4951-9a76-0265c8b498ee"
+    mpid: "9ccf58d6-63dc-4215-9116-f9f4a7cba12b"
   }, {
     id: 'search',
     label: '검색',
     icon: BookOpen,
     color: '#8BB5E8',
-    mpid: "e24f00a7-f93e-4360-bd95-4769f9702c8b"
+    mpid: "da7d3a1f-5100-4214-bddb-a4f1a88e697b"
   }, {
     id: 'archive',
     label: '아카이브',
     icon: Bookmark,
     color: '#B5D4C8',
-    mpid: "d097c051-cce0-4daa-aea9-94dfb631f3ed"
+    mpid: "01cb1b81-81c1-40f0-8d82-06aec9ca1497"
   }, {
     id: 'settings',
     label: '설정',
     icon: Settings,
     color: '#F4E4B8',
-    mpid: "66f75186-aebc-4804-81d0-3f6f631531d1"
+    mpid: "8906c00f-1957-4be3-a950-593aa8d0bd52"
   }] as any[];
   const handleLogin = () => {
     // Mock login - in real app, this would integrate with Firebase Auth

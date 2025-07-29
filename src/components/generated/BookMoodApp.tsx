@@ -49,7 +49,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
     moodCardUrl: '/api/mood-cards/1',
-    mpid: "7e7179c3-c8a0-45a6-b537-72c899aa250a"
+    mpid: "00c86c2a-cc31-4d40-93df-260425e5dc4f"
   }, {
     id: '2',
     bookId: '2',
@@ -59,7 +59,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
     moodCardUrl: '/api/mood-cards/2',
-    mpid: "77223924-cd73-4d8c-b169-4d0d3ef9a57e"
+    mpid: "72a5f319-4f20-4298-9209-b59b4a60aac1"
   }];
   const handleViewChange = (view: ViewType) => {
     setCurrentView(view);
@@ -71,10 +71,10 @@ const BookMoodApp: React.FC = () => {
     setSelectedMoodCard(review);
     setCurrentView('mood-detail');
   };
-  const handleReviewSubmit = (bookData: BookData, reviewText: string) => {
+  const handleReviewSubmit = (bookData: BookData, reviewText: string, selectedEmotions: string[]) => {
     // Mock AI analysis - in real app, this would call OpenAI API
     const mockAnalysis = {
-      emotions: ['inspired', 'curious', 'satisfied'],
+      emotions: selectedEmotions.length > 0 ? selectedEmotions : ['inspired', 'curious', 'satisfied'],
       topics: ['learning', 'discovery', 'knowledge'],
       moodSummary: 'This reading experience sparked your intellectual curiosity and left you feeling enriched with new perspectives.'
     };
