@@ -302,22 +302,22 @@ const BookEmotionStats: React.FC<BookEmotionStatsProps> = ({
     id: 'overview',
     label: '개요',
     icon: Target,
-    mpid: "f4d96d39-3db8-4e8c-bdba-71058ddca890"
+    mpid: "aae85db4-dca0-44bf-9034-7f1693633d0a"
   }, {
     id: 'emotions',
     label: '감정',
     icon: Heart,
-    mpid: "2bc98f1d-71c0-4da2-8caa-35c2b6a4e6b3"
+    mpid: "89bc5cd6-d82a-4d29-ae38-0af947337723"
   }, {
     id: 'trends',
     label: '트렌드',
     icon: TrendingUp,
-    mpid: "a86b3ead-6fef-4eed-8cf8-17ac4c5fd876"
+    mpid: "1d98a18e-0a0c-4dd1-ab10-0a8ee46778a7"
   }, {
     id: 'reviews',
     label: '리뷰',
     icon: Users,
-    mpid: "fe81713b-74e9-46f7-91d9-513af2d83099"
+    mpid: "5b4e0b32-5611-4399-89cc-c330a5fbf133"
   }] as any[];
   return <motion.div initial={{
     opacity: 0,

@@ -31,31 +31,31 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     label: '홈',
     icon: Home,
     color: '#A8B5E8',
-    mpid: "131f16fb-8ddb-4653-9416-2b93d4ff0d63"
+    mpid: "4bbe8b96-e080-418a-840d-565de20caf55"
   }, {
     id: 'search',
     label: '검색',
     icon: BookOpen,
     color: '#8BB5E8',
-    mpid: "a6fddd13-ec89-401e-a125-512b77c32ae1"
+    mpid: "91a324c4-0df6-49ec-a9b5-33893c5dd1fc"
   }, {
     id: 'archive',
     label: '아카이브',
     icon: Bookmark,
     color: '#B5D4C8',
-    mpid: "743b9c6d-9246-4801-b8a4-ddfefb615f5e"
+    mpid: "59d8aea0-f9d7-464f-932d-7a227bde9659"
   }, {
     id: 'wishlist',
     label: '찜한책',
     icon: Heart,
     color: '#F4E4B8',
-    mpid: "dd78ad08-c5e0-4d5f-8c0f-324a5f72df4e"
+    mpid: "3d501bca-2b4f-4548-baaa-f5f76611520c"
   }, {
     id: 'settings',
     label: '설정',
     icon: Settings,
     color: '#E8B5A8',
-    mpid: "629b725c-ae1b-4f25-86e7-2dedb4271c7a"
+    mpid: "17a08333-ba33-4295-88ae-306cd6c2b314"
   }] as any[];
   const handleLogin = () => {
     console.log('Login clicked');

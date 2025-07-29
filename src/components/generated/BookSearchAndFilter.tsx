@@ -90,7 +90,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     readerCount: 1250,
     averageRating: 4.5,
     tags: ['판타지', '힐링', '꿈'],
-    mpid: "284192ac-0619-40c2-a413-892b9762371e"
+    mpid: "3345c6ca-c436-4004-a4bf-41e5d8b852a3"
   }, {
     id: '2',
     title: '아몬드',
@@ -114,7 +114,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     readerCount: 2100,
     averageRating: 4.7,
     tags: ['성장', '감정', '청소년'],
-    mpid: "4137a9d1-f5a5-4782-bb14-6700392c4415"
+    mpid: "5839e606-b15f-4064-8efc-147581835d02"
   }, {
     id: '3',
     title: '미드나이트 라이브러리',
@@ -137,7 +137,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     readerCount: 890,
     averageRating: 4.3,
     tags: ['철학', '인생', '선택'],
-    mpid: "b516ed63-715c-4486-9d6e-562f0ca67ad0"
+    mpid: "c2749605-3e26-452b-bb52-88714b110301"
   }];
 
   // Detailed emotion categories
@@ -147,35 +147,35 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     icon: <Smile className="w-4 h-4" data-magicpath-id="0" data-magicpath-path="BookSearchAndFilter.tsx" />,
     color: 'bg-yellow-100 text-yellow-700 border-yellow-200',
     subcategories: ['행복', '즐거움', '만족', '희열', '환희', '기대감', '설렘', '감동'],
-    mpid: "2fb81950-7537-4268-be9b-00136d5e7a1f"
+    mpid: "d99bbd35-2d91-410a-9482-f9d14a5a8cde"
   }, {
     id: 'sadness',
     name: '슬픔',
     icon: <Frown className="w-4 h-4" data-magicpath-id="1" data-magicpath-path="BookSearchAndFilter.tsx" />,
     color: 'bg-blue-100 text-blue-700 border-blue-200',
     subcategories: ['우울', '아쉬움', '그리움', '애잔함', '쓸쓸함', '허무', '절망', '안타까움'],
-    mpid: "548cde29-5b89-4858-bcb7-c0dbe4cd3479"
+    mpid: "0d179b37-4d93-4628-a01b-597c7a53758e"
   }, {
     id: 'love',
     name: '사랑',
     icon: <Heart className="w-4 h-4" data-magicpath-id="2" data-magicpath-path="BookSearchAndFilter.tsx" />,
     color: 'bg-pink-100 text-pink-700 border-pink-200',
     subcategories: ['애정', '따뜻함', '친밀감', '소중함', '아끼는 마음', '연민', '동정', '공감'],
-    mpid: "0a5768d3-b115-4abc-8bf7-3f40da457910"
+    mpid: "aa477fb2-2dd0-4b18-a984-f746219c4656"
   }, {
     id: 'peace',
     name: '평온',
     icon: <Leaf className="w-4 h-4" data-magicpath-id="3" data-magicpath-path="BookSearchAndFilter.tsx" />,
     color: 'bg-green-100 text-green-700 border-green-200',
     subcategories: ['고요함', '차분함', '안정감', '편안함', '여유', '평화', '휴식', '치유'],
-    mpid: "a1da13ac-8806-49dc-9f84-eb54ed8d65c5"
+    mpid: "66b1ca67-276c-4327-8d2a-2d196c66f0c2"
   }, {
     id: 'inspiration',
     name: '영감',
     icon: <Rainbow className="w-4 h-4" />,
     color: 'bg-teal-100 text-teal-700 border-teal-200',
     subcategories: ['깨달음', '통찰', '자극', '동기부여', '희망', '용기', '의지', '결심'],
-    mpid: "9c0f3480-0b14-4d56-8710-eb7f6d19f255"
+    mpid: "3de1e1da-e57f-4977-8da1-d2357c0c4bd4"
   }];
 
   // Available emotions for filtering
@@ -185,62 +185,62 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
       name: '기쁨',
       color: '#F4E4B8',
       count: 0,
-      mpid: "e694ffde-3a69-48cc-b92a-78d68d8fd987"
+      mpid: "e10524ae-9ffb-42e4-a4cf-54bcc5ff8aa7"
     }, {
       name: '사랑',
       color: '#E91E63',
       count: 0,
-      mpid: "a504b77d-d9d8-4a99-b946-90a08d12c4c3"
+      mpid: "49fc79a3-68f1-43a3-95ba-704cfdc8b767"
     }, {
       name: '평온',
       color: '#B5D4C8',
       count: 0,
-      mpid: "01c4abfb-39d1-489f-a8c0-d9cce6f5c7fd"
+      mpid: "98b63c28-efb2-4396-be39-987438d00e91"
     }, {
       name: '영감',
       color: '#00D4AA',
       count: 0,
-      mpid: "ea125551-ecbf-4ffe-b8f5-028ac624a151"
+      mpid: "3da2887d-fcac-4c54-a0ec-0229662e144b"
     }, {
       name: '희망',
       color: '#4CAF50',
       count: 0,
-      mpid: "0df0c5b6-3b17-41a5-95db-81a7dde81cbc"
+      mpid: "d4c76b22-ded8-4bf3-b852-52012fb1bdca"
     }],
-    mpid: "ab14a252-fbfb-49ac-9646-1ac647f5e226"
+    mpid: "566888dc-58d0-449b-a37e-168b9126c859"
   }, {
     category: '복합적 감정',
     emotions: [{
       name: '그리움',
       color: '#9C27B0',
       count: 0,
-      mpid: "2bbc08b4-d4d5-412c-a25a-6ef80accd743"
+      mpid: "b7c9a240-43a0-46bd-a289-773da56efc3b"
     }, {
       name: '감동',
       color: '#E91E63',
       count: 0,
-      mpid: "dbf23adc-f1f4-4e5f-8cf1-8f3336679838"
+      mpid: "ef873d79-003f-4b78-8de3-db71e07d4072"
     }, {
       name: '깨달음',
       color: '#607D8B',
       count: 0,
-      mpid: "edd03fb9-93dd-42c7-8fc9-1c84c4db2aaa"
+      mpid: "d4b5ce3a-ac1b-463e-bafc-4917b3bfc4f6"
     }],
-    mpid: "70b54751-0ad9-4665-9b4c-a44fa208def3"
+    mpid: "9a3d90c0-1e6a-4ba0-8021-f7378116a1e7"
   }, {
     category: '내성적 감정',
     emotions: [{
       name: '슬픔',
       color: '#A8B5E8',
       count: 0,
-      mpid: "b25b302f-d8c0-44b6-8ff4-530359cf89f4"
+      mpid: "e4dd110c-25ac-4349-b7d3-c845e04fcfe8"
     }, {
       name: '고독',
       color: '#95A5A6',
       count: 0,
-      mpid: "e02b08ce-095d-4529-8079-4b4937883a45"
+      mpid: "cf84a7e8-bc13-4ea0-86f3-4b677624663e"
     }],
-    mpid: "47543288-96d8-478f-97e3-b07ce2af2d6c"
+    mpid: "ec7defa7-6b0e-49b3-86d4-dc1c35bd7112"
   }] as any[];
   const toggleEmotion = (emotion: string) => {
     setSelectedEmotions(prev => prev.includes(emotion) ? prev.filter(e => e !== emotion) : [...prev, emotion]);
