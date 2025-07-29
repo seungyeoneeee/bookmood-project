@@ -18,6 +18,7 @@ interface BookData {
 interface BookSearchFlowProps {
   onReviewSubmit: (bookData: BookData, reviewText: string, selectedEmotions: string[]) => void;
   onBack: () => void;
+  onWishlistToggle?: (book: BookData) => void;
   mpid?: string;
 }
 type FlowStep = 'search' | 'book-list' | 'book-detail' | 'review';
@@ -31,7 +32,8 @@ interface EmotionCategory {
 }
 const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
   onReviewSubmit,
-  onBack
+  onBack,
+  onWishlistToggle
 }) => {
   const [currentStep, setCurrentStep] = useState<FlowStep>('search');
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,70 +51,70 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     icon: <Smile className="w-4 h-4" data-magicpath-id="0" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-yellow-100 text-yellow-700 border-yellow-200',
     subcategories: ['행복', '즐거움', '만족', '희열', '환희', '기대감', '설렘', '감동'],
-    mpid: "ee1fcd81-f4db-44f1-a835-ace2f5e1d1c2"
+    mpid: "7299c784-2c46-4d72-b7f5-36007c73bd16"
   }, {
     id: 'sadness',
     name: '슬픔',
     icon: <Frown className="w-4 h-4" data-magicpath-id="1" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-blue-100 text-blue-700 border-blue-200',
     subcategories: ['우울', '아쉬움', '그리움', '애잔함', '쓸쓸함', '허무', '절망', '안타까움'],
-    mpid: "f4976a1e-7eaf-4afb-bb29-27ab53a899d5"
+    mpid: "3b231a16-e02e-4561-814b-9e04658d4c59"
   }, {
     id: 'anger',
     name: '분노',
     icon: <Flame className="w-4 h-4" data-magicpath-id="2" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-red-100 text-red-700 border-red-200',
     subcategories: ['화남', '짜증', '분개', '억울함', '답답함', '불만', '격분', '원망'],
-    mpid: "5e98ebee-dda9-41fe-b669-266a0cff1af0"
+    mpid: "5aab29cb-0ead-4904-a507-7fe652aa068c"
   }, {
     id: 'fear',
     name: '두려움',
     icon: <Cloud className="w-4 h-4" />,
     color: 'bg-gray-100 text-gray-700 border-gray-200',
     subcategories: ['불안', '걱정', '긴장', '공포', '무서움', '경계', '조심스러움', '위축'],
-    mpid: "4df9e009-d86c-4479-9569-930280c42399"
+    mpid: "68a8ff39-3ed7-4da1-acdb-093fb5b08493"
   }, {
     id: 'surprise',
     name: '놀라움',
     icon: <Zap className="w-4 h-4" data-magicpath-id="3" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-purple-100 text-purple-700 border-purple-200',
     subcategories: ['충격', '경이로움', '신기함', '의외', '당황', '깜짝', '놀람', '감탄'],
-    mpid: "3c813c49-cab2-42cd-9246-b12432aed6a1"
+    mpid: "f16ee4ea-ac7a-4d0b-82f4-9fb8f8daccd1"
   }, {
     id: 'love',
     name: '사랑',
     icon: <Heart className="w-4 h-4" data-magicpath-id="4" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-pink-100 text-pink-700 border-pink-200',
     subcategories: ['애정', '따뜻함', '친밀감', '소중함', '아끼는 마음', '연민', '동정', '공감'],
-    mpid: "12013aaa-b3ed-487b-8d08-7c98231eaf36"
+    mpid: "acb52216-9ed1-469f-8d44-6cbf59f89554"
   }, {
     id: 'peace',
     name: '평온',
     icon: <Leaf className="w-4 h-4" data-magicpath-id="5" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-green-100 text-green-700 border-green-200',
     subcategories: ['고요함', '차분함', '안정감', '편안함', '여유', '평화', '휴식', '치유'],
-    mpid: "5ede9853-afba-4dbe-bb56-ddd34a14fce7"
+    mpid: "4e6138ec-d735-4173-9e77-2eac21726537"
   }, {
     id: 'excitement',
     name: '흥미진진',
     icon: <Sun className="w-4 h-4" data-magicpath-id="6" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-orange-100 text-orange-700 border-orange-200',
     subcategories: ['스릴', '재미', '흥미', '몰입', '집중', '긴장감', '박진감', '활력'],
-    mpid: "d5113fcf-facb-4962-b49e-6aa134ace7c7"
+    mpid: "a5f79470-0792-4ad5-aeeb-1fea9464fa11"
   }, {
     id: 'melancholy',
     name: '우울감',
     icon: <Moon className="w-4 h-4" data-magicpath-id="7" data-magicpath-path="BookSearchFlow.tsx" />,
     color: 'bg-indigo-100 text-indigo-700 border-indigo-200',
     subcategories: ['멜랑콜리', '센치함', '쓸쓸함', '고독', '외로움', '침울함', '무기력', '공허함'],
-    mpid: "8ee6208f-7348-44cd-b508-bec474d582d6"
+    mpid: "fa873300-1049-49e0-ac43-433040c59214"
   }, {
     id: 'inspiration',
     name: '영감',
     icon: <Rainbow className="w-4 h-4" />,
     color: 'bg-teal-100 text-teal-700 border-teal-200',
     subcategories: ['깨달음', '통찰', '자극', '동기부여', '희망', '용기', '의지', '결심'],
-    mpid: "dd4cea09-d7ec-4539-89c0-1699569f51bd"
+    mpid: "1bbc4a7f-9fe5-48ad-84a2-e7ae9b4e4d0e"
   }];
   const toggleEmotion = (emotion: string) => {
     setSelectedEmotions(prev => prev.includes(emotion) ? prev.filter(e => e !== emotion) : [...prev, emotion]);
@@ -130,7 +132,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '팩토리나인',
     genre: '판타지',
     pages: 312,
-    mpid: "070da5e4-0914-4327-b58e-bcdd05f00c6e"
+    mpid: "d4660d35-8c7e-471d-9f38-11edf84f73f2"
   }, {
     id: '2',
     title: '아몬드',
@@ -142,7 +144,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '창비',
     genre: '청소년 소설',
     pages: 267,
-    mpid: "504f8f28-4492-4e90-a1a1-cd7800a9501f"
+    mpid: "8a3aca01-67bc-4208-bcb8-93921c1ad3ef"
   }, {
     id: '3',
     title: '미드나이트 라이브러리',
@@ -154,7 +156,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '인플루엔셜',
     genre: '철학 소설',
     pages: 288,
-    mpid: "8c92db12-dbf5-47f8-83ec-2bcfa166b1c5"
+    mpid: "928940ed-f591-44b2-a736-281a1a4ba56d"
   }, {
     id: '4',
     title: '82년생 김지영',
@@ -166,7 +168,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '민음사',
     genre: '사회 소설',
     pages: 215,
-    mpid: "fde0ef6f-26cf-47fd-9108-61cfb37368df"
+    mpid: "e6ee69b4-90a1-4b87-a560-372a78a1d85d"
   }, {
     id: '5',
     title: '코스모스',
@@ -178,7 +180,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '사이언스북스',
     genre: '과학',
     pages: 512,
-    mpid: "548d1c51-a13c-4675-9ee9-5dff7ded035c"
+    mpid: "dc0c6f54-a09e-48de-bfc5-52892eb0b73e"
   }, {
     id: '6',
     title: '채식주의자',
@@ -190,7 +192,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
     publisher: '창비',
     genre: '현대 소설',
     pages: 158,
-    mpid: "9cc34a11-4959-406e-a356-c8b867a066fb"
+    mpid: "0f28b09f-29d3-4520-9213-45854d93700b"
   }];
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
@@ -324,9 +326,12 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
                 <div className="flex space-x-4" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="48" data-magicpath-path="BookSearchFlow.tsx">
                   <div className="relative" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="49" data-magicpath-path="BookSearchFlow.tsx">
                     <img src={book.cover} alt={book.title} className="w-20 h-28 object-cover rounded-2xl shadow-lg" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="cover:unknown" data-magicpath-id="50" data-magicpath-path="BookSearchFlow.tsx" />
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] rounded-full flex items-center justify-center" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="51" data-magicpath-path="BookSearchFlow.tsx">
+                    <button onClick={e => {
+                e.stopPropagation();
+                onWishlistToggle?.(book);
+              }} className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-[#F4E4B8] to-[#F0E4B8] rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="51" data-magicpath-path="BookSearchFlow.tsx">
                       <Heart className="w-3 h-3 text-white" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="52" data-magicpath-path="BookSearchFlow.tsx" />
-                    </div>
+                    </button>
                   </div>
                   
                   <div className="flex-1 space-y-3" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="53" data-magicpath-path="BookSearchFlow.tsx">
@@ -459,10 +464,16 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
             </div>
 
             {/* Action Button */}
-            <button onClick={handleProceedToReview} className="w-full py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="116" data-magicpath-path="BookSearchFlow.tsx">
-              <Sparkles className="w-5 h-5" />
-              <span data-magicpath-id="117" data-magicpath-path="BookSearchFlow.tsx">감상문 작성하기</span>
-            </button>
+            <div className="flex space-x-3" data-magicpath-id="116" data-magicpath-path="BookSearchFlow.tsx">
+              <button onClick={handleProceedToReview} className="flex-1 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="117" data-magicpath-path="BookSearchFlow.tsx">
+                <Sparkles className="w-5 h-5" />
+                <span data-magicpath-id="118" data-magicpath-path="BookSearchFlow.tsx">감상문 작성하기</span>
+              </button>
+              
+              <button onClick={() => onWishlistToggle?.(selectedBook)} className="px-6 py-4 bg-gradient-to-r from-[#F4E4B8] to-[#F0E4B8] text-white rounded-2xl font-medium flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="119" data-magicpath-path="BookSearchFlow.tsx">
+                <Heart className="w-5 h-5" data-magicpath-id="120" data-magicpath-path="BookSearchFlow.tsx" />
+              </button>
+            </div>
           </div>}
       </div>
     </motion.div>;
@@ -475,59 +486,59 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
   }} exit={{
     opacity: 0,
     x: -20
-  }} className="min-h-screen px-4 py-8" data-magicpath-id="118" data-magicpath-path="BookSearchFlow.tsx">
-      <div className="max-w-sm mx-auto" data-magicpath-id="119" data-magicpath-path="BookSearchFlow.tsx">
+  }} className="min-h-screen px-4 py-8" data-magicpath-id="121" data-magicpath-path="BookSearchFlow.tsx">
+      <div className="max-w-sm mx-auto" data-magicpath-id="122" data-magicpath-path="BookSearchFlow.tsx">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8" data-magicpath-id="120" data-magicpath-path="BookSearchFlow.tsx">
-          <button onClick={() => setCurrentStep('book-detail')} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="121" data-magicpath-path="BookSearchFlow.tsx">
-            <ArrowLeft className="w-5 h-5 text-gray-600" data-magicpath-id="122" data-magicpath-path="BookSearchFlow.tsx" />
+        <div className="flex items-center justify-between mb-8" data-magicpath-id="123" data-magicpath-path="BookSearchFlow.tsx">
+          <button onClick={() => setCurrentStep('book-detail')} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="124" data-magicpath-path="BookSearchFlow.tsx">
+            <ArrowLeft className="w-5 h-5 text-gray-600" data-magicpath-id="125" data-magicpath-path="BookSearchFlow.tsx" />
           </button>
-          <h1 className="text-xl font-bold text-gray-800" data-magicpath-id="123" data-magicpath-path="BookSearchFlow.tsx">감상문 작성</h1>
-          <div className="w-10" data-magicpath-id="124" data-magicpath-path="BookSearchFlow.tsx" />
+          <h1 className="text-xl font-bold text-gray-800" data-magicpath-id="126" data-magicpath-path="BookSearchFlow.tsx">감상문 작성</h1>
+          <div className="w-10" data-magicpath-id="127" data-magicpath-path="BookSearchFlow.tsx" />
         </div>
 
-        {selectedBook && <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm" data-magicpath-id="125" data-magicpath-path="BookSearchFlow.tsx">
-            <div className="flex items-center space-x-3" data-magicpath-id="126" data-magicpath-path="BookSearchFlow.tsx">
-              <img src={selectedBook.cover} alt={selectedBook.title} className="w-12 h-18 object-cover rounded-lg shadow-sm" data-magicpath-id="127" data-magicpath-path="BookSearchFlow.tsx" />
-              <div data-magicpath-id="128" data-magicpath-path="BookSearchFlow.tsx">
-                <h3 className="font-semibold text-gray-800 text-sm" data-magicpath-id="129" data-magicpath-path="BookSearchFlow.tsx">{selectedBook.title}</h3>
-                <p className="text-gray-600 text-xs" data-magicpath-id="130" data-magicpath-path="BookSearchFlow.tsx">{selectedBook.author}</p>
+        {selectedBook && <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm" data-magicpath-id="128" data-magicpath-path="BookSearchFlow.tsx">
+            <div className="flex items-center space-x-3" data-magicpath-id="129" data-magicpath-path="BookSearchFlow.tsx">
+              <img src={selectedBook.cover} alt={selectedBook.title} className="w-12 h-18 object-cover rounded-lg shadow-sm" data-magicpath-id="130" data-magicpath-path="BookSearchFlow.tsx" />
+              <div data-magicpath-id="131" data-magicpath-path="BookSearchFlow.tsx">
+                <h3 className="font-semibold text-gray-800 text-sm" data-magicpath-id="132" data-magicpath-path="BookSearchFlow.tsx">{selectedBook.title}</h3>
+                <p className="text-gray-600 text-xs" data-magicpath-id="133" data-magicpath-path="BookSearchFlow.tsx">{selectedBook.author}</p>
               </div>
             </div>
           </div>}
 
         {/* Emotion Categories */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6" data-magicpath-id="131" data-magicpath-path="BookSearchFlow.tsx">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="132" data-magicpath-path="BookSearchFlow.tsx">
-            <Heart className="w-5 h-5 mr-2 text-pink-500" data-magicpath-id="133" data-magicpath-path="BookSearchFlow.tsx" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm mb-6" data-magicpath-id="134" data-magicpath-path="BookSearchFlow.tsx">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="135" data-magicpath-path="BookSearchFlow.tsx">
+            <Heart className="w-5 h-5 mr-2 text-pink-500" data-magicpath-id="136" data-magicpath-path="BookSearchFlow.tsx" />
             어떤 감정을 느꼈나요?
           </h3>
-          <p className="text-sm text-gray-600 mb-6" data-magicpath-id="134" data-magicpath-path="BookSearchFlow.tsx">책을 읽으며 느낀 감정들을 선택해주세요 (복수 선택 가능)</p>
+          <p className="text-sm text-gray-600 mb-6" data-magicpath-id="137" data-magicpath-path="BookSearchFlow.tsx">책을 읽으며 느낀 감정들을 선택해주세요 (복수 선택 가능)</p>
           
-          <div className="space-y-4" data-magicpath-id="135" data-magicpath-path="BookSearchFlow.tsx">
-            {emotionCategories.map(category => <div key={category.id} className="space-y-3" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="136" data-magicpath-path="BookSearchFlow.tsx">
-                <div className="flex items-center space-x-2" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="137" data-magicpath-path="BookSearchFlow.tsx">
-                  <div className={`p-2 rounded-lg ${category.color} border`} data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-field="icon:unknwon" data-magicpath-id="138" data-magicpath-path="BookSearchFlow.tsx">
+          <div className="space-y-4" data-magicpath-id="138" data-magicpath-path="BookSearchFlow.tsx">
+            {emotionCategories.map(category => <div key={category.id} className="space-y-3" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="139" data-magicpath-path="BookSearchFlow.tsx">
+                <div className="flex items-center space-x-2" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="140" data-magicpath-path="BookSearchFlow.tsx">
+                  <div className={`p-2 rounded-lg ${category.color} border`} data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-field="icon:unknwon" data-magicpath-id="141" data-magicpath-path="BookSearchFlow.tsx">
                     {category.icon}
                   </div>
-                  <h4 className="font-medium text-gray-800" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-field="name:string" data-magicpath-id="139" data-magicpath-path="BookSearchFlow.tsx">{category.name}</h4>
+                  <h4 className="font-medium text-gray-800" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-field="name:string" data-magicpath-id="142" data-magicpath-path="BookSearchFlow.tsx">{category.name}</h4>
                 </div>
                 
-                <div className="flex flex-wrap gap-2 ml-10" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="140" data-magicpath-path="BookSearchFlow.tsx">
-                  {category.subcategories.map(emotion => <button key={emotion} onClick={() => toggleEmotion(emotion)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${selectedEmotions.includes(emotion) ? 'bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`} data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="141" data-magicpath-path="BookSearchFlow.tsx">
+                <div className="flex flex-wrap gap-2 ml-10" data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="143" data-magicpath-path="BookSearchFlow.tsx">
+                  {category.subcategories.map(emotion => <button key={emotion} onClick={() => toggleEmotion(emotion)} className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${selectedEmotions.includes(emotion) ? 'bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`} data-magicpath-uuid={(category as any)["mpid"] ?? "unsafe"} data-magicpath-id="144" data-magicpath-path="BookSearchFlow.tsx">
                       {emotion}
                     </button>)}
                 </div>
               </div>)}
           </div>
 
-          {selectedEmotions.length > 0 && <div className="mt-6 p-4 bg-gradient-to-r from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-xl border border-gray-100" data-magicpath-id="142" data-magicpath-path="BookSearchFlow.tsx">
-              <h4 className="text-sm font-medium text-gray-800 mb-2" data-magicpath-id="143" data-magicpath-path="BookSearchFlow.tsx">선택한 감정들:</h4>
-              <div className="flex flex-wrap gap-2" data-magicpath-id="144" data-magicpath-path="BookSearchFlow.tsx">
-                {selectedEmotions.map(emotion => <span key={emotion} className="px-2 py-1 bg-white rounded-full text-xs font-medium text-gray-700 border border-gray-200 flex items-center space-x-1" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="145" data-magicpath-path="BookSearchFlow.tsx">
-                    <span data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="146" data-magicpath-path="BookSearchFlow.tsx">{emotion}</span>
-                    <button onClick={() => toggleEmotion(emotion)} className="text-gray-400 hover:text-gray-600" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="147" data-magicpath-path="BookSearchFlow.tsx">
-                      <X className="w-3 h-3" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="148" data-magicpath-path="BookSearchFlow.tsx" />
+          {selectedEmotions.length > 0 && <div className="mt-6 p-4 bg-gradient-to-r from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-xl border border-gray-100" data-magicpath-id="145" data-magicpath-path="BookSearchFlow.tsx">
+              <h4 className="text-sm font-medium text-gray-800 mb-2" data-magicpath-id="146" data-magicpath-path="BookSearchFlow.tsx">선택한 감정들:</h4>
+              <div className="flex flex-wrap gap-2" data-magicpath-id="147" data-magicpath-path="BookSearchFlow.tsx">
+                {selectedEmotions.map(emotion => <span key={emotion} className="px-2 py-1 bg-white rounded-full text-xs font-medium text-gray-700 border border-gray-200 flex items-center space-x-1" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="148" data-magicpath-path="BookSearchFlow.tsx">
+                    <span data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="149" data-magicpath-path="BookSearchFlow.tsx">{emotion}</span>
+                    <button onClick={() => toggleEmotion(emotion)} className="text-gray-400 hover:text-gray-600" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="150" data-magicpath-path="BookSearchFlow.tsx">
+                      <X className="w-3 h-3" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="151" data-magicpath-path="BookSearchFlow.tsx" />
                     </button>
                   </span>)}
               </div>
@@ -535,35 +546,35 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
         </div>
 
         {/* Review Text */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-magicpath-id="149" data-magicpath-path="BookSearchFlow.tsx">
-          <label className="block text-sm font-medium text-gray-800 mb-4 flex items-center" data-magicpath-id="150" data-magicpath-path="BookSearchFlow.tsx">
-            <BookOpen className="w-4 h-4 mr-2" data-magicpath-id="151" data-magicpath-path="BookSearchFlow.tsx" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-magicpath-id="152" data-magicpath-path="BookSearchFlow.tsx">
+          <label className="block text-sm font-medium text-gray-800 mb-4 flex items-center" data-magicpath-id="153" data-magicpath-path="BookSearchFlow.tsx">
+            <BookOpen className="w-4 h-4 mr-2" data-magicpath-id="154" data-magicpath-path="BookSearchFlow.tsx" />
             감상문 작성
           </label>
-          <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="이 책을 읽으면서 어떤 감정을 느꼈나요? 어떤 장면이 가장 인상 깊었나요? 자유롭게 감상을 적어주세요..." className="w-full h-40 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20 resize-none text-sm" data-magicpath-id="152" data-magicpath-path="BookSearchFlow.tsx" />
+          <textarea value={reviewText} onChange={e => setReviewText(e.target.value)} placeholder="이 책을 읽으면서 어떤 감정을 느꼈나요? 어떤 장면이 가장 인상 깊었나요? 자유롭게 감상을 적어주세요..." className="w-full h-40 px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20 resize-none text-sm" data-magicpath-id="155" data-magicpath-path="BookSearchFlow.tsx" />
           
-          <div className="mt-6" data-magicpath-id="153" data-magicpath-path="BookSearchFlow.tsx">
-            <p className="text-xs text-gray-500 mb-4 text-center" data-magicpath-id="154" data-magicpath-path="BookSearchFlow.tsx">
+          <div className="mt-6" data-magicpath-id="156" data-magicpath-path="BookSearchFlow.tsx">
+            <p className="text-xs text-gray-500 mb-4 text-center" data-magicpath-id="157" data-magicpath-path="BookSearchFlow.tsx">
               AI가 당신의 감상과 선택한 감정을 분석해서 개인화된 무드 카드를 만들어드려요
             </p>
-            <button onClick={handleSubmitReview} disabled={!reviewText.trim() || selectedEmotions.length === 0 || isSubmitting} className="w-full py-4 bg-gradient-to-r from-[#F4E4B8] to-[#F0E4B8] text-white rounded-2xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="155" data-magicpath-path="BookSearchFlow.tsx">
+            <button onClick={handleSubmitReview} disabled={!reviewText.trim() || selectedEmotions.length === 0 || isSubmitting} className="w-full py-4 bg-gradient-to-r from-[#F4E4B8] to-[#F0E4B8] text-white rounded-2xl font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="158" data-magicpath-path="BookSearchFlow.tsx">
               {isSubmitting ? <>
-                  <Loader2 className="w-5 h-5 animate-spin" data-magicpath-id="156" data-magicpath-path="BookSearchFlow.tsx" />
-                  <span data-magicpath-id="157" data-magicpath-path="BookSearchFlow.tsx">무드 카드 생성 중...</span>
+                  <Loader2 className="w-5 h-5 animate-spin" data-magicpath-id="159" data-magicpath-path="BookSearchFlow.tsx" />
+                  <span data-magicpath-id="160" data-magicpath-path="BookSearchFlow.tsx">무드 카드 생성 중...</span>
                 </> : <>
-                  <Send className="w-5 h-5" data-magicpath-id="158" data-magicpath-path="BookSearchFlow.tsx" />
-                  <span data-magicpath-id="159" data-magicpath-path="BookSearchFlow.tsx">감상문 제출하기</span>
+                  <Send className="w-5 h-5" data-magicpath-id="161" data-magicpath-path="BookSearchFlow.tsx" />
+                  <span data-magicpath-id="162" data-magicpath-path="BookSearchFlow.tsx">감상문 제출하기</span>
                 </>}
             </button>
             
-            {selectedEmotions.length === 0 && reviewText.trim() && <p className="text-xs text-amber-600 mt-2 text-center" data-magicpath-id="160" data-magicpath-path="BookSearchFlow.tsx">
+            {selectedEmotions.length === 0 && reviewText.trim() && <p className="text-xs text-amber-600 mt-2 text-center" data-magicpath-id="163" data-magicpath-path="BookSearchFlow.tsx">
                 감정을 하나 이상 선택해주세요
               </p>}
           </div>
         </div>
       </div>
     </motion.div>;
-  return <AnimatePresence mode="wait" data-magicpath-id="161" data-magicpath-path="BookSearchFlow.tsx">
+  return <AnimatePresence mode="wait" data-magicpath-id="164" data-magicpath-path="BookSearchFlow.tsx">
       {currentStep === 'search' && renderSearchStep()}
       {currentStep === 'book-list' && renderBookListStep()}
       {currentStep === 'book-detail' && renderBookDetailStep()}
