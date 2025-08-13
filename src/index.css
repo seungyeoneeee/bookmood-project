@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter&family=Arial&family=Helvetica&family=Times+New+Roman&family=Georgia&family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=ui-sans-serif:wght@400&display=swap');
 @import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
