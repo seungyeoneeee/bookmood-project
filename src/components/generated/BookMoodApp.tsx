@@ -10,7 +10,6 @@ import MoodCardDetail from './MoodCardDetail';
 import WishlistManager from './WishlistManager';
 import BookEmotionStats from './BookEmotionStats';
 import ReadingProgressTracker from './ReadingProgressTracker';
-import BookCursor from './BookCursor';
 import LoginPage from './LoginPage';
 export interface BookData {
   id: string;
@@ -96,7 +95,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
     moodCardUrl: '/api/mood-cards/1',
-    mpid: "55288e02-5778-40a4-ac9c-055af237a028"
+    mpid: "794996df-d0af-4802-bf53-0d7eaf8dba77"
   }, {
     id: '2',
     bookId: '2',
@@ -106,7 +105,7 @@ const BookMoodApp: React.FC = () => {
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
     moodCardUrl: '/api/mood-cards/2',
-    mpid: "57119c7a-de40-462f-82f6-f00105e32597"
+    mpid: "c18aeda1-4bff-4fed-97f4-5493bc297aad"
   }];
   const mockBookEmotionData = {
     bookId: '1',
@@ -118,27 +117,27 @@ const BookMoodApp: React.FC = () => {
       emotion: '기쁨',
       count: 450,
       percentage: 36,
-      mpid: "d3c3f162-1d22-4e08-ba33-6a32af671c22"
+      mpid: "0b81ce87-f79a-443f-985e-bb16ac19d910"
     }, {
       emotion: '평온',
       count: 380,
       percentage: 30,
-      mpid: "d5259b01-db22-4614-823d-0900558c3ad0"
+      mpid: "f44179ec-cb95-4140-99f2-5933bb9dd014"
     }, {
       emotion: '영감',
       count: 250,
       percentage: 20,
-      mpid: "6dfa7d64-4e50-4a53-b649-6244198b07ff"
+      mpid: "ef766803-464c-405a-a60a-bc038db90f05"
     }, {
       emotion: '사랑',
       count: 120,
       percentage: 10,
-      mpid: "29dd5b75-edf1-4f05-a73a-99e81bf1b801"
+      mpid: "51e5c888-7301-4388-ad09-650beb98c3c9"
     }, {
       emotion: '그리움',
       count: 50,
       percentage: 4,
-      mpid: "9b3ddce6-8141-443c-9f38-ec9453d77da3"
+      mpid: "9cfa4104-fd2b-41c4-a988-8433e7c084ab"
     }],
     averageRating: 4.5,
     recentReviews: [{
@@ -148,7 +147,7 @@ const BookMoodApp: React.FC = () => {
       rating: 5,
       snippet: '정말 따뜻하고 아름다운 이야기였어요. 꿈이라는 소재를 이렇게 잘 풀어낼 수 있다니...',
       createdAt: new Date('2024-01-20'),
-      mpid: "54d623c2-b3a1-4447-bf67-434b649a2bb3"
+      mpid: "57244c84-f061-4a8e-bc78-58a95389c633"
     }, {
       id: '2',
       userName: '책벌레',
@@ -156,28 +155,28 @@ const BookMoodApp: React.FC = () => {
       rating: 4,
       snippet: '상상력이 풍부한 작품이에요. 읽는 내내 미소가 지어졌습니다.',
       createdAt: new Date('2024-01-18'),
-      mpid: "0d9b8497-59b7-4055-ae72-a4f26e453fcf"
+      mpid: "14acbfe4-aa8f-424a-ab49-d48267f014ae"
     }],
     trendData: [{
       month: '10월',
       readers: 200,
       avgRating: 4.3,
-      mpid: "69da4c18-20b8-41ee-a1f5-945d72df8162"
+      mpid: "075217d5-1d9a-4980-8973-8c7749d25650"
     }, {
       month: '11월',
       readers: 350,
       avgRating: 4.4,
-      mpid: "10e04762-afec-4a16-9737-3edc87aa3526"
+      mpid: "b76e79fd-c3a8-4318-8e47-f72a277990a4"
     }, {
       month: '12월',
       readers: 450,
       avgRating: 4.5,
-      mpid: "4f1b63c8-214c-4d7d-a4e8-b687bc34a6c1"
+      mpid: "3ccb1a0e-db2a-4f3b-a1e7-c2e1977f377a"
     }, {
       month: '1월',
       readers: 250,
       avgRating: 4.6,
-      mpid: "dbc398bf-5239-48bd-a426-f41b4205c1db"
+      mpid: "aabcf5e0-1231-46ea-b77f-6e7b4a77a582"
     }]
   };
   const handleViewChange = (view: ViewType) => {
@@ -468,8 +467,7 @@ const BookMoodApp: React.FC = () => {
   };
   return <>
       {currentView === 'login' ? renderContent() : <AppLayout currentView={currentView} onViewChange={handleViewChange} user={user} onLogout={handleLogout} data-magicpath-id="45" data-magicpath-path="BookMoodApp.tsx">
-          <BookCursor data-magicpath-id="46" data-magicpath-path="BookMoodApp.tsx" />
-          <AnimatePresence mode="wait" data-magicpath-id="47" data-magicpath-path="BookMoodApp.tsx">
+          <AnimatePresence mode="wait" data-magicpath-id="46" data-magicpath-path="BookMoodApp.tsx">
             {renderContent()}
           </AnimatePresence>
         </AppLayout>}
