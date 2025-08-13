@@ -17,12 +17,10 @@ export interface WishlistBook {
   priority: 'high' | 'medium' | 'low';
   tags: string[];
   notes?: string;
-  mpid?: string;
 }
 interface WishlistManagerProps {
   onBack: () => void;
   onBookSelect?: (book: WishlistBook) => void;
-  mpid?: string;
 }
 type SortType = 'recent' | 'priority' | 'title' | 'author';
 type FilterType = 'all' | 'high' | 'medium' | 'low';
@@ -52,8 +50,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       addedAt: new Date('2024-01-10'),
       priority: 'high',
       tags: ['개발', '코딩', '실무'],
-      notes: '팀 리더가 추천한 필독서',
-      mpid: "7645c31d-92aa-4caf-a1fd-ff7cfde614ab"
+      notes: '팀 리더가 추천한 필독서'
     }, {
       id: '2',
       title: '사피엔스',
@@ -67,8 +64,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       addedAt: new Date('2024-01-15'),
       priority: 'medium',
       tags: ['역사', '인문학', '철학'],
-      notes: '친구가 강력 추천',
-      mpid: "af59f88a-8184-401e-87b3-a21eb60d5ec0"
+      notes: '친구가 강력 추천'
     }, {
       id: '3',
       title: '원피스 1권',
@@ -82,8 +78,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       addedAt: new Date('2024-01-20'),
       priority: 'low',
       tags: ['만화', '모험', '우정'],
-      notes: '휴식용 독서',
-      mpid: "fdecd419-1f67-4555-a326-3f1955d39bad"
+      notes: '휴식용 독서'
     }, {
       id: '4',
       title: '데미안',
@@ -97,8 +92,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       addedAt: new Date('2024-01-25'),
       priority: 'high',
       tags: ['고전', '성장', '철학'],
-      notes: '고등학교 때 읽다가 중단한 책',
-      mpid: "1dbacb45-ccd6-4923-bb11-dc8cc5e490d7"
+      notes: '고등학교 때 읽다가 중단한 책'
     }, {
       id: '5',
       title: '아토믹 해빗',
@@ -112,8 +106,7 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       addedAt: new Date('2024-02-01'),
       priority: 'medium',
       tags: ['습관', '자기계발', '실용'],
-      notes: '새해 목표 달성을 위해',
-      mpid: "723f82a8-4ea3-46af-9684-c64095ffbe1e"
+      notes: '새해 목표 달성을 위해'
     }];
     setWishlistBooks(mockWishlist);
   }, []);
@@ -208,47 +201,47 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="min-h-screen px-4 py-8" data-magicpath-id="0" data-magicpath-path="WishlistManager.tsx">
-      <div className="max-w-sm mx-auto" data-magicpath-id="1" data-magicpath-path="WishlistManager.tsx">
+  }} className="min-h-screen px-4 py-8">
+      <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8" data-magicpath-id="2" data-magicpath-path="WishlistManager.tsx">
-          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="3" data-magicpath-path="WishlistManager.tsx">
-            <ArrowLeft className="w-5 h-5 text-gray-600" data-magicpath-id="4" data-magicpath-path="WishlistManager.tsx" />
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
-          <div className="text-center" data-magicpath-id="5" data-magicpath-path="WishlistManager.tsx">
-            <h1 className="text-xl font-bold text-gray-800" data-magicpath-id="6" data-magicpath-path="WishlistManager.tsx">찜한 책</h1>
-            <p className="text-sm text-gray-600" data-magicpath-id="7" data-magicpath-path="WishlistManager.tsx">{wishlistBooks.length}권의 책</p>
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-gray-800">찜한 책</h1>
+            <p className="text-sm text-gray-600">{wishlistBooks.length}권의 책</p>
           </div>
-          <button onClick={() => setIsSelectionMode(!isSelectionMode)} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="8" data-magicpath-path="WishlistManager.tsx">
-            {isSelectionMode ? <X className="w-5 h-5 text-gray-600" data-magicpath-id="9" data-magicpath-path="WishlistManager.tsx" /> : <Filter className="w-5 h-5 text-gray-600" data-magicpath-id="10" data-magicpath-path="WishlistManager.tsx" />}
+          <button onClick={() => setIsSelectionMode(!isSelectionMode)} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+            {isSelectionMode ? <X className="w-5 h-5 text-gray-600" /> : <Filter className="w-5 h-5 text-gray-600" />}
           </button>
         </div>
 
         {/* Search and Filters */}
-        <div className="space-y-4 mb-6" data-magicpath-id="11" data-magicpath-path="WishlistManager.tsx">
+        <div className="space-y-4 mb-6">
           {/* Search */}
-          <div className="relative" data-magicpath-id="12" data-magicpath-path="WishlistManager.tsx">
-            <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="책 제목, 작가, 장르로 검색..." className="w-full px-4 py-3 pl-12 bg-white border border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20" data-magicpath-id="13" data-magicpath-path="WishlistManager.tsx" />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" data-magicpath-id="14" data-magicpath-path="WishlistManager.tsx" />
-            {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 transform -translate-y-1/2" data-magicpath-id="15" data-magicpath-path="WishlistManager.tsx">
-                <X className="w-5 h-5 text-gray-400 hover:text-gray-600" data-magicpath-id="16" data-magicpath-path="WishlistManager.tsx" />
+          <div className="relative">
+            <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="책 제목, 작가, 장르로 검색..." className="w-full px-4 py-3 pl-12 bg-white border border-gray-200 rounded-2xl text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            {searchQuery && <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
               </button>}
           </div>
 
           {/* Sort and Filter Controls */}
-          <div className="flex space-x-3" data-magicpath-id="17" data-magicpath-path="WishlistManager.tsx">
-            <select value={sortType} onChange={e => setSortType(e.target.value as SortType)} className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8]" data-magicpath-id="18" data-magicpath-path="WishlistManager.tsx">
-              <option value="recent" data-magicpath-id="19" data-magicpath-path="WishlistManager.tsx">최근 추가순</option>
-              <option value="priority" data-magicpath-id="20" data-magicpath-path="WishlistManager.tsx">우선순위순</option>
-              <option value="title" data-magicpath-id="21" data-magicpath-path="WishlistManager.tsx">제목순</option>
-              <option value="author" data-magicpath-id="22" data-magicpath-path="WishlistManager.tsx">작가순</option>
+          <div className="flex space-x-3">
+            <select value={sortType} onChange={e => setSortType(e.target.value as SortType)} className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8]">
+              <option value="recent">최근 추가순</option>
+              <option value="priority">우선순위순</option>
+              <option value="title">제목순</option>
+              <option value="author">작가순</option>
             </select>
 
-            <select value={filterType} onChange={e => setFilterType(e.target.value as FilterType)} className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8]" data-magicpath-id="23" data-magicpath-path="WishlistManager.tsx">
-              <option value="all" data-magicpath-id="24" data-magicpath-path="WishlistManager.tsx">모든 우선순위</option>
-              <option value="high" data-magicpath-id="25" data-magicpath-path="WishlistManager.tsx">높음</option>
-              <option value="medium" data-magicpath-id="26" data-magicpath-path="WishlistManager.tsx">보통</option>
-              <option value="low" data-magicpath-id="27" data-magicpath-path="WishlistManager.tsx">낮음</option>
+            <select value={filterType} onChange={e => setFilterType(e.target.value as FilterType)} className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8]">
+              <option value="all">모든 우선순위</option>
+              <option value="high">높음</option>
+              <option value="medium">보통</option>
+              <option value="low">낮음</option>
             </select>
           </div>
         </div>
@@ -260,26 +253,26 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
       }} animate={{
         opacity: 1,
         y: 0
-      }} className="bg-[#A8B5E8]/10 border border-[#A8B5E8]/20 rounded-2xl p-4 mb-6" data-magicpath-id="28" data-magicpath-path="WishlistManager.tsx">
-            <div className="flex items-center justify-between" data-magicpath-id="29" data-magicpath-path="WishlistManager.tsx">
-              <p className="text-sm text-gray-700" data-magicpath-id="30" data-magicpath-path="WishlistManager.tsx">
+      }} className="bg-[#A8B5E8]/10 border border-[#A8B5E8]/20 rounded-2xl p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-700">
                 {selectedBooks.length}권 선택됨
               </p>
-              <div className="flex space-x-2" data-magicpath-id="31" data-magicpath-path="WishlistManager.tsx">
-                <button onClick={() => setSelectedBooks(filteredAndSortedBooks.map(book => book.id))} className="px-3 py-1 text-xs bg-[#A8B5E8] text-white rounded-lg hover:bg-[#8BB5E8] transition-colors" data-magicpath-id="32" data-magicpath-path="WishlistManager.tsx">
+              <div className="flex space-x-2">
+                <button onClick={() => setSelectedBooks(filteredAndSortedBooks.map(book => book.id))} className="px-3 py-1 text-xs bg-[#A8B5E8] text-white rounded-lg hover:bg-[#8BB5E8] transition-colors">
                   전체 선택
                 </button>
-                {selectedBooks.length > 0 && <button onClick={removeSelectedBooks} className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center space-x-1" data-magicpath-id="33" data-magicpath-path="WishlistManager.tsx">
-                    <Trash2 className="w-3 h-3" data-magicpath-id="34" data-magicpath-path="WishlistManager.tsx" />
-                    <span data-magicpath-id="35" data-magicpath-path="WishlistManager.tsx">삭제</span>
+                {selectedBooks.length > 0 && <button onClick={removeSelectedBooks} className="px-3 py-1 text-xs bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center space-x-1">
+                    <Trash2 className="w-3 h-3" />
+                    <span>삭제</span>
                   </button>}
               </div>
             </div>
           </motion.div>}
 
         {/* Books List */}
-        <div className="space-y-4" data-magicpath-id="36" data-magicpath-path="WishlistManager.tsx">
-          <AnimatePresence data-magicpath-id="37" data-magicpath-path="WishlistManager.tsx">
+        <div className="space-y-4">
+          <AnimatePresence>
             {filteredAndSortedBooks.map((book, index) => <motion.div key={book.id} initial={{
             opacity: 0,
             y: 20
@@ -291,74 +284,74 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
             x: -100
           }} transition={{
             delay: index * 0.05
-          }} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="38" data-magicpath-path="WishlistManager.tsx">
-                <div className="flex space-x-4" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="39" data-magicpath-path="WishlistManager.tsx">
+          }} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex space-x-4">
                   {/* Selection Checkbox */}
-                  {isSelectionMode && <div className="flex items-start pt-2" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="40" data-magicpath-path="WishlistManager.tsx">
-                      <button onClick={() => toggleBookSelection(book.id)} className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${selectedBooks.includes(book.id) ? 'bg-[#A8B5E8] border-[#A8B5E8] text-white' : 'border-gray-300 hover:border-[#A8B5E8]'}`} data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="41" data-magicpath-path="WishlistManager.tsx">
-                        {selectedBooks.includes(book.id) && <Check className="w-3 h-3" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="42" data-magicpath-path="WishlistManager.tsx" />}
+                  {isSelectionMode && <div className="flex items-start pt-2">
+                      <button onClick={() => toggleBookSelection(book.id)} className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${selectedBooks.includes(book.id) ? 'bg-[#A8B5E8] border-[#A8B5E8] text-white' : 'border-gray-300 hover:border-[#A8B5E8]'}`}>
+                        {selectedBooks.includes(book.id) && <Check className="w-3 h-3" />}
                       </button>
                     </div>}
 
                   {/* Book Cover */}
-                  <div className="relative" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="43" data-magicpath-path="WishlistManager.tsx">
-                    <img src={book.cover} alt={book.title} className="w-16 h-24 object-cover rounded-lg shadow-sm" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="cover:unknown" data-magicpath-id="44" data-magicpath-path="WishlistManager.tsx" />
-                    <button onClick={() => togglePriority(book.id)} className={`absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-medium rounded-full border ${getPriorityColor(book.priority)}`} data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="priority:unknown" data-magicpath-id="45" data-magicpath-path="WishlistManager.tsx">
+                  <div className="relative">
+                    <img src={book.cover} alt={book.title} className="w-16 h-24 object-cover rounded-lg shadow-sm" />
+                    <button onClick={() => togglePriority(book.id)} className={`absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-medium rounded-full border ${getPriorityColor(book.priority)}`}>
                       {getPriorityText(book.priority)}
                     </button>
                   </div>
 
                   {/* Book Info */}
-                  <div className="flex-1 space-y-2" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="46" data-magicpath-path="WishlistManager.tsx">
-                    <div data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="47" data-magicpath-path="WishlistManager.tsx">
-                      <h3 className="font-semibold text-gray-800 text-sm leading-tight" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="title:unknown" data-magicpath-id="48" data-magicpath-path="WishlistManager.tsx">
+                  <div className="flex-1 space-y-2">
+                    <div>
+                      <h3 className="font-semibold text-gray-800 text-sm leading-tight">
                         {book.title}
                       </h3>
-                      <p className="text-gray-600 text-xs" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="author:unknown" data-magicpath-id="49" data-magicpath-path="WishlistManager.tsx">{book.author}</p>
+                      <p className="text-gray-600 text-xs">{book.author}</p>
                     </div>
 
-                    <div className="flex items-center space-x-3 text-xs text-gray-500" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="50" data-magicpath-path="WishlistManager.tsx">
-                      {book.rating && <div className="flex items-center" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="51" data-magicpath-path="WishlistManager.tsx">
-                          <Star className="w-3 h-3 text-[#F4E4B8] fill-current mr-1" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="52" data-magicpath-path="WishlistManager.tsx" />
-                          <span data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="rating:unknown" data-magicpath-id="53" data-magicpath-path="WishlistManager.tsx">{book.rating}</span>
+                    <div className="flex items-center space-x-3 text-xs text-gray-500">
+                      {book.rating && <div className="flex items-center">
+                          <Star className="w-3 h-3 text-[#F4E4B8] fill-current mr-1" />
+                          <span>{book.rating}</span>
                         </div>}
-                      {book.publishedYear && <div className="flex items-center" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="54" data-magicpath-path="WishlistManager.tsx">
-                          <Calendar className="w-3 h-3 mr-1" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="55" data-magicpath-path="WishlistManager.tsx" />
-                          <span data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="publishedYear:unknown" data-magicpath-id="56" data-magicpath-path="WishlistManager.tsx">{book.publishedYear}</span>
+                      {book.publishedYear && <div className="flex items-center">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          <span>{book.publishedYear}</span>
                         </div>}
-                      {book.pages && <div className="flex items-center" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="57" data-magicpath-path="WishlistManager.tsx">
-                          <BookOpen className="w-3 h-3 mr-1" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="58" data-magicpath-path="WishlistManager.tsx" />
-                          <span data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="pages:unknown" data-magicpath-id="59" data-magicpath-path="WishlistManager.tsx">{book.pages}p</span>
+                      {book.pages && <div className="flex items-center">
+                          <BookOpen className="w-3 h-3 mr-1" />
+                          <span>{book.pages}p</span>
                         </div>}
                     </div>
 
-                    <p className="text-gray-700 text-xs line-clamp-2 leading-relaxed" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="description:unknown" data-magicpath-id="60" data-magicpath-path="WishlistManager.tsx">
+                    <p className="text-gray-700 text-xs line-clamp-2 leading-relaxed">
                       {book.description}
                     </p>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-1" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="61" data-magicpath-path="WishlistManager.tsx">
-                      {book.tags.slice(0, 3).map((tag, idx) => <span key={idx} className="px-2 py-0.5 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="62" data-magicpath-path="WishlistManager.tsx">
+                    <div className="flex flex-wrap gap-1">
+                      {book.tags.slice(0, 3).map((tag, idx) => <span key={idx} className="px-2 py-0.5 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30">
                           {tag}
                         </span>)}
                     </div>
 
                     {/* Notes */}
-                    {book.notes && <p className="text-xs text-gray-500 italic" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-field="notes:unknown" data-magicpath-id="63" data-magicpath-path="WishlistManager.tsx">
+                    {book.notes && <p className="text-xs text-gray-500 italic">
                         "{book.notes}"
                       </p>}
 
                     {/* Actions */}
-                    <div className="flex items-center justify-between pt-2" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="64" data-magicpath-path="WishlistManager.tsx">
-                      <p className="text-xs text-gray-400" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="65" data-magicpath-path="WishlistManager.tsx">
+                    <div className="flex items-center justify-between pt-2">
+                      <p className="text-xs text-gray-400">
                         {book.addedAt.toLocaleDateString('ko-KR')} 추가
                       </p>
-                      <div className="flex items-center space-x-2" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="66" data-magicpath-path="WishlistManager.tsx">
-                        {onBookSelect && <button onClick={() => onBookSelect(book)} className="px-3 py-1 text-xs bg-[#A8B5E8] text-white rounded-lg hover:bg-[#8BB5E8] transition-colors" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="67" data-magicpath-path="WishlistManager.tsx">
+                      <div className="flex items-center space-x-2">
+                        {onBookSelect && <button onClick={() => onBookSelect(book)} className="px-3 py-1 text-xs bg-[#A8B5E8] text-white rounded-lg hover:bg-[#8BB5E8] transition-colors">
                             읽기 시작
                           </button>}
-                        {!isSelectionMode && <button onClick={() => removeFromWishlist(book.id)} className="p-1 text-red-400 hover:text-red-500 transition-colors" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="68" data-magicpath-path="WishlistManager.tsx">
-                            <Heart className="w-4 h-4 fill-current" data-magicpath-uuid={(book as any)["mpid"] ?? "unsafe"} data-magicpath-id="69" data-magicpath-path="WishlistManager.tsx" />
+                        {!isSelectionMode && <button onClick={() => removeFromWishlist(book.id)} className="p-1 text-red-400 hover:text-red-500 transition-colors">
+                            <Heart className="w-4 h-4 fill-current" />
                           </button>}
                       </div>
                     </div>
@@ -373,37 +366,37 @@ const WishlistManager: React.FC<WishlistManagerProps> = ({
         opacity: 0
       }} animate={{
         opacity: 1
-      }} className="text-center py-16" data-magicpath-id="70" data-magicpath-path="WishlistManager.tsx">
-            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" data-magicpath-id="71" data-magicpath-path="WishlistManager.tsx" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-2" data-magicpath-id="72" data-magicpath-path="WishlistManager.tsx">
+      }} className="text-center py-16">
+            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
               {searchQuery || filterType !== 'all' ? '검색 결과가 없습니다' : '찜한 책이 없습니다'}
             </h3>
-            <p className="text-gray-600 text-sm" data-magicpath-id="73" data-magicpath-path="WishlistManager.tsx">
+            <p className="text-gray-600 text-sm">
               {searchQuery || filterType !== 'all' ? '다른 조건으로 검색해보세요' : '마음에 드는 책을 찜해보세요'}
             </p>
           </motion.div>}
 
         {/* Stats */}
-        {wishlistBooks.length > 0 && <div className="mt-8 bg-gradient-to-r from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-2xl p-6 border border-gray-100" data-magicpath-id="74" data-magicpath-path="WishlistManager.tsx">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4" data-magicpath-id="75" data-magicpath-path="WishlistManager.tsx">찜 통계</h3>
-            <div className="grid grid-cols-3 gap-4" data-magicpath-id="76" data-magicpath-path="WishlistManager.tsx">
-              <div className="text-center" data-magicpath-id="77" data-magicpath-path="WishlistManager.tsx">
-                <div className="text-2xl font-bold text-[#A8B5E8] mb-1" data-magicpath-id="78" data-magicpath-path="WishlistManager.tsx">
+        {wishlistBooks.length > 0 && <div className="mt-8 bg-gradient-to-r from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-2xl p-6 border border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">찜 통계</h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#A8B5E8] mb-1">
                   {wishlistBooks.filter(book => book.priority === 'high').length}
                 </div>
-                <div className="text-gray-600 text-xs" data-magicpath-id="79" data-magicpath-path="WishlistManager.tsx">높은 우선순위</div>
+                <div className="text-gray-600 text-xs">높은 우선순위</div>
               </div>
-              <div className="text-center" data-magicpath-id="80" data-magicpath-path="WishlistManager.tsx">
-                <div className="text-2xl font-bold text-[#B5D4C8] mb-1" data-magicpath-id="81" data-magicpath-path="WishlistManager.tsx">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#B5D4C8] mb-1">
                   {wishlistBooks.filter(book => book.priority === 'medium').length}
                 </div>
-                <div className="text-gray-600 text-xs" data-magicpath-id="82" data-magicpath-path="WishlistManager.tsx">보통 우선순위</div>
+                <div className="text-gray-600 text-xs">보통 우선순위</div>
               </div>
-              <div className="text-center" data-magicpath-id="83" data-magicpath-path="WishlistManager.tsx">
-                <div className="text-2xl font-bold text-[#F4E4B8] mb-1" data-magicpath-id="84" data-magicpath-path="WishlistManager.tsx">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#F4E4B8] mb-1">
                   {wishlistBooks.filter(book => book.priority === 'low').length}
                 </div>
-                <div className="text-gray-600 text-xs" data-magicpath-id="85" data-magicpath-path="WishlistManager.tsx">낮은 우선순위</div>
+                <div className="text-gray-600 text-xs">낮은 우선순위</div>
               </div>
             </div>
           </div>}

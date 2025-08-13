@@ -11,13 +11,11 @@ interface ReviewData {
   moodSummary: string;
   createdAt: Date;
   moodCardUrl?: string;
-  mpid?: string;
 }
 interface ArchiveDashboardProps {
   reviews: ReviewData[];
   onMoodCardSelect: (review: ReviewData) => void;
   onBack: () => void;
-  mpid?: string;
 }
 type ViewMode = 'grid' | 'timeline';
 type FilterType = 'all' | 'month' | 'emotion' | 'topic';
@@ -99,53 +97,53 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
     y: 0
   }} transition={{
     delay: index * 0.1
-  }} onClick={() => onMoodCardSelect(review)} className="bg-white border border-gray-200 rounded-2xl p-6 active:scale-95 transition-transform cursor-pointer shadow-sm hover:shadow-md" data-magicpath-id="0" data-magicpath-path="ArchiveDashboard.tsx">
-      <div className="flex items-start justify-between mb-4" data-magicpath-id="1" data-magicpath-path="ArchiveDashboard.tsx">
-        <div className="flex-1" data-magicpath-id="2" data-magicpath-path="ArchiveDashboard.tsx">
-          <p className="text-xs text-gray-500 mb-2 flex items-center" data-magicpath-id="3" data-magicpath-path="ArchiveDashboard.tsx">
-            <Calendar className="w-3 h-3 mr-1" data-magicpath-id="4" data-magicpath-path="ArchiveDashboard.tsx" />
+  }} onClick={() => onMoodCardSelect(review)} className="bg-white border border-gray-200 rounded-2xl p-6 active:scale-95 transition-transform cursor-pointer shadow-sm hover:shadow-md">
+      <div className="flex items-start justify-between mb-4">
+        <div className="flex-1">
+          <p className="text-xs text-gray-500 mb-2 flex items-center">
+            <Calendar className="w-3 h-3 mr-1" />
             {review.createdAt.toLocaleDateString('ko-KR')}
           </p>
-          <p className="text-gray-800 font-medium text-sm line-clamp-3 mb-4 leading-relaxed" data-magicpath-id="5" data-magicpath-path="ArchiveDashboard.tsx">
+          <p className="text-gray-800 font-medium text-sm line-clamp-3 mb-4 leading-relaxed">
             {review.moodSummary}
           </p>
         </div>
-        <Heart className="w-5 h-5 text-[#F4E4B8] ml-3" data-magicpath-id="6" data-magicpath-path="ArchiveDashboard.tsx" />
+        <Heart className="w-5 h-5 text-[#F4E4B8] ml-3" />
       </div>
 
-      <div className="space-y-3" data-magicpath-id="7" data-magicpath-path="ArchiveDashboard.tsx">
-        <div data-magicpath-id="8" data-magicpath-path="ArchiveDashboard.tsx">
-          <p className="text-xs font-medium text-gray-600 mb-2" data-magicpath-id="9" data-magicpath-path="ArchiveDashboard.tsx">감정</p>
-          <div className="flex flex-wrap gap-1" data-magicpath-id="10" data-magicpath-path="ArchiveDashboard.tsx">
-            {review.emotions.slice(0, 3).map((emotion, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full border border-[#A8B5E8]/30" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="11" data-magicpath-path="ArchiveDashboard.tsx">
+      <div className="space-y-3">
+        <div>
+          <p className="text-xs font-medium text-gray-600 mb-2">감정</p>
+          <div className="flex flex-wrap gap-1">
+            {review.emotions.slice(0, 3).map((emotion, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full border border-[#A8B5E8]/30">
                 {emotion}
               </span>)}
           </div>
         </div>
 
-        <div data-magicpath-id="12" data-magicpath-path="ArchiveDashboard.tsx">
-          <p className="text-xs font-medium text-gray-600 mb-2" data-magicpath-id="13" data-magicpath-path="ArchiveDashboard.tsx">주제</p>
-          <div className="flex flex-wrap gap-1" data-magicpath-id="14" data-magicpath-path="ArchiveDashboard.tsx">
-            {review.topics.slice(0, 2).map((topic, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30" data-magicpath-uuid={(topic as any)["mpid"] ?? "unsafe"} data-magicpath-id="15" data-magicpath-path="ArchiveDashboard.tsx">
+        <div>
+          <p className="text-xs font-medium text-gray-600 mb-2">주제</p>
+          <div className="flex flex-wrap gap-1">
+            {review.topics.slice(0, 2).map((topic, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30">
                 {topic}
               </span>)}
           </div>
         </div>
       </div>
 
-      <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between" data-magicpath-id="16" data-magicpath-path="ArchiveDashboard.tsx">
-        <span className="text-xs text-gray-400" data-magicpath-id="17" data-magicpath-path="ArchiveDashboard.tsx">탭해서 자세히 보기</span>
-        <div className="flex items-center space-x-2" data-magicpath-id="18" data-magicpath-path="ArchiveDashboard.tsx">
-          <button className="p-1 hover:bg-gray-100 rounded opacity-70 hover:opacity-100 transition-opacity" data-magicpath-id="19" data-magicpath-path="ArchiveDashboard.tsx">
-            <Download className="w-3 h-3 text-gray-600" data-magicpath-id="20" data-magicpath-path="ArchiveDashboard.tsx" />
+      <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+        <span className="text-xs text-gray-400">탭해서 자세히 보기</span>
+        <div className="flex items-center space-x-2">
+          <button className="p-1 hover:bg-gray-100 rounded opacity-70 hover:opacity-100 transition-opacity">
+            <Download className="w-3 h-3 text-gray-600" />
           </button>
-          <button className="p-1 hover:bg-gray-100 rounded opacity-70 hover:opacity-100 transition-opacity" data-magicpath-id="21" data-magicpath-path="ArchiveDashboard.tsx">
-            <Share2 className="w-3 h-3 text-gray-600" data-magicpath-id="22" data-magicpath-path="ArchiveDashboard.tsx" />
+          <button className="p-1 hover:bg-gray-100 rounded opacity-70 hover:opacity-100 transition-opacity">
+            <Share2 className="w-3 h-3 text-gray-600" />
           </button>
         </div>
       </div>
     </motion.div>;
-  const renderTimeline = () => <div className="space-y-4" data-magicpath-id="23" data-magicpath-path="ArchiveDashboard.tsx">
+  const renderTimeline = () => <div className="space-y-4">
       {filteredReviews.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).map((review, index) => <motion.div key={review.id} initial={{
       opacity: 0,
       x: -20
@@ -154,15 +152,15 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
       x: 0
     }} transition={{
       delay: index * 0.1
-    }} onClick={() => onMoodCardSelect(review)} className="cursor-pointer" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="24" data-magicpath-path="ArchiveDashboard.tsx">
-            <div className="flex space-x-4" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="25" data-magicpath-path="ArchiveDashboard.tsx">
-              <div className="flex flex-col items-center" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="26" data-magicpath-path="ArchiveDashboard.tsx">
-                <div className="w-3 h-3 bg-[#A8B5E8] rounded-full" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="27" data-magicpath-path="ArchiveDashboard.tsx" />
-                {index < filteredReviews.length - 1 && <div className="w-px h-16 bg-gray-200 mt-2" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="28" data-magicpath-path="ArchiveDashboard.tsx" />}
+    }} onClick={() => onMoodCardSelect(review)} className="cursor-pointer">
+            <div className="flex space-x-4">
+              <div className="flex flex-col items-center">
+                <div className="w-3 h-3 bg-[#A8B5E8] rounded-full" />
+                {index < filteredReviews.length - 1 && <div className="w-px h-16 bg-gray-200 mt-2" />}
               </div>
-              <div className="flex-1 bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-shadow" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="29" data-magicpath-path="ArchiveDashboard.tsx">
-                <div className="flex items-start justify-between mb-3" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="30" data-magicpath-path="ArchiveDashboard.tsx">
-                  <p className="text-xs text-gray-500" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="31" data-magicpath-path="ArchiveDashboard.tsx">
+              <div className="flex-1 bg-white border border-gray-200 rounded-2xl p-4 hover:shadow-md transition-shadow">
+                <div className="flex items-start justify-between mb-3">
+                  <p className="text-xs text-gray-500">
                     {review.createdAt.toLocaleDateString('ko-KR', {
                 weekday: 'long',
                 year: 'numeric',
@@ -170,23 +168,23 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
                 day: 'numeric'
               })}
                   </p>
-                  <Heart className="w-4 h-4 text-[#F4E4B8]" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="32" data-magicpath-path="ArchiveDashboard.tsx" />
+                  <Heart className="w-4 h-4 text-[#F4E4B8]" />
                 </div>
                 
-                <p className="text-gray-800 font-medium mb-3 text-sm line-clamp-2" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-field="moodSummary:unknown" data-magicpath-id="33" data-magicpath-path="ArchiveDashboard.tsx">
+                <p className="text-gray-800 font-medium mb-3 text-sm line-clamp-2">
                   {review.moodSummary}
                 </p>
 
-                <div className="flex flex-wrap gap-1 mb-3" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="34" data-magicpath-path="ArchiveDashboard.tsx">
-                  {review.emotions.map((emotion, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full border border-[#A8B5E8]/30" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="35" data-magicpath-path="ArchiveDashboard.tsx">
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {review.emotions.map((emotion, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full border border-[#A8B5E8]/30">
                       {emotion}
                     </span>)}
-                  {review.topics.map((topic, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-id="36" data-magicpath-path="ArchiveDashboard.tsx">
+                  {review.topics.map((topic, idx) => <span key={idx} className="px-2 py-1 text-xs bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full border border-[#B5D4C8]/30">
                       {topic}
                     </span>)}
                 </div>
 
-                <p className="text-xs text-gray-500 line-clamp-2" data-magicpath-uuid={(review as any)["mpid"] ?? "unsafe"} data-magicpath-field="review:unknown" data-magicpath-id="37" data-magicpath-path="ArchiveDashboard.tsx">
+                <p className="text-xs text-gray-500 line-clamp-2">
                   {review.review}
                 </p>
               </div>
@@ -199,119 +197,119 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="min-h-screen px-4 py-8" data-magicpath-id="38" data-magicpath-path="ArchiveDashboard.tsx">
-      <div className="max-w-sm mx-auto" data-magicpath-id="39" data-magicpath-path="ArchiveDashboard.tsx">
+  }} className="min-h-screen px-4 py-8">
+      <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8" data-magicpath-id="40" data-magicpath-path="ArchiveDashboard.tsx">
-          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="41" data-magicpath-path="ArchiveDashboard.tsx">
-            <ArrowLeft className="w-5 h-5 text-gray-600" data-magicpath-id="42" data-magicpath-path="ArchiveDashboard.tsx" />
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
-          <div className="text-center" data-magicpath-id="43" data-magicpath-path="ArchiveDashboard.tsx">
-            <h1 className="text-xl font-bold text-gray-800" data-magicpath-id="44" data-magicpath-path="ArchiveDashboard.tsx">내 아카이브</h1>
-            <p className="text-gray-600 text-sm" data-magicpath-id="45" data-magicpath-path="ArchiveDashboard.tsx">{reviews.length}개의 감정 기록</p>
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-gray-800">내 아카이브</h1>
+            <p className="text-gray-600 text-sm">{reviews.length}개의 감정 기록</p>
           </div>
-          <div className="w-10" data-magicpath-id="46" data-magicpath-path="ArchiveDashboard.tsx" />
+          <div className="w-10" />
         </div>
 
         {/* Stats Overview */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm" data-magicpath-id="47" data-magicpath-path="ArchiveDashboard.tsx">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="48" data-magicpath-path="ArchiveDashboard.tsx">
-            <BarChart3 className="w-5 h-5 mr-2" data-magicpath-id="49" data-magicpath-path="ArchiveDashboard.tsx" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <BarChart3 className="w-5 h-5 mr-2" />
             이번 달 통계
           </h3>
-          <div className="grid grid-cols-3 gap-4" data-magicpath-id="50" data-magicpath-path="ArchiveDashboard.tsx">
-            <div className="text-center" data-magicpath-id="51" data-magicpath-path="ArchiveDashboard.tsx">
-              <div className="text-2xl font-bold text-[#A8B5E8] mb-1" data-magicpath-id="52" data-magicpath-path="ArchiveDashboard.tsx">
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-[#A8B5E8] mb-1">
                 {reviews.length}
               </div>
-              <div className="text-gray-600 text-xs" data-magicpath-id="53" data-magicpath-path="ArchiveDashboard.tsx">총 기록</div>
+              <div className="text-gray-600 text-xs">총 기록</div>
             </div>
-            <div className="text-center" data-magicpath-id="54" data-magicpath-path="ArchiveDashboard.tsx">
-              <div className="text-2xl font-bold text-[#B5D4C8] mb-1" data-magicpath-id="55" data-magicpath-path="ArchiveDashboard.tsx">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-[#B5D4C8] mb-1">
                 {emotionData.length}
               </div>
-              <div className="text-gray-600 text-xs" data-magicpath-id="56" data-magicpath-path="ArchiveDashboard.tsx">감정 종류</div>
+              <div className="text-gray-600 text-xs">감정 종류</div>
             </div>
-            <div className="text-center" data-magicpath-id="57" data-magicpath-path="ArchiveDashboard.tsx">
-              <div className="text-2xl font-bold text-[#F4E4B8] mb-1" data-magicpath-id="58" data-magicpath-path="ArchiveDashboard.tsx">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-[#F4E4B8] mb-1">
                 {topicData.length}
               </div>
-              <div className="text-gray-600 text-xs" data-magicpath-id="59" data-magicpath-path="ArchiveDashboard.tsx">주제 종류</div>
+              <div className="text-gray-600 text-xs">주제 종류</div>
             </div>
           </div>
         </div>
 
         {/* Top Emotions */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm" data-magicpath-id="60" data-magicpath-path="ArchiveDashboard.tsx">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="61" data-magicpath-path="ArchiveDashboard.tsx">
-            <Heart className="w-5 h-5 mr-2" data-magicpath-id="62" data-magicpath-path="ArchiveDashboard.tsx" />
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-8 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+            <Heart className="w-5 h-5 mr-2" />
             자주 느낀 감정
           </h3>
-          <div className="space-y-3" data-magicpath-id="63" data-magicpath-path="ArchiveDashboard.tsx">
-            {emotionData.slice(0, 5).map((item, index) => <div key={item.emotion} className="flex items-center justify-between" data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-id="64" data-magicpath-path="ArchiveDashboard.tsx">
-                <span className="text-sm text-gray-800 capitalize" data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-field="emotion:unknown" data-magicpath-id="65" data-magicpath-path="ArchiveDashboard.tsx">{item.emotion}</span>
-                <div className="flex items-center space-x-2" data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-id="66" data-magicpath-path="ArchiveDashboard.tsx">
-                  <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden" data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-id="67" data-magicpath-path="ArchiveDashboard.tsx">
+          <div className="space-y-3">
+            {emotionData.slice(0, 5).map((item, index) => <div key={item.emotion} className="flex items-center justify-between">
+                <span className="text-sm text-gray-800 capitalize">{item.emotion}</span>
+                <div className="flex items-center space-x-2">
+                  <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden">
                     <div className="h-full bg-gradient-to-r from-[#A8B5E8] to-[#B5D4C8] rounded-full transition-all duration-500" style={{
                   width: `${item.count / emotionData[0].count * 100}%`
-                }} data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-id="68" data-magicpath-path="ArchiveDashboard.tsx" />
+                }} />
                   </div>
-                  <span className="text-xs text-gray-600 w-6 text-right" data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-field="count:unknown" data-magicpath-id="69" data-magicpath-path="ArchiveDashboard.tsx">{item.count}</span>
+                  <span className="text-xs text-gray-600 w-6 text-right">{item.count}</span>
                 </div>
               </div>)}
           </div>
         </div>
 
         {/* View Mode Toggle */}
-        <div className="flex items-center justify-center mb-6" data-magicpath-id="70" data-magicpath-path="ArchiveDashboard.tsx">
-          <div className="flex items-center bg-gray-100 rounded-2xl p-1" data-magicpath-id="71" data-magicpath-path="ArchiveDashboard.tsx">
-            <button onClick={() => setViewMode('grid')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === 'grid' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-600'}`} data-magicpath-id="72" data-magicpath-path="ArchiveDashboard.tsx">
+        <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center bg-gray-100 rounded-2xl p-1">
+            <button onClick={() => setViewMode('grid')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === 'grid' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-600'}`}>
               <Grid className="w-4 h-4 mr-2 inline" />
               카드
             </button>
-            <button onClick={() => setViewMode('timeline')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === 'timeline' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-600'}`} data-magicpath-id="73" data-magicpath-path="ArchiveDashboard.tsx">
-              <List className="w-4 h-4 mr-2 inline" data-magicpath-id="74" data-magicpath-path="ArchiveDashboard.tsx" />
+            <button onClick={() => setViewMode('timeline')} className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${viewMode === 'timeline' ? 'bg-white text-gray-800 shadow-sm' : 'text-gray-600'}`}>
+              <List className="w-4 h-4 mr-2 inline" />
               타임라인
             </button>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-6" data-magicpath-id="75" data-magicpath-path="ArchiveDashboard.tsx">
+        <div className="flex flex-wrap gap-2 mb-6">
           <select value={filterType} onChange={e => {
           setFilterType(e.target.value as FilterType);
           setSelectedFilter('');
-        }} className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20" data-magicpath-id="76" data-magicpath-path="ArchiveDashboard.tsx">
-            <option value="all" data-magicpath-id="77" data-magicpath-path="ArchiveDashboard.tsx">전체</option>
-            <option value="month" data-magicpath-id="78" data-magicpath-path="ArchiveDashboard.tsx">월별</option>
-            <option value="emotion" data-magicpath-id="79" data-magicpath-path="ArchiveDashboard.tsx">감정별</option>
-            <option value="topic" data-magicpath-id="80" data-magicpath-path="ArchiveDashboard.tsx">주제별</option>
+        }} className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20">
+            <option value="all">전체</option>
+            <option value="month">월별</option>
+            <option value="emotion">감정별</option>
+            <option value="topic">주제별</option>
           </select>
 
-          {filterType !== 'all' && <select value={selectedFilter} onChange={e => setSelectedFilter(e.target.value)} className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20" data-magicpath-id="81" data-magicpath-path="ArchiveDashboard.tsx">
-              <option value="" data-magicpath-id="82" data-magicpath-path="ArchiveDashboard.tsx">선택하세요</option>
-              {filterType === 'month' && chartData.map((item: any) => <option key={item.month} value={item.month} data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-field="month:unknown" data-magicpath-id="83" data-magicpath-path="ArchiveDashboard.tsx">{item.month}</option>)}
-              {filterType === 'emotion' && emotionData.map(item => <option key={item.emotion} value={item.emotion} data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-field="emotion:unknown" data-magicpath-id="84" data-magicpath-path="ArchiveDashboard.tsx">{item.emotion}</option>)}
-              {filterType === 'topic' && topicData.map(item => <option key={item.topic} value={item.topic} data-magicpath-uuid={(item as any)["mpid"] ?? "unsafe"} data-magicpath-field="topic:unknown" data-magicpath-id="85" data-magicpath-path="ArchiveDashboard.tsx">{item.topic}</option>)}
+          {filterType !== 'all' && <select value={selectedFilter} onChange={e => setSelectedFilter(e.target.value)} className="px-3 py-2 bg-white border border-gray-200 rounded-xl text-gray-800 text-sm focus:outline-none focus:border-[#A8B5E8] focus:ring-2 focus:ring-[#A8B5E8]/20">
+              <option value="">선택하세요</option>
+              {filterType === 'month' && chartData.map((item: any) => <option key={item.month} value={item.month}>{item.month}</option>)}
+              {filterType === 'emotion' && emotionData.map(item => <option key={item.emotion} value={item.emotion}>{item.emotion}</option>)}
+              {filterType === 'topic' && topicData.map(item => <option key={item.topic} value={item.topic}>{item.topic}</option>)}
             </select>}
 
           {selectedFilter && <button onClick={() => {
           setFilterType('all');
           setSelectedFilter('');
-        }} className="px-3 py-2 text-xs bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors" data-magicpath-id="86" data-magicpath-path="ArchiveDashboard.tsx">
+        }} className="px-3 py-2 text-xs bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors">
               필터 해제
             </button>}
         </div>
 
         {/* Content */}
-        <AnimatePresence mode="wait" data-magicpath-id="87" data-magicpath-path="ArchiveDashboard.tsx">
+        <AnimatePresence mode="wait">
           {viewMode === 'grid' ? <motion.div key="grid" initial={{
           opacity: 0
         }} animate={{
           opacity: 1
         }} exit={{
           opacity: 0
-        }} className="space-y-4" data-magicpath-id="88" data-magicpath-path="ArchiveDashboard.tsx">
+        }} className="space-y-4">
               {filteredReviews.map((review, index) => renderMoodCard(review, index))}
             </motion.div> : <motion.div key="timeline" initial={{
           opacity: 0
@@ -319,7 +317,7 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
           opacity: 1
         }} exit={{
           opacity: 0
-        }} data-magicpath-id="89" data-magicpath-path="ArchiveDashboard.tsx">
+        }}>
               {renderTimeline()}
             </motion.div>}
         </AnimatePresence>
@@ -328,10 +326,10 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
         opacity: 0
       }} animate={{
         opacity: 1
-      }} className="text-center py-16" data-magicpath-id="90" data-magicpath-path="ArchiveDashboard.tsx">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" data-magicpath-id="91" data-magicpath-path="ArchiveDashboard.tsx" />
-            <h3 className="text-lg font-semibold text-gray-800 mb-2" data-magicpath-id="92" data-magicpath-path="ArchiveDashboard.tsx">기록이 없습니다</h3>
-            <p className="text-gray-600 text-sm" data-magicpath-id="93" data-magicpath-path="ArchiveDashboard.tsx">
+      }} className="text-center py-16">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">기록이 없습니다</h3>
+            <p className="text-gray-600 text-sm">
               {selectedFilter ? '필터를 조정해보세요' : '첫 번째 책 리뷰를 작성해보세요'}
             </p>
           </motion.div>}

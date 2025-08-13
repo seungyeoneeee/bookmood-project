@@ -10,12 +10,10 @@ interface ReviewData {
   moodSummary: string;
   createdAt: Date;
   moodCardUrl?: string;
-  mpid?: string;
 }
 interface MoodCardDetailProps {
   review: ReviewData;
   onBack: () => void;
-  mpid?: string;
 }
 const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
   review,
@@ -91,15 +89,15 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="min-h-screen px-4 py-8" data-magicpath-id="0" data-magicpath-path="MoodCardDetail.tsx">
-      <div className="max-w-sm mx-auto" data-magicpath-id="1" data-magicpath-path="MoodCardDetail.tsx">
+  }} className="min-h-screen px-4 py-8">
+      <div className="max-w-sm mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8" data-magicpath-id="2" data-magicpath-path="MoodCardDetail.tsx">
-          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors" data-magicpath-id="3" data-magicpath-path="MoodCardDetail.tsx">
-            <ArrowLeft className="w-5 h-5 text-gray-600" data-magicpath-id="4" data-magicpath-path="MoodCardDetail.tsx" />
+        <div className="flex items-center justify-between mb-8">
+          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+            <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
-          <h1 className="text-xl font-bold text-gray-800" data-magicpath-id="5" data-magicpath-path="MoodCardDetail.tsx">무드 카드</h1>
-          <div className="w-10" data-magicpath-id="6" data-magicpath-path="MoodCardDetail.tsx" />
+          <h1 className="text-xl font-bold text-gray-800">무드 카드</h1>
+          <div className="w-10" />
         </div>
 
         {/* Main Mood Card */}
@@ -111,27 +109,27 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
         scale: 1
       }} transition={{
         delay: 0.2
-      }} className="mb-8" data-magicpath-id="7" data-magicpath-path="MoodCardDetail.tsx">
+      }} className="mb-8">
           <div className="aspect-square rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl" style={{
           background: getEmotionGradient()
-        }} data-magicpath-id="8" data-magicpath-path="MoodCardDetail.tsx">
+        }}>
             {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10" data-magicpath-id="9" data-magicpath-path="MoodCardDetail.tsx">
-              <div className="absolute top-4 right-4 w-32 h-32 border border-white/20 rounded-full" data-magicpath-id="10" data-magicpath-path="MoodCardDetail.tsx" />
-              <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/20 rounded-full" data-magicpath-id="11" data-magicpath-path="MoodCardDetail.tsx" />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full" data-magicpath-id="12" data-magicpath-path="MoodCardDetail.tsx" />
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-4 right-4 w-32 h-32 border border-white/20 rounded-full" />
+              <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/20 rounded-full" />
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full" />
             </div>
 
             {/* Content */}
-            <div className="relative z-10 h-full flex flex-col justify-between" data-magicpath-id="13" data-magicpath-path="MoodCardDetail.tsx">
-              <div data-magicpath-id="14" data-magicpath-path="MoodCardDetail.tsx">
-                <div className="flex items-center space-x-2 mb-4" data-magicpath-id="15" data-magicpath-path="MoodCardDetail.tsx">
-                  <Heart className="w-6 h-6" data-magicpath-id="16" data-magicpath-path="MoodCardDetail.tsx" />
-                  <span className="text-sm font-medium opacity-90" data-magicpath-id="17" data-magicpath-path="MoodCardDetail.tsx">BookMood</span>
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              <div>
+                <div className="flex items-center space-x-2 mb-4">
+                  <Heart className="w-6 h-6" />
+                  <span className="text-sm font-medium opacity-90">BookMood</span>
                 </div>
                 
-                <div className="mb-6" data-magicpath-id="18" data-magicpath-path="MoodCardDetail.tsx">
-                  <p className="text-sm opacity-75 mb-2" data-magicpath-id="19" data-magicpath-path="MoodCardDetail.tsx">
+                <div className="mb-6">
+                  <p className="text-sm opacity-75 mb-2">
                     {review.createdAt.toLocaleDateString('ko-KR', {
                     year: 'numeric',
                     month: 'long',
@@ -141,24 +139,24 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
                 </div>
               </div>
 
-              <div className="space-y-4" data-magicpath-id="20" data-magicpath-path="MoodCardDetail.tsx">
-                <blockquote className="text-lg font-medium leading-relaxed" data-magicpath-id="21" data-magicpath-path="MoodCardDetail.tsx">
+              <div className="space-y-4">
+                <blockquote className="text-lg font-medium leading-relaxed">
                   "{review.moodSummary}"
                 </blockquote>
 
-                <div className="flex flex-wrap gap-2" data-magicpath-id="22" data-magicpath-path="MoodCardDetail.tsx">
-                  {review.emotions.slice(0, 3).map((emotion, index) => <span key={index} className="px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full" data-magicpath-uuid={(emotion as any)["mpid"] ?? "unsafe"} data-magicpath-id="23" data-magicpath-path="MoodCardDetail.tsx">
+                <div className="flex flex-wrap gap-2">
+                  {review.emotions.slice(0, 3).map((emotion, index) => <span key={index} className="px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full">
                       {emotion}
                     </span>)}
                 </div>
               </div>
 
-              <div className="flex items-center justify-between" data-magicpath-id="24" data-magicpath-path="MoodCardDetail.tsx">
-                <div className="flex items-center space-x-2" data-magicpath-id="25" data-magicpath-path="MoodCardDetail.tsx">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
                   <Sparkles className="w-4 h-4 opacity-75" />
-                  <span className="text-xs opacity-75" data-magicpath-id="26" data-magicpath-path="MoodCardDetail.tsx">AI 생성</span>
+                  <span className="text-xs opacity-75">AI 생성</span>
                 </div>
-                <div className="text-xs opacity-75" data-magicpath-id="27" data-magicpath-path="MoodCardDetail.tsx">
+                <div className="text-xs opacity-75">
                   #{review.id.slice(0, 8)}
                 </div>
               </div>
@@ -167,16 +165,16 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
         </motion.div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3 mb-8" data-magicpath-id="28" data-magicpath-path="MoodCardDetail.tsx">
-          <button onClick={handleDownload} disabled={isDownloading} className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="29" data-magicpath-path="MoodCardDetail.tsx">
-            <Download className="w-5 h-5" data-magicpath-id="30" data-magicpath-path="MoodCardDetail.tsx" />
-            <span data-magicpath-id="31" data-magicpath-path="MoodCardDetail.tsx">{isDownloading ? '생성 중...' : '다운로드'}</span>
+        <div className="flex space-x-3 mb-8">
+          <button onClick={handleDownload} disabled={isDownloading} className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow">
+            <Download className="w-5 h-5" />
+            <span>{isDownloading ? '생성 중...' : '다운로드'}</span>
           </button>
 
-          <div className="relative" data-magicpath-id="32" data-magicpath-path="MoodCardDetail.tsx">
-            <button onClick={() => setShowShareMenu(!showShareMenu)} className="px-6 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center space-x-2 shadow-lg hover:shadow-xl transition-shadow" data-magicpath-id="33" data-magicpath-path="MoodCardDetail.tsx">
-              <Share2 className="w-5 h-5" data-magicpath-id="34" data-magicpath-path="MoodCardDetail.tsx" />
-              <span data-magicpath-id="35" data-magicpath-path="MoodCardDetail.tsx">공유</span>
+          <div className="relative">
+            <button onClick={() => setShowShareMenu(!showShareMenu)} className="px-6 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center space-x-2 shadow-lg hover:shadow-xl transition-shadow">
+              <Share2 className="w-5 h-5" />
+              <span>공유</span>
             </button>
 
             {showShareMenu && <motion.div initial={{
@@ -187,24 +185,24 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
             opacity: 1,
             scale: 1,
             y: 0
-          }} className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-2xl shadow-lg z-10" data-magicpath-id="36" data-magicpath-path="MoodCardDetail.tsx">
-                <div className="p-2" data-magicpath-id="37" data-magicpath-path="MoodCardDetail.tsx">
-                  <button onClick={() => handleSocialShare('twitter')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors" data-magicpath-id="38" data-magicpath-path="MoodCardDetail.tsx">
-                    <Twitter className="w-4 h-4 text-blue-400" data-magicpath-id="39" data-magicpath-path="MoodCardDetail.tsx" />
-                    <span className="text-sm text-gray-800" data-magicpath-id="40" data-magicpath-path="MoodCardDetail.tsx">트위터</span>
+          }} className="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-200 rounded-2xl shadow-lg z-10">
+                <div className="p-2">
+                  <button onClick={() => handleSocialShare('twitter')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
+                    <Twitter className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm text-gray-800">트위터</span>
                   </button>
-                  <button onClick={() => handleSocialShare('facebook')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors" data-magicpath-id="41" data-magicpath-path="MoodCardDetail.tsx">
-                    <Facebook className="w-4 h-4 text-blue-500" data-magicpath-id="42" data-magicpath-path="MoodCardDetail.tsx" />
-                    <span className="text-sm text-gray-800" data-magicpath-id="43" data-magicpath-path="MoodCardDetail.tsx">페이스북</span>
+                  <button onClick={() => handleSocialShare('facebook')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
+                    <Facebook className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm text-gray-800">페이스북</span>
                   </button>
-                  <button onClick={() => handleSocialShare('instagram')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors" data-magicpath-id="44" data-magicpath-path="MoodCardDetail.tsx">
-                    <Instagram className="w-4 h-4 text-pink-400" data-magicpath-id="45" data-magicpath-path="MoodCardDetail.tsx" />
-                    <span className="text-sm text-gray-800" data-magicpath-id="46" data-magicpath-path="MoodCardDetail.tsx">인스타그램</span>
+                  <button onClick={() => handleSocialShare('instagram')} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
+                    <Instagram className="w-4 h-4 text-pink-400" />
+                    <span className="text-sm text-gray-800">인스타그램</span>
                   </button>
-                  <div className="border-t border-gray-200 my-2" data-magicpath-id="47" data-magicpath-path="MoodCardDetail.tsx" />
-                  <button onClick={handleCopyLink} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors" data-magicpath-id="48" data-magicpath-path="MoodCardDetail.tsx">
-                    {copied ? <Check className="w-4 h-4 text-green-400" data-magicpath-id="49" data-magicpath-path="MoodCardDetail.tsx" /> : <Copy className="w-4 h-4 text-gray-600" data-magicpath-id="50" data-magicpath-path="MoodCardDetail.tsx" />}
-                    <span className="text-sm text-gray-800" data-magicpath-id="51" data-magicpath-path="MoodCardDetail.tsx">
+                  <div className="border-t border-gray-200 my-2" />
+                  <button onClick={handleCopyLink} className="w-full flex items-center space-x-3 px-3 py-3 text-left hover:bg-gray-50 rounded-xl transition-colors">
+                    {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4 text-gray-600" />}
+                    <span className="text-sm text-gray-800">
                       {copied ? '복사됨!' : '링크 복사'}
                     </span>
                   </button>
@@ -214,18 +212,18 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
         </div>
 
         {/* Details */}
-        <div className="space-y-6" data-magicpath-id="52" data-magicpath-path="MoodCardDetail.tsx">
+        <div className="space-y-6">
           {/* Metadata */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-magicpath-id="53" data-magicpath-path="MoodCardDetail.tsx">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="54" data-magicpath-path="MoodCardDetail.tsx">
-              <Calendar className="w-5 h-5 mr-2" data-magicpath-id="55" data-magicpath-path="MoodCardDetail.tsx" />
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+              <Calendar className="w-5 h-5 mr-2" />
               독서 정보
             </h2>
             
-            <div className="space-y-4" data-magicpath-id="56" data-magicpath-path="MoodCardDetail.tsx">
-              <div data-magicpath-id="57" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-sm font-medium text-gray-600 mb-1" data-magicpath-id="58" data-magicpath-path="MoodCardDetail.tsx">날짜</p>
-                <p className="text-gray-800" data-magicpath-id="59" data-magicpath-path="MoodCardDetail.tsx">
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">날짜</p>
+                <p className="text-gray-800">
                   {review.createdAt.toLocaleDateString('ko-KR', {
                   weekday: 'long',
                   year: 'numeric',
@@ -235,20 +233,20 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
                 </p>
               </div>
 
-              <div data-magicpath-id="60" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-sm font-medium text-gray-600 mb-2" data-magicpath-id="61" data-magicpath-path="MoodCardDetail.tsx">감지된 감정</p>
-                <div className="flex flex-wrap gap-2" data-magicpath-id="62" data-magicpath-path="MoodCardDetail.tsx">
-                  {review.emotions.map((emotion, index) => <span key={index} className="px-3 py-1 text-sm bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full font-medium border border-[#A8B5E8]/30" data-magicpath-id="63" data-magicpath-path="MoodCardDetail.tsx">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-2">감지된 감정</p>
+                <div className="flex flex-wrap gap-2">
+                  {review.emotions.map((emotion, index) => <span key={index} className="px-3 py-1 text-sm bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full font-medium border border-[#A8B5E8]/30">
                       {emotion}
                     </span>)}
                 </div>
               </div>
 
-              <div data-magicpath-id="64" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-sm font-medium text-gray-600 mb-2" data-magicpath-id="65" data-magicpath-path="MoodCardDetail.tsx">주제</p>
-                <div className="flex flex-wrap gap-2" data-magicpath-id="66" data-magicpath-path="MoodCardDetail.tsx">
-                  {review.topics.map((topic, index) => <span key={index} className="px-3 py-1 text-sm bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full font-medium flex items-center border border-[#B5D4C8]/30" data-magicpath-id="67" data-magicpath-path="MoodCardDetail.tsx">
-                      <Tag className="w-3 h-3 mr-1" data-magicpath-id="68" data-magicpath-path="MoodCardDetail.tsx" />
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-2">주제</p>
+                <div className="flex flex-wrap gap-2">
+                  {review.topics.map((topic, index) => <span key={index} className="px-3 py-1 text-sm bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full font-medium flex items-center border border-[#B5D4C8]/30">
+                      <Tag className="w-3 h-3 mr-1" />
                       {topic}
                     </span>)}
                 </div>
@@ -257,22 +255,22 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
           </div>
 
           {/* AI Analysis */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-magicpath-id="69" data-magicpath-path="MoodCardDetail.tsx">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center" data-magicpath-id="70" data-magicpath-path="MoodCardDetail.tsx">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
               <Sparkles className="w-5 h-5 mr-2" />
               AI 감정 분석
             </h3>
             
-            <div className="space-y-4" data-magicpath-id="71" data-magicpath-path="MoodCardDetail.tsx">
-              <div data-magicpath-id="72" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-sm font-medium text-gray-600 mb-2" data-magicpath-id="73" data-magicpath-path="MoodCardDetail.tsx">생성된 요약</p>
-                <blockquote className="text-gray-800 italic border-l-4 border-[#A8B5E8] pl-4 py-2 bg-[#A8B5E8]/10 rounded-r-xl" data-magicpath-id="74" data-magicpath-path="MoodCardDetail.tsx">
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-2">생성된 요약</p>
+                <blockquote className="text-gray-800 italic border-l-4 border-[#A8B5E8] pl-4 py-2 bg-[#A8B5E8]/10 rounded-r-xl">
                   "{review.moodSummary}"
                 </blockquote>
               </div>
 
-              <div className="pt-4 border-t border-gray-200" data-magicpath-id="75" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-xs text-gray-500" data-magicpath-id="76" data-magicpath-path="MoodCardDetail.tsx">
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-xs text-gray-500">
                   이 분석은 AI를 사용하여 당신의 독서 경험의 감정적 본질을 포착했습니다.
                 </p>
               </div>
@@ -280,26 +278,26 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
           </div>
 
           {/* Original Review */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm" data-magicpath-id="77" data-magicpath-path="MoodCardDetail.tsx">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4" data-magicpath-id="78" data-magicpath-path="MoodCardDetail.tsx">원본 감상문</h3>
-            <div className="prose prose-sm max-w-none" data-magicpath-id="79" data-magicpath-path="MoodCardDetail.tsx">
-              <p className="text-gray-700 leading-relaxed" data-magicpath-id="80" data-magicpath-path="MoodCardDetail.tsx">
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">원본 감상문</h3>
+            <div className="prose prose-sm max-w-none">
+              <p className="text-gray-700 leading-relaxed">
                 {review.review}
               </p>
             </div>
           </div>
 
           {/* Stats */}
-          <div className="bg-gradient-to-r from-[#A8B5E8]/20 to-[#B5D4C8]/20 border border-gray-200 rounded-2xl p-6" data-magicpath-id="81" data-magicpath-path="MoodCardDetail.tsx">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4" data-magicpath-id="82" data-magicpath-path="MoodCardDetail.tsx">무드 카드 통계</h3>
-            <div className="grid grid-cols-2 gap-4" data-magicpath-id="83" data-magicpath-path="MoodCardDetail.tsx">
-              <div className="text-center" data-magicpath-id="84" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-2xl font-bold text-[#A8B5E8]" data-magicpath-id="85" data-magicpath-path="MoodCardDetail.tsx">{review.emotions.length}</p>
-                <p className="text-sm text-gray-600" data-magicpath-id="86" data-magicpath-path="MoodCardDetail.tsx">감정</p>
+          <div className="bg-gradient-to-r from-[#A8B5E8]/20 to-[#B5D4C8]/20 border border-gray-200 rounded-2xl p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">무드 카드 통계</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <p className="text-2xl font-bold text-[#A8B5E8]">{review.emotions.length}</p>
+                <p className="text-sm text-gray-600">감정</p>
               </div>
-              <div className="text-center" data-magicpath-id="87" data-magicpath-path="MoodCardDetail.tsx">
-                <p className="text-2xl font-bold text-[#B5D4C8]" data-magicpath-id="88" data-magicpath-path="MoodCardDetail.tsx">{review.topics.length}</p>
-                <p className="text-sm text-gray-600" data-magicpath-id="89" data-magicpath-path="MoodCardDetail.tsx">주제</p>
+              <div className="text-center">
+                <p className="text-2xl font-bold text-[#B5D4C8]">{review.topics.length}</p>
+                <p className="text-sm text-gray-600">주제</p>
               </div>
             </div>
           </div>
@@ -307,7 +305,7 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
       </div>
 
       {/* Click outside to close share menu */}
-      {showShareMenu && <div className="fixed inset-0 z-0" onClick={() => setShowShareMenu(false)} data-magicpath-id="90" data-magicpath-path="MoodCardDetail.tsx" />}
+      {showShareMenu && <div className="fixed inset-0 z-0" onClick={() => setShowShareMenu(false)} />}
     </motion.div>;
 };
 export default MoodCardDetail;

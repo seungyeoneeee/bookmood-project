@@ -18,7 +18,6 @@ export interface BookData {
   cover: string;
   description: string;
   isbn?: string;
-  mpid?: string;
 }
 export interface ReviewData {
   id: string;
@@ -29,14 +28,12 @@ export interface ReviewData {
   moodSummary: string;
   createdAt: Date;
   moodCardUrl?: string;
-  mpid?: string;
 }
 export interface User {
   id: string;
   name: string;
   email: string;
   avatar?: string;
-  mpid?: string;
 }
 type ViewType = 'login' | 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter' | 'reading-progress';
 const BookMoodApp: React.FC = () => {
@@ -94,8 +91,7 @@ const BookMoodApp: React.FC = () => {
     topics: ['relationships', 'philosophy', 'growth'],
     moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
     createdAt: new Date('2024-01-15'),
-    moodCardUrl: '/api/mood-cards/1',
-    mpid: "794996df-d0af-4802-bf53-0d7eaf8dba77"
+    moodCardUrl: '/api/mood-cards/1'
   }, {
     id: '2',
     bookId: '2',
@@ -104,8 +100,7 @@ const BookMoodApp: React.FC = () => {
     topics: ['adventure', 'mystery', 'suspense'],
     moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
     createdAt: new Date('2024-01-20'),
-    moodCardUrl: '/api/mood-cards/2',
-    mpid: "c18aeda1-4bff-4fed-97f4-5493bc297aad"
+    moodCardUrl: '/api/mood-cards/2'
   }];
   const mockBookEmotionData = {
     bookId: '1',
@@ -116,28 +111,23 @@ const BookMoodApp: React.FC = () => {
     emotionStats: [{
       emotion: '기쁨',
       count: 450,
-      percentage: 36,
-      mpid: "0b81ce87-f79a-443f-985e-bb16ac19d910"
+      percentage: 36
     }, {
       emotion: '평온',
       count: 380,
-      percentage: 30,
-      mpid: "f44179ec-cb95-4140-99f2-5933bb9dd014"
+      percentage: 30
     }, {
       emotion: '영감',
       count: 250,
-      percentage: 20,
-      mpid: "ef766803-464c-405a-a60a-bc038db90f05"
+      percentage: 20
     }, {
       emotion: '사랑',
       count: 120,
-      percentage: 10,
-      mpid: "51e5c888-7301-4388-ad09-650beb98c3c9"
+      percentage: 10
     }, {
       emotion: '그리움',
       count: 50,
-      percentage: 4,
-      mpid: "9cfa4104-fd2b-41c4-a988-8433e7c084ab"
+      percentage: 4
     }],
     averageRating: 4.5,
     recentReviews: [{
@@ -146,37 +136,31 @@ const BookMoodApp: React.FC = () => {
       emotions: ['기쁨', '평온'],
       rating: 5,
       snippet: '정말 따뜻하고 아름다운 이야기였어요. 꿈이라는 소재를 이렇게 잘 풀어낼 수 있다니...',
-      createdAt: new Date('2024-01-20'),
-      mpid: "57244c84-f061-4a8e-bc78-58a95389c633"
+      createdAt: new Date('2024-01-20')
     }, {
       id: '2',
       userName: '책벌레',
       emotions: ['영감', '기쁨'],
       rating: 4,
       snippet: '상상력이 풍부한 작품이에요. 읽는 내내 미소가 지어졌습니다.',
-      createdAt: new Date('2024-01-18'),
-      mpid: "14acbfe4-aa8f-424a-ab49-d48267f014ae"
+      createdAt: new Date('2024-01-18')
     }],
     trendData: [{
       month: '10월',
       readers: 200,
-      avgRating: 4.3,
-      mpid: "075217d5-1d9a-4980-8973-8c7749d25650"
+      avgRating: 4.3
     }, {
       month: '11월',
       readers: 350,
-      avgRating: 4.4,
-      mpid: "b76e79fd-c3a8-4318-8e47-f72a277990a4"
+      avgRating: 4.4
     }, {
       month: '12월',
       readers: 450,
-      avgRating: 4.5,
-      mpid: "3ccb1a0e-db2a-4f3b-a1e7-c2e1977f377a"
+      avgRating: 4.5
     }, {
       month: '1월',
       readers: 250,
-      avgRating: 4.6,
-      mpid: "aabcf5e0-1231-46ea-b77f-6e7b4a77a582"
+      avgRating: 4.6
     }]
   };
   const handleViewChange = (view: ViewType) => {
@@ -265,7 +249,7 @@ const BookMoodApp: React.FC = () => {
         return <LoginPage onLogin={handleLogin} onSignUp={() => {
           // For now, redirect to login - could add signup flow later
           console.log('Sign up clicked');
-        }} data-magicpath-id="0" data-magicpath-path="BookMoodApp.tsx" />;
+        }} />;
       case 'home':
         return <motion.div initial={{
           opacity: 0,
@@ -273,27 +257,27 @@ const BookMoodApp: React.FC = () => {
         }} animate={{
           opacity: 1,
           y: 0
-        }} className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden" data-magicpath-id="1" data-magicpath-path="BookMoodApp.tsx">
+        }} className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
             {/* Floating Characters */}
-            <motion.div variants={floatingVariants} animate="animate" className="absolute top-20 right-8 w-16 h-16 bg-gradient-to-br from-[#A8B5E8] to-[#8BB5E8] rounded-full flex items-center justify-center shadow-lg opacity-80" data-magicpath-id="2" data-magicpath-path="BookMoodApp.tsx">
-              <Book className="w-8 h-8 text-white" data-magicpath-id="3" data-magicpath-path="BookMoodApp.tsx" />
+            <motion.div variants={floatingVariants} animate="animate" className="absolute top-20 right-8 w-16 h-16 bg-gradient-to-br from-[#A8B5E8] to-[#8BB5E8] rounded-full flex items-center justify-center shadow-lg opacity-80">
+              <Book className="w-8 h-8 text-white" />
             </motion.div>
             
-            <motion.div variants={floatingDelayedVariants} animate="animate" className="absolute top-32 left-6 w-12 h-12 bg-gradient-to-br from-[#F4E4B8] to-[#E8D5A3] rounded-full flex items-center justify-center shadow-lg opacity-70" data-magicpath-id="4" data-magicpath-path="BookMoodApp.tsx">
-              <Heart className="w-6 h-6 text-white" data-magicpath-id="5" data-magicpath-path="BookMoodApp.tsx" />
+            <motion.div variants={floatingDelayedVariants} animate="animate" className="absolute top-32 left-6 w-12 h-12 bg-gradient-to-br from-[#F4E4B8] to-[#E8D5A3] rounded-full flex items-center justify-center shadow-lg opacity-70">
+              <Heart className="w-6 h-6 text-white" />
             </motion.div>
             
-            <motion.div variants={floatingSlowVariants} animate="animate" className="absolute top-64 right-12 w-10 h-10 bg-gradient-to-br from-[#B5D4C8] to-[#A3C9B8] rounded-full flex items-center justify-center shadow-lg opacity-60" data-magicpath-id="6" data-magicpath-path="BookMoodApp.tsx">
-              <TrendingUp className="w-5 h-5 text-white" data-magicpath-id="7" data-magicpath-path="BookMoodApp.tsx" />
+            <motion.div variants={floatingSlowVariants} animate="animate" className="absolute top-64 right-12 w-10 h-10 bg-gradient-to-br from-[#B5D4C8] to-[#A3C9B8] rounded-full flex items-center justify-center shadow-lg opacity-60">
+              <TrendingUp className="w-5 h-5 text-white" />
             </motion.div>
             
-            <motion.div variants={floatingVariants} animate="animate" className="absolute bottom-32 left-8 w-14 h-14 bg-gradient-to-br from-[#E8B5A8] to-[#D8A598] rounded-full flex items-center justify-center shadow-lg opacity-75" data-magicpath-id="8" data-magicpath-path="BookMoodApp.tsx">
-              <User className="w-7 h-7 text-white" data-magicpath-id="9" data-magicpath-path="BookMoodApp.tsx" />
+            <motion.div variants={floatingVariants} animate="animate" className="absolute bottom-32 left-8 w-14 h-14 bg-gradient-to-br from-[#E8B5A8] to-[#D8A598] rounded-full flex items-center justify-center shadow-lg opacity-75">
+              <User className="w-7 h-7 text-white" />
             </motion.div>
 
-            <div className="max-w-md mx-auto relative z-10" data-magicpath-id="10" data-magicpath-path="BookMoodApp.tsx">
+            <div className="max-w-md mx-auto relative z-10">
               {/* Hero Section */}
-              <div className="text-center mb-16 pt-8" data-magicpath-id="11" data-magicpath-path="BookMoodApp.tsx">
+              <div className="text-center mb-16 pt-8">
                 <motion.div initial={{
                 opacity: 0,
                 scale: 0.9
@@ -302,8 +286,8 @@ const BookMoodApp: React.FC = () => {
                 scale: 1
               }} transition={{
                 delay: 0.2
-              }} className="w-24 h-24 bg-gradient-to-br from-[#A8B5E8] to-[#8BB5E8] rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl relative" data-magicpath-id="12" data-magicpath-path="BookMoodApp.tsx">
-                  <Heart className="w-12 h-12 text-white" data-magicpath-id="13" data-magicpath-path="BookMoodApp.tsx" />
+              }} className="w-24 h-24 bg-gradient-to-br from-[#A8B5E8] to-[#8BB5E8] rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-xl relative">
+                  <Heart className="w-12 h-12 text-white" />
                   {/* Pulse effect */}
                   <motion.div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-[#A8B5E8] to-[#8BB5E8] opacity-30" animate={{
                   scale: [1, 1.2, 1],
@@ -312,7 +296,7 @@ const BookMoodApp: React.FC = () => {
                   duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut"
-                }} data-magicpath-id="14" data-magicpath-path="BookMoodApp.tsx" />
+                }} />
                 </motion.div>
                 
                 <motion.h1 initial={{
@@ -323,7 +307,7 @@ const BookMoodApp: React.FC = () => {
                 y: 0
               }} transition={{
                 delay: 0.4
-              }} className="text-4xl font-bold text-gray-800 mb-4" data-magicpath-id="15" data-magicpath-path="BookMoodApp.tsx">
+              }} className="text-4xl font-bold text-gray-800 mb-4">
                   BookMood
                 </motion.h1>
                 
@@ -335,8 +319,8 @@ const BookMoodApp: React.FC = () => {
                 y: 0
               }} transition={{
                 delay: 0.6
-              }} className="text-gray-600 text-lg leading-relaxed" data-magicpath-id="16" data-magicpath-path="BookMoodApp.tsx">
-                  AI가 분석하는 감정 태그로<br data-magicpath-id="17" data-magicpath-path="BookMoodApp.tsx" />
+              }} className="text-gray-600 text-lg leading-relaxed">
+                  AI가 분석하는 감정 태그로<br />
                   당신의 독서 취향을 발견하세요
                 </motion.p>
               </div>
@@ -350,15 +334,15 @@ const BookMoodApp: React.FC = () => {
               y: 0
             }} transition={{
               delay: 0.8
-            }} className="mb-12" data-magicpath-id="18" data-magicpath-path="BookMoodApp.tsx">
+            }} className="mb-12">
                 <motion.div onClick={() => handleViewChange('search')} className="bg-white rounded-full shadow-lg border border-gray-200 p-4 flex items-center space-x-4 cursor-pointer transition-all duration-300" whileHover={{
                 scale: 1.02,
                 boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"
               }} whileTap={{
                 scale: 0.98
-              }} data-magicpath-id="19" data-magicpath-path="BookMoodApp.tsx">
-                  <Search className="w-6 h-6 text-gray-400" data-magicpath-id="20" data-magicpath-path="BookMoodApp.tsx" />
-                  <span className="text-gray-500 text-lg flex-1" data-magicpath-id="21" data-magicpath-path="BookMoodApp.tsx">책을 검색하고 감정을 기록해보세요</span>
+              }}>
+                  <Search className="w-6 h-6 text-gray-400" />
+                  <span className="text-gray-500 text-lg flex-1">책을 검색하고 감정을 기록해보세요</span>
                 </motion.div>
               </motion.div>
 
@@ -371,15 +355,15 @@ const BookMoodApp: React.FC = () => {
               y: 0
             }} transition={{
               delay: 1.0
-            }} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 mb-8" data-magicpath-id="22" data-magicpath-path="BookMoodApp.tsx">
-                <h4 className="text-gray-800 font-semibold mb-6 text-center" data-magicpath-id="23" data-magicpath-path="BookMoodApp.tsx">이번 달 독서 현황</h4>
-                <div className="grid grid-cols-3 gap-6" data-magicpath-id="24" data-magicpath-path="BookMoodApp.tsx">
+            }} className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 mb-8">
+                <h4 className="text-gray-800 font-semibold mb-6 text-center">이번 달 독서 현황</h4>
+                <div className="grid grid-cols-3 gap-6">
                   <motion.div className="text-center" whileHover={{
                   scale: 1.05
                 }} transition={{
                   type: "spring",
                   stiffness: 300
-                }} data-magicpath-id="25" data-magicpath-path="BookMoodApp.tsx">
+                }}>
                     <motion.div className="text-3xl font-bold text-[#A8B5E8] mb-2" animate={{
                     scale: [1, 1.1, 1],
                     color: ["#A8B5E8", "#8BB5E8", "#A8B5E8"]
@@ -387,17 +371,17 @@ const BookMoodApp: React.FC = () => {
                     duration: 2,
                     repeat: Infinity,
                     ease: "easeInOut"
-                  }} data-magicpath-id="26" data-magicpath-path="BookMoodApp.tsx">
+                  }}>
                       3
                     </motion.div>
-                    <div className="text-gray-600 text-sm" data-magicpath-id="27" data-magicpath-path="BookMoodApp.tsx">읽은 책</div>
+                    <div className="text-gray-600 text-sm">읽은 책</div>
                   </motion.div>
                   <motion.div className="text-center" whileHover={{
                   scale: 1.05
                 }} transition={{
                   type: "spring",
                   stiffness: 300
-                }} data-magicpath-id="28" data-magicpath-path="BookMoodApp.tsx">
+                }}>
                     <motion.div className="text-3xl font-bold text-[#B5D4C8] mb-2" animate={{
                     scale: [1, 1.1, 1],
                     color: ["#B5D4C8", "#A3C9B8", "#B5D4C8"]
@@ -406,17 +390,17 @@ const BookMoodApp: React.FC = () => {
                     repeat: Infinity,
                     ease: "easeInOut",
                     delay: 0.5
-                  }} data-magicpath-id="29" data-magicpath-path="BookMoodApp.tsx">
+                  }}>
                       {wishlistBooks.length}
                     </motion.div>
-                    <div className="text-gray-600 text-sm" data-magicpath-id="30" data-magicpath-path="BookMoodApp.tsx">찜한 책</div>
+                    <div className="text-gray-600 text-sm">찜한 책</div>
                   </motion.div>
                   <motion.div className="text-center" whileHover={{
                   scale: 1.05
                 }} transition={{
                   type: "spring",
                   stiffness: 300
-                }} data-magicpath-id="31" data-magicpath-path="BookMoodApp.tsx">
+                }}>
                     <motion.div className="text-3xl font-bold text-[#F4E4B8] mb-2" animate={{
                     scale: [1, 1.1, 1],
                     color: ["#F4E4B8", "#E8D5A3", "#F4E4B8"]
@@ -425,49 +409,49 @@ const BookMoodApp: React.FC = () => {
                     repeat: Infinity,
                     ease: "easeInOut",
                     delay: 1
-                  }} data-magicpath-id="32" data-magicpath-path="BookMoodApp.tsx">
+                  }}>
                       2
                     </motion.div>
-                    <div className="text-gray-600 text-sm" data-magicpath-id="33" data-magicpath-path="BookMoodApp.tsx">무드 카드</div>
+                    <div className="text-gray-600 text-sm">무드 카드</div>
                   </motion.div>
                 </div>
               </motion.div>
             </div>
           </motion.div>;
       case 'search':
-        return <BookSearchAndFilter onReviewSubmit={handleReviewSubmit} onBack={() => handleViewChange('home')} onWishlistToggle={handleWishlistToggle} onStartReading={handleStartReading} onViewEmotionStats={handleBookStatsSelect} wishlistBooks={wishlistBooks.map(book => book.id)} data-magicpath-id="34" data-magicpath-path="BookMoodApp.tsx" />;
+        return <BookSearchAndFilter onReviewSubmit={handleReviewSubmit} onBack={() => handleViewChange('home')} onWishlistToggle={handleWishlistToggle} onStartReading={handleStartReading} onViewEmotionStats={handleBookStatsSelect} wishlistBooks={wishlistBooks.map(book => book.id)} />;
       case 'archive':
-        return <ArchiveDashboard reviews={reviews.length > 0 ? reviews : mockReviews} onMoodCardSelect={handleMoodCardSelect} onBack={() => handleViewChange('home')} data-magicpath-id="35" data-magicpath-path="BookMoodApp.tsx" />;
+        return <ArchiveDashboard reviews={reviews.length > 0 ? reviews : mockReviews} onMoodCardSelect={handleMoodCardSelect} onBack={() => handleViewChange('home')} />;
       case 'mood-detail':
-        return selectedMoodCard ? <MoodCardDetail review={selectedMoodCard} onBack={() => handleViewChange('archive')} data-magicpath-id="36" data-magicpath-path="BookMoodApp.tsx" /> : null;
+        return selectedMoodCard ? <MoodCardDetail review={selectedMoodCard} onBack={() => handleViewChange('archive')} /> : null;
       case 'settings':
         return <motion.div initial={{
           opacity: 0
         }} animate={{
           opacity: 1
-        }} className="min-h-screen p-4" data-magicpath-id="37" data-magicpath-path="BookMoodApp.tsx">
-            <div className="max-w-sm mx-auto pt-8" data-magicpath-id="38" data-magicpath-path="BookMoodApp.tsx">
-              <h1 className="text-2xl font-bold text-gray-800 mb-8" data-magicpath-id="39" data-magicpath-path="BookMoodApp.tsx">설정</h1>
-              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100" data-magicpath-id="40" data-magicpath-path="BookMoodApp.tsx">
-                <p className="text-gray-600" data-magicpath-id="41" data-magicpath-path="BookMoodApp.tsx">설정 패널 준비 중...</p>
+        }} className="min-h-screen p-4">
+            <div className="max-w-sm mx-auto pt-8">
+              <h1 className="text-2xl font-bold text-gray-800 mb-8">설정</h1>
+              <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                <p className="text-gray-600">설정 패널 준비 중...</p>
               </div>
             </div>
           </motion.div>;
       case 'wishlist':
         return <WishlistManager onBack={() => handleViewChange('home')} onBookSelect={book => {
           handleStartReading(book);
-        }} data-magicpath-id="42" data-magicpath-path="BookMoodApp.tsx" />;
+        }} />;
       case 'emotion-stats':
-        return selectedBookForStats ? <BookEmotionStats bookData={mockBookEmotionData} onBack={() => handleViewChange('search')} data-magicpath-id="43" data-magicpath-path="BookMoodApp.tsx" /> : null;
+        return selectedBookForStats ? <BookEmotionStats bookData={mockBookEmotionData} onBack={() => handleViewChange('search')} /> : null;
       case 'reading-progress':
-        return selectedBookForReading ? <ReadingProgressTracker bookData={selectedBookForReading} onBack={() => handleViewChange('search')} onComplete={handleCompleteReading} data-magicpath-id="44" data-magicpath-path="BookMoodApp.tsx" /> : null;
+        return selectedBookForReading ? <ReadingProgressTracker bookData={selectedBookForReading} onBack={() => handleViewChange('search')} onComplete={handleCompleteReading} /> : null;
       default:
         return null;
     }
   };
   return <>
-      {currentView === 'login' ? renderContent() : <AppLayout currentView={currentView} onViewChange={handleViewChange} user={user} onLogout={handleLogout} data-magicpath-id="45" data-magicpath-path="BookMoodApp.tsx">
-          <AnimatePresence mode="wait" data-magicpath-id="46" data-magicpath-path="BookMoodApp.tsx">
+      {currentView === 'login' ? renderContent() : <AppLayout currentView={currentView} onViewChange={handleViewChange} user={user} onLogout={handleLogout}>
+          <AnimatePresence mode="wait">
             {renderContent()}
           </AnimatePresence>
         </AppLayout>}
