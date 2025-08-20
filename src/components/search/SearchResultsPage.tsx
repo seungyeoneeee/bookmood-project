@@ -104,9 +104,9 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        className="min-h-screen px-4 py-8"
+        className="min-h-screen"
       >
-        <div className="max-w-sm mx-auto">
+        <div className="px-4 md:px-0">
           <div className="flex items-center justify-between mb-8">
             <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
               <ArrowLeft className="w-5 h-5 text-gray-600" />
@@ -129,7 +129,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
       exit={{ opacity: 0, x: -20 }} 
-      className="min-h-screen px-4 py-8"
+      className="min-h-screen"
     >
       <div className="max-w-sm mx-auto">
         {/* Header */}

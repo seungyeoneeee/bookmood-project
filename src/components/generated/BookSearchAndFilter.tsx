@@ -295,7 +295,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
   }} exit={{
     opacity: 0,
     y: -20
-  }} className="min-h-screen px-4 py-8">
+  }} className="min-h-screen">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -377,7 +377,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     }} exit={{
       opacity: 0,
       x: -20
-    }} className="min-h-screen px-4 py-8">
+    }} className="min-h-screen">
         <div className="max-w-sm mx-auto">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -598,7 +598,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
   }} exit={{
     opacity: 0,
     x: -20
-  }} className="min-h-screen px-4 py-8">
+  }} className="min-h-screen">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -703,7 +703,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
   }} exit={{
     opacity: 0,
     x: -20
-  }} className="min-h-screen px-4 py-8">
+  }} className="min-h-screen">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -793,7 +793,7 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
   }} exit={{
     opacity: 0,
     x: -20
-  }} className="min-h-screen px-4 py-8">
+  }} className="min-h-screen">
       <div className="max-w-sm mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

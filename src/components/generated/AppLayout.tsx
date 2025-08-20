@@ -154,8 +154,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({
       )}
 
       {/* Main Content */}
-      <main className={isMobile ? "pb-20 pt-4" : "pt-24 pb-8"}>
-        <div className={isMobile ? "px-4" : "px-6"}>
+      <main className={isMobile ? "pb-20 pt-4 px-4" : "pt-24 pb-8 px-8"}>
+        <div className={isMobile ? "" : "max-w-6xl mx-auto"}>
           {children}
         </div>
       </main>

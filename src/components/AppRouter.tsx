@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Routes, Route, Navigate, useNavigate, useParams, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Book, Heart, TrendingUp, User, Search } from 'lucide-react';
+import { Book, Heart, TrendingUp, User, Search, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { BookExternal } from '../types/database';
 import * as booksApi from '../api/books';
@@ -144,7 +144,7 @@ const EmotionStatsRoute: React.FC = () => {
 const ReadingProgressRoute: React.FC = () => {
   const { bookId } = useParams<{ bookId: string }>(); // 실제로는 ISBN13
   const navigate = useNavigate();
-  const [bookData, setBookData] = useState<any>(null);
+  const [bookData, setBookData] = useState<{ id: string; title: string; author: string; cover: string; pages: number } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
 
@@ -211,35 +211,62 @@ const ReadingProgressRoute: React.FC = () => {
     loadBookData();
   }, [bookId]);
 
-  const handleProgressUpdate = async (isbn13: string, currentPage: number, totalPages: number, notes: any[]) => {
-    if (!user) return;
+  const handleProgressUpdate = async (isbn13: string, currentPage: number, totalPages: number, notes: { page: number; content: string }[]) => {
+    console.log('📊 handleProgressUpdate 호출됨:', { isbn13, currentPage, totalPages, notesCount: notes.length, user: user?.id });
+    
+    if (!user) {
+      console.warn('❌ 사용자가 인증되지 않음');
+      return;
+    }
 
     try {
       const progressPercentage = Math.round((currentPage / totalPages) * 100);
       const notesText = notes.map(note => `[${note.page}p] ${note.content}`).join('\n');
       
+      console.log('💾 저장할 데이터:', {
+        isbn13,
+        progressPercentage,
+        notesText: notesText.length > 0 ? `${notesText.substring(0, 50)}...` : '(메모 없음)',
+        notesCount: notes.length
+      });
+      
+      // 현재 progress 상태에서 shelf_status 결정 (기본값은 reading)
+      let shelfStatus = 'reading';
+      if (progressPercentage === 100) {
+        shelfStatus = 'completed';
+      } else {
+        // progress 객체에서 상태를 가져올 수 있다면 사용, 아니면 기본값
+        shelfStatus = 'reading'; // TODO: progress 상태 반영 필요
+      }
+      
       // library_items 테이블에 진행 상태 실시간 저장/업데이트
-      await libraryApi.addLibraryItem({
+      const result = await libraryApi.addLibraryItem({
         isbn13: isbn13,
-        shelf_status: progressPercentage === 100 ? 'completed' : 'reading',
+        is_wishlist: false,
+        shelf_status: shelfStatus,
         progress: progressPercentage,
         started_at: new Date().toISOString().split('T')[0],
         note: notesText || undefined
       });
       
-      console.log(`📚 진행 상태 저장됨: ${progressPercentage}% (${currentPage}/${totalPages})`);
+      if (result.error) {
+        console.error('❌ 데이터베이스 저장 실패:', result.error);
+      } else {
+        console.log(`✅ 진행 상태 저장 성공: ${progressPercentage}% (${currentPage}/${totalPages}) - 메모 ${notes.length}개`);
+      }
     } catch (error) {
-      console.error('진행 상태 저장 실패:', error);
+      console.error('❌ handleProgressUpdate 예외:', error);
     }
   };
 
-  const handleComplete = async (progress: any) => {
+  const handleComplete = async (progress: { notes: { page: number; content: string }[] }) => {
     if (!user || !bookId) return;
 
     try {
       // library_items 테이블에 독서 완료 기록 저장
       await libraryApi.addLibraryItem({
         isbn13: bookId,
+        is_wishlist: false,
         shelf_status: 'completed',
         progress: 100,
         finished_at: new Date().toISOString().split('T')[0],
@@ -282,6 +309,7 @@ const ReadingProgressRoute: React.FC = () => {
       onBack={() => navigate(-1)} 
       onComplete={handleComplete}
       onProgressUpdate={handleProgressUpdate}
+      user={user ? { id: user.id } : undefined}
     />
   );
 };
@@ -289,8 +317,9 @@ const ReadingProgressRoute: React.FC = () => {
 const HomePage: React.FC<{ 
   user: User | null; 
   wishlistBooks: WishlistBook[]; 
+  readingBooks: ReadingBook[];
   onViewChange: (view: string) => void 
-}> = ({ user, wishlistBooks, onViewChange }) => {
+}> = ({ user, wishlistBooks, readingBooks, onViewChange }) => {
   const navigate = useNavigate();
   
   // Animation variants for floating elements
@@ -336,7 +365,7 @@ const HomePage: React.FC<{
     <motion.div 
       initial={{ opacity: 0, y: 20 }} 
       animate={{ opacity: 1, y: 0 }} 
-      className="min-h-screen px-4 py-8 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden"
+      
     >
       {/* Floating Characters */}
       <motion.div 
@@ -371,7 +400,7 @@ const HomePage: React.FC<{
         <User className="w-7 h-7 text-white" />
       </motion.div>
 
-      <div className="max-w-md mx-auto relative z-10">
+      <div className="relative z-10 px-4 md:px-0">
         {/* Hero Section */}
         <div className="text-center mb-16 pt-8">
           <motion.div 
@@ -444,7 +473,7 @@ const HomePage: React.FC<{
           className="bg-white rounded-3xl p-8 shadow-lg border border-gray-100 mb-8"
         >
           <h4 className="text-gray-800 font-semibold mb-6 text-center">이번 달 독서 현황</h4>
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-6 mb-6">
             <motion.div 
               className="text-center" 
               whileHover={{ scale: 1.05 }} 
@@ -512,6 +541,32 @@ const HomePage: React.FC<{
               </motion.div>
               <div className="text-gray-600 text-sm">무드 카드</div>
             </motion.div>
+          </div>
+          
+          {/* 📚 읽고 있는 책 정보 추가 */}
+          <div className="border-t border-gray-100 pt-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-gray-800">
+                    {readingBooks.length}권
+                  </div>
+                  <div className="text-sm text-gray-600">읽고 있는 책</div>
+                </div>
+              </div>
+              
+              <motion.button
+                onClick={() => navigate('/reading')}
+                className="px-4 py-2 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-xl text-sm font-medium"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                보기
+              </motion.button>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -670,28 +725,75 @@ const AppRouter: React.FC = () => {
     navigate(`/books/${book.isbn13}/stats`);
   };
 
-  const handleStartReading = (book: BookData | BookExternal) => {
-    // BookData는 id를, BookExternal은 isbn13을 사용
-    const bookIdentifier = 'id' in book ? book.id : book.isbn13;
-    navigate(`/books/${bookIdentifier}/progress`);
+  const handleStartReading = async (book: BookData | BookExternal) => {
+    if (!user) {
+      console.error('❌ 사용자가 인증되지 않음');
+      return;
+    }
+
+    const bookIsbn = 'id' in book ? book.id : book.isbn13;
+    
+    try {
+      console.log('📚 읽기 시작 처리:', { user: user.id, book: book.title, isbn: bookIsbn });
+      
+      // 먼저 책 정보가 데이터베이스에 있는지 확인하고 없으면 저장
+      const { data: existingBook } = await booksApi.getBookByIsbn(bookIsbn);
+      if (!existingBook) {
+        console.log('💾 책 정보 저장 중...');
+        const bookToSave = 'id' in book ? {
+          isbn13: book.id,
+          title: book.title,
+          author: book.author,
+          cover_url: book.cover,
+          summary: book.description,
+          // 기타 필드들 매핑
+        } as BookExternal : book;
+        
+        const { error: saveBookError } = await booksApi.saveBook(bookToSave);
+        if (saveBookError) {
+          console.error('❌ 책 정보 저장 실패:', saveBookError);
+        }
+      }
+      
+      // 읽기 시작 데이터 저장/업데이트
+      console.log('📖 읽기 시작 데이터 저장 중...');
+      const { data: libraryResult, error: libraryError } = await libraryApi.addLibraryItem({
+        isbn13: bookIsbn,
+        is_wishlist: false, // 📚 읽기 시작하면 위시리스트에서 실제 읽기로 변경
+        shelf_status: 'reading',
+        progress: 0,
+        started_at: new Date().toISOString().split('T')[0]
+      });
+      
+      if (libraryError) {
+        console.error('❌ 읽기 시작 데이터 저장 실패:', libraryError);
+        throw libraryError;
+      }
+      
+      console.log('✅ 읽기 시작 데이터 저장 성공:', libraryResult);
+      
+      // 읽고 있는 책 목록 새로고침
+      loadReadingBooks();
+      
+      // 진행 페이지로 이동
+      navigate(`/books/${bookIsbn}/progress`);
+    } catch (error) {
+      console.error('❌ 읽기 시작 처리 실패:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert(`읽기 시작 실패: ${errorMessage}`);
+    }
   };
 
   const handleCompleteBook = (book: BookData | BookExternal) => {
     const bookId = 'id' in book ? book.id : book.isbn13;
-    setLibraryBooks(prev => prev.map(b => 
-      b.id === bookId 
-        ? { ...b, shelf_status: 'completed', finished_at: new Date() }
-        : b
-    ));
+    // 읽고 있는 책 목록 새로고침
+    loadReadingBooks();
     console.log('Book completed:', bookId);
   };
 
   const handleProgressUpdate = (book: BookExternal, progress: number) => {
-    setLibraryBooks(prev => prev.map(b => 
-      b.id === book.isbn13 
-        ? { ...b, progress: progress }
-        : b
-    ));
+    // 읽고 있는 책 목록 새로고침
+    loadReadingBooks();
     console.log('Progress updated:', book.isbn13, progress);
   };
 
@@ -731,10 +833,11 @@ const AppRouter: React.FC = () => {
         if (!existingBook) {
           console.log('💾 책 정보 저장 중...');
           const { data: savedBook, error: saveBookError } = await booksApi.saveBook(book);
-          if (saveBookError) {
-            console.error('❌ 책 정보 저장 실패:', saveBookError);
-            throw new Error(`책 정보 저장 실패: ${saveBookError.message || saveBookError}`);
-          } else {
+                  if (saveBookError) {
+          console.error('❌ 책 정보 저장 실패:', saveBookError);
+          const errorMessage = saveBookError instanceof Error ? saveBookError.message : String(saveBookError);
+          throw new Error(`책 정보 저장 실패: ${errorMessage}`);
+        } else {
             console.log('✅ 책 정보 저장 성공:', savedBook?.title);
           }
         } else {
@@ -781,7 +884,8 @@ const AppRouter: React.FC = () => {
       }
     } catch (error) {
       console.error('❌ 위시리스트 토글 실패:', error);
-      alert(`위시리스트 저장 실패: ${error.message || error}`);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      alert(`위시리스트 저장 실패: ${errorMessage}`);
       // 실패시에만 다시 로드
       loadWishlistBooks();
     }
@@ -809,7 +913,7 @@ const AppRouter: React.FC = () => {
     navigate('/archive');
   };
 
-  const handleLogin = (provider: 'google' | 'apple' | 'email', credentials?: {
+  const handleLogin = (_provider: 'google' | 'apple' | 'email', _credentials?: {
     email: string;
     password: string;
   }) => {
@@ -871,6 +975,7 @@ const AppRouter: React.FC = () => {
                   <HomePage 
                     user={user} 
                     wishlistBooks={wishlistBooks} 
+                    readingBooks={readingBooks}
                     onViewChange={handleViewChange} 
                   />
                 } />
@@ -904,7 +1009,7 @@ const AppRouter: React.FC = () => {
               onCompleteReading={handleCompleteBook}
               onUpdateProgress={handleProgressUpdate}
               wishlistBooks={wishlistIsbnList}
-              user={user}
+              user={user ? { id: user.id } : undefined}
             />
                 } />
                 
@@ -959,9 +1064,9 @@ const AppRouter: React.FC = () => {
                   <motion.div 
                     initial={{ opacity: 0 }} 
                     animate={{ opacity: 1 }} 
-                    className="min-h-screen p-4"
+                    className="min-h-screen"
                   >
-                    <div className="max-w-sm mx-auto pt-8">
+                    <div className="px-4 md:px-0">
                       <h1 className="text-2xl font-bold text-gray-800 mb-8">설정</h1>
                       <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
                         <p className="text-gray-600">설정 패널 준비 중...</p>

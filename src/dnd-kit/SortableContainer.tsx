@@ -29,7 +29,7 @@ export function SortableContainer({
   containerType,
   ...props
 }: SortableContainerProps) {
-  const [isOver, setIsOver] = useState<Boolean>(false);
+  const [isOver, setIsOver] = useState<boolean>(false);
   const [strategy, setStrategy] = useState<SORTING_STRAGETY>(SORTING_STRAGETY.HORIZONTAL);
   const [isEditMode, setIsEditMode] = useState((window as any).__editModeActive || false);
   const { order, setOrder, addMove } = useMoves();
