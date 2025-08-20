@@ -127,9 +127,9 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen px-4 py-8 bg-gray-50"
+      className="min-h-screen"
     >
-      <div className="max-w-sm mx-auto">
+      <div className="px-4 md:px-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button

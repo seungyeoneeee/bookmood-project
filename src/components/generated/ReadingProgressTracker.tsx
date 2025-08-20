@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Edit3, Save, X, Plus, Trash2, Clock, Target, Calendar } from 'lucide-react';
+import { ArrowLeft, BookOpen, Edit3, Save, X, Plus, Trash2, Clock, Target, Calendar, Play, Pause } from 'lucide-react';
+import * as libraryApi from '../../api/library';
 export interface ReadingProgress {
   id: string;
   bookId: string;
@@ -15,6 +16,7 @@ export interface ReadingProgress {
   lastReadDate: Date;
   targetDate?: Date;
   notes: ReadingNote[];
+  status: 'reading' | 'paused';
 }
 export interface ReadingNote {
   id: string;
@@ -33,12 +35,14 @@ interface ReadingProgressTrackerProps {
   onBack: () => void;
   onComplete?: (progress: ReadingProgress) => void;
   onProgressUpdate?: (isbn13: string, currentPage: number, totalPages: number, notes: ReadingNote[]) => void;
+  user?: { id: string };
 }
 const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   bookData,
   onBack,
   onComplete,
-  onProgressUpdate
+  onProgressUpdate,
+  user
 }) => {
   const [progress, setProgress] = useState<ReadingProgress>({
     id: Date.now().toString(),
@@ -50,18 +54,118 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
     currentPage: 0,
     startDate: new Date(),
     lastReadDate: new Date(),
-    notes: []
+    notes: [],
+    status: 'reading'
   });
+  const [isLoadingProgress, setIsLoadingProgress] = useState(true);
   const [currentPageInput, setCurrentPageInput] = useState('0');
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [newNoteContent, setNewNoteContent] = useState('');
   const [newNotePage, setNewNotePage] = useState('');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [editingNoteContent, setEditingNoteContent] = useState('');
+  // 기존 읽기 진행 상태 불러오기
+  useEffect(() => {
+    const loadExistingProgress = async () => {
+      try {
+        console.log('📖 기존 읽기 진행 상태 불러오는 중...', { bookId: bookData.id, userId: user?.id });
+        
+        if (!user?.id) {
+          console.warn('❌ 사용자 인증 정보 없음');
+          setIsLoadingProgress(false);
+          return;
+        }
+        
+        const { data: libraryItem } = await libraryApi.getLibraryItemByIsbn(bookData.id, user.id);
+        
+        if (libraryItem && !libraryItem.is_wishlist) {
+          console.log('✅ 기존 진행 상태 발견:', {
+            progress: libraryItem.progress,
+            note: libraryItem.note?.substring(0, 50)
+          });
+          
+          // 진행률에서 현재 페이지 계산
+          const currentPage = Math.round((libraryItem.progress || 0) * bookData.pages / 100);
+          
+          // 메모 파싱 (저장된 형식: "[페이지수p] 내용")
+          const notes = libraryItem.note ? 
+            libraryItem.note.split('\n')
+              .filter(line => line.trim().length > 0)
+              .map((line, index) => {
+                const match = line.match(/^\[(\d+)p\]\s*(.+)$/);
+                return {
+                  id: Date.now().toString() + index,
+                  page: match ? parseInt(match[1]) : 1,
+                  content: match ? match[2] : line,
+                  createdAt: new Date(libraryItem.updated_at || libraryItem.created_at)
+                };
+              }) : [];
+          
+          setProgress(prev => ({
+            ...prev,
+            currentPage,
+            startDate: new Date(libraryItem.started_at || libraryItem.created_at),
+            lastReadDate: new Date(libraryItem.updated_at || libraryItem.created_at),
+            notes,
+            status: libraryItem.shelf_status === 'paused' ? 'paused' : 'reading'
+          }));
+          
+          console.log(`📚 진행 상태 복원됨: ${currentPage}/${bookData.pages} (${libraryItem.progress}%) - 메모 ${notes.length}개`);
+        } else {
+          console.log('📖 새로운 책 읽기 시작');
+        }
+      } catch (error) {
+        console.error('❌ 진행 상태 불러오기 실패:', error);
+      } finally {
+        setIsLoadingProgress(false);
+      }
+    };
+
+    loadExistingProgress();
+  }, [bookData.id, bookData.pages, user?.id]);
+
   useEffect(() => {
     setCurrentPageInput(progress.currentPage.toString());
   }, [progress.currentPage]);
   const progressPercentage = Math.round(progress.currentPage / progress.totalPages * 100);
+  
+  // 읽기 상태 변경 함수
+  const toggleReadingStatus = async () => {
+    const newStatus = progress.status === 'reading' ? 'paused' : 'reading';
+    setProgress(prev => ({
+      ...prev,
+      status: newStatus,
+      lastReadDate: new Date()
+    }));
+    
+    // 상태 변경 시 데이터베이스에 직접 저장
+    console.log('📊 읽기 상태 변경:', { from: progress.status, to: newStatus });
+    
+    if (!user?.id) {
+      console.warn('❌ 사용자 인증 정보 없음');
+      return;
+    }
+    
+    try {
+      // 현재 library item을 가져와서 상태만 업데이트
+      const { data: currentItem } = await libraryApi.getLibraryItemByIsbn(bookData.id, user.id);
+      
+      if (currentItem) {
+        const result = await libraryApi.updateLibraryItem(currentItem.id, {
+          shelf_status: newStatus,
+          progress: progress.currentPage ? Math.round((progress.currentPage / progress.totalPages) * 100) : currentItem.progress
+        });
+        
+        if (result.error) {
+          console.error('❌ 상태 변경 저장 실패:', result.error);
+        } else {
+          console.log(`✅ 읽기 상태 변경 저장 성공: ${newStatus}`);
+        }
+      }
+    } catch (error) {
+      console.error('❌ 상태 변경 처리 실패:', error);
+    }
+  };
   const updateCurrentPage = () => {
     const page = parseInt(currentPageInput);
     if (page >= 0 && page <= progress.totalPages) {
@@ -73,8 +177,11 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
       setProgress(newProgress);
       
       // 실시간으로 진행 상태를 데이터베이스에 저장
+      console.log('🔄 페이지 업데이트 중:', { page, totalPages: progress.totalPages, notesCount: progress.notes.length });
       if (onProgressUpdate) {
         onProgressUpdate(bookData.id, page, progress.totalPages, progress.notes);
+      } else {
+        console.warn('❌ onProgressUpdate 콜백이 없음');
       }
     }
   };
@@ -95,8 +202,11 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
     }));
     
     // 메모 추가 시에도 데이터베이스에 저장
+    console.log('📝 메모 추가 중:', { currentPage: progress.currentPage, totalPages: progress.totalPages, notesCount: updatedNotes.length });
     if (onProgressUpdate) {
       onProgressUpdate(bookData.id, progress.currentPage, progress.totalPages, updatedNotes);
+    } else {
+      console.warn('❌ onProgressUpdate 콜백이 없음');
     }
     
     setNewNoteContent('');
@@ -105,21 +215,42 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   };
   const updateNote = (noteId: string) => {
     if (!editingNoteContent.trim()) return;
+    const updatedNotes = progress.notes.map(note => note.id === noteId ? {
+      ...note,
+      content: editingNoteContent.trim()
+    } : note);
+    
     setProgress(prev => ({
       ...prev,
-      notes: prev.notes.map(note => note.id === noteId ? {
-        ...note,
-        content: editingNoteContent.trim()
-      } : note)
+      notes: updatedNotes
     }));
+    
+    // 메모 수정 시에도 데이터베이스에 저장
+    console.log('✏️ 메모 수정 중:', { noteId, currentPage: progress.currentPage, totalPages: progress.totalPages, notesCount: updatedNotes.length });
+    if (onProgressUpdate) {
+      onProgressUpdate(bookData.id, progress.currentPage, progress.totalPages, updatedNotes);
+    } else {
+      console.warn('❌ onProgressUpdate 콜백이 없음');
+    }
+    
     setEditingNoteId(null);
     setEditingNoteContent('');
   };
   const deleteNote = (noteId: string) => {
+    const updatedNotes = progress.notes.filter(note => note.id !== noteId);
+    
     setProgress(prev => ({
       ...prev,
-      notes: prev.notes.filter(note => note.id !== noteId)
+      notes: updatedNotes
     }));
+    
+    // 메모 삭제 시에도 데이터베이스에 저장
+    console.log('🗑️ 메모 삭제 중:', { noteId, currentPage: progress.currentPage, totalPages: progress.totalPages, notesCount: updatedNotes.length });
+    if (onProgressUpdate) {
+      onProgressUpdate(bookData.id, progress.currentPage, progress.totalPages, updatedNotes);
+    } else {
+      console.warn('❌ onProgressUpdate 콜백이 없음');
+    }
   };
   const startEditingNote = (note: ReadingNote) => {
     setEditingNoteId(note.id);
@@ -150,8 +281,14 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="min-h-screen px-4 py-8">
-      <div className="max-w-sm mx-auto">
+  }} className="min-h-screen">
+      {isLoadingProgress ? (
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 border-2 border-[#A8B5E8] border-t-transparent rounded-full animate-spin" />
+          <span className="ml-3 text-gray-600">읽기 진행 상태를 불러오는 중...</span>
+        </div>
+      ) : (
+      <div className="px-4 md:px-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
@@ -170,9 +307,34 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
                 {progress.bookTitle}
               </h2>
               <p className="text-gray-600 mb-3">{progress.bookAuthor}</p>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 mb-3">
                 <p>총 {progress.totalPages}페이지</p>
                 <p>{getDaysReading()}일째 읽는 중</p>
+              </div>
+              
+              {/* 읽기 상태 표시 및 변경 */}
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={toggleReadingStatus}
+                  className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                    progress.status === 'reading'
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                  }`}
+                >
+                  {progress.status === 'reading' ? (
+                    <>
+                      <Play className="w-3 h-3" />
+                      <span>읽는 중</span>
+                    </>
+                  ) : (
+                    <>
+                      <Pause className="w-3 h-3" />
+                      <span>잠시 멈춤</span>
+                    </>
+                  )}
+                </button>
+                <span className="text-xs text-gray-400">탭하여 상태 변경</span>
               </div>
             </div>
           </div>
@@ -358,6 +520,7 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
             </button>
           </motion.div>}
       </div>
-    </motion.div>;
+      )}
+    </motion.div>
 };
 export default ReadingProgressTracker;

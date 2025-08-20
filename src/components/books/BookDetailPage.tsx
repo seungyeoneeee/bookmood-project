@@ -243,9 +243,9 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        className="min-h-screen px-4 py-8"
+        className="min-h-screen"
       >
-        <div className="max-w-sm mx-auto">
+        <div className="px-4 md:px-0">
           <div className="flex items-center justify-between mb-8">
             <button 
               onClick={onBack} 
@@ -271,7 +271,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }} 
-        className="min-h-screen px-4 py-8"
+        className="min-h-screen"
       >
         <div className="max-w-sm mx-auto text-center py-20">
           <h3 className="text-lg font-medium text-gray-800 mb-2">책을 찾을 수 없습니다</h3>
@@ -297,7 +297,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
       initial={{ opacity: 0, x: 20 }} 
       animate={{ opacity: 1, x: 0 }} 
       exit={{ opacity: 0, x: -20 }} 
-      className="min-h-screen px-4 py-8"
+      className="min-h-screen"
     >
       <div className="max-w-sm mx-auto">
         {/* Header */}
