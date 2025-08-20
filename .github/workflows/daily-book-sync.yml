@@ -1,0 +1,38 @@
+name: 📚 Daily Book Sync
+
+on:
+  schedule:
+    # 매일 오전 9시 (UTC 0시 = 한국 시간 9시)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  sync-books:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 🟢 Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: 📦 의존성 설치
+        working-directory: ./scripts
+        run: npm install
+
+      - name: 🚀 책 정보 동기화 실행
+        working-directory: ./scripts
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          ALADIN_API_KEY: ${{ secrets.ALADIN_API_KEY }}
+        run: npm run sync-books
+
+      - name: 📊 결과 알림
+        if: always()
+        run: |
+          echo "📚 일일 책 정보 동기화 완료!"
+          echo "📅 실행 시간: $(date)"

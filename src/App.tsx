@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { Container, Theme } from './settings/types';
-import BookMoodApp from './components/generated/BookMoodApp';
+import AppRouter from './components/AppRouter';
+import { AuthProvider } from './contexts/AuthContext';
 
-let theme: Theme = 'light';
-let container: Container = 'none';
+const theme: Theme = 'light';
+const container: Container = 'none';
 
 function App() {
   function setTheme(theme: Theme) {
@@ -17,7 +19,13 @@ function App() {
   setTheme(theme);
 
   const generatedComponent = useMemo(() => {
-    return <BookMoodApp />;
+    return (
+      <BrowserRouter>
+        <AuthProvider>
+          <AppRouter />
+        </AuthProvider>
+      </BrowserRouter>
+    );
   }, []);
 
   if (container === 'centered') {

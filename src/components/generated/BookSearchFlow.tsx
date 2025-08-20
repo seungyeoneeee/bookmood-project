@@ -506,6 +506,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
           <p className="text-sm text-gray-600 mb-6">책을 읽으며 느낀 감정들을 선택해주세요 (복수 선택 가능)</p>
           
           <div className="space-y-4">
+          dddd
             {emotionCategories.map(category => <div key={category.id} className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <div className={`p-2 rounded-lg ${category.color} border`}>

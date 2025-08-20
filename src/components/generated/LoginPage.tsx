@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Book, Heart, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 export interface LoginPageProps {
   onLogin?: (provider: 'google' | 'apple' | 'email', credentials?: {
     email: string;
@@ -16,30 +18,92 @@ export default function LoginPage({
   onBack,
   onSignUp
 }: LoginPageProps) {
+  const { signIn, signUp } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isSignUpMode, setIsSignUpMode] = useState(false);
   const handleSocialLogin = async (provider: 'google' | 'apple') => {
+    if (provider === 'apple') {
+      // Apple 로그인은 아직 구현되지 않음
+      alert('Apple 로그인은 곧 지원될 예정입니다.');
+      return;
+    }
+
     setIsLoading(provider);
-    // Simulate loading
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        }
+      });
+      
+      if (error) {
+        setError('구글 로그인 중 오류가 발생했습니다: ' + error.message);
+        setIsLoading(null);
+      } else {
+        // OAuth 리다이렉션이 시작되므로 로딩 상태는 자동으로 해제됨
+        console.log('구글 로그인 리다이렉션 시작');
+      }
+    } catch (err) {
+      setError('구글 로그인 연결에 실패했습니다.');
       setIsLoading(null);
-      onLogin?.(provider);
-    }, 1500);
+      console.error('구글 로그인 오류:', err);
+    }
   };
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) return;
+    
     setIsLoading('email');
-    // Simulate loading
-    setTimeout(() => {
+    setError(null);
+    
+    try {
+      const { error } = await signIn(email, password);
+      
+      if (error) {
+        setError(error.message);
+        setIsLoading(null);
+      } else {
+        // 로그인 성공
+        onLogin?.('email', { email, password });
+        setIsLoading(null);
+      }
+    } catch (err) {
+      setError('로그인 중 오류가 발생했습니다.');
       setIsLoading(null);
-      onLogin?.('email', {
-        email,
-        password
-      });
-    }, 1500);
+    }
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+    
+    setIsLoading('email');
+    setError(null);
+    
+    try {
+      const { error } = await signUp(email, password);
+      
+      if (error) {
+        setError(error.message);
+        setIsLoading(null);
+      } else {
+        // 회원가입 성공
+        setError(null);
+        alert('회원가입 성공! 이메일을 확인해서 인증을 완료해주세요.');
+        setIsSignUpMode(false);
+        setIsLoading(null);
+      }
+    } catch (err) {
+      setError('회원가입 중 오류가 발생했습니다.');
+      setIsLoading(null);
+    }
   };
 
   // Animation variants
@@ -132,10 +196,10 @@ export default function LoginPage({
                 {/* Welcome Text */}
                 <motion.div variants={itemVariants} className="text-center mb-8">
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    다시 만나서 반가워요
+                    {isSignUpMode ? '북무드에 오신 것을 환영해요' : '다시 만나서 반가워요'}
                   </h2>
                   <p className="text-gray-600">
-                    독서 여정을 계속해보세요
+                    {isSignUpMode ? '당신만의 독서 여정을 시작해보세요' : '독서 여정을 계속해보세요'}
                   </p>
                 </motion.div>
 
@@ -192,7 +256,7 @@ export default function LoginPage({
                 </motion.div>
 
                 {/* Email Login Form */}
-                <motion.form variants={itemVariants} onSubmit={handleEmailLogin} className="space-y-4">
+                <motion.form variants={itemVariants} onSubmit={isSignUpMode ? handleSignUp : handleEmailLogin} className="space-y-4">
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-gray-700">
                       이메일
@@ -212,6 +276,17 @@ export default function LoginPage({
                     </div>
                   </div>
 
+                  {/* Error Message */}
+                  {error && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
+
                   <button type="submit" disabled={isLoading !== null || !email || !password} className="w-full h-12 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] hover:from-[#9AA8E5] hover:to-[#7DA8E5] text-white font-medium shadow-lg relative overflow-hidden group rounded-lg flex items-center justify-center disabled:opacity-50">
                     {isLoading === 'email' ? <motion.div animate={{
                     rotate: 360
@@ -219,7 +294,7 @@ export default function LoginPage({
                     duration: 1,
                     repeat: Infinity,
                     ease: "linear"
-                  }} className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" /> : '로그인'}
+                  }} className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full" /> : (isSignUpMode ? '회원가입' : '로그인')}
                     <motion.div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full" transition={{
                     duration: 0.6
                   }} />
@@ -233,10 +308,35 @@ export default function LoginPage({
                   </button>
                   
                   <div className="text-sm text-gray-600">
-                    계정이 없으신가요?{' '}
-                    <button type="button" onClick={onSignUp} className="text-[#A8B5E8] hover:text-[#8BB5E8] font-medium transition-colors">
-                      회원가입
-                    </button>
+                    {isSignUpMode ? (
+                      <>
+                        이미 계정이 있으신가요?{' '}
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setIsSignUpMode(false);
+                            setError(null);
+                          }} 
+                          className="text-[#A8B5E8] hover:text-[#8BB5E8] font-medium transition-colors"
+                        >
+                          로그인
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        계정이 없으신가요?{' '}
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            setIsSignUpMode(true);
+                            setError(null);
+                          }} 
+                          className="text-[#A8B5E8] hover:text-[#8BB5E8] font-medium transition-colors"
+                        >
+                          회원가입
+                        </button>
+                      </>
+                    )}
                   </div>
                 </motion.div>
               </div>
@@ -245,7 +345,7 @@ export default function LoginPage({
             {/* Trust Indicators */}
             <motion.div variants={itemVariants} className="mt-6 text-center">
               <p className="text-xs text-gray-500 leading-relaxed">
-                로그인하면 BookMood의{' '}
+                {isSignUpMode ? '회원가입하면' : '로그인하면'} BookMood의{' '}
                 <span className="text-[#A8B5E8] hover:underline cursor-pointer">이용약관</span>과{' '}
                 <span className="text-[#A8B5E8] hover:underline cursor-pointer">개인정보처리방침</span>에<br />
                 동의하는 것으로 간주됩니다.

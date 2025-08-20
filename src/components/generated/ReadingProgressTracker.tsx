@@ -32,11 +32,13 @@ interface ReadingProgressTrackerProps {
   };
   onBack: () => void;
   onComplete?: (progress: ReadingProgress) => void;
+  onProgressUpdate?: (isbn13: string, currentPage: number, totalPages: number, notes: ReadingNote[]) => void;
 }
 const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   bookData,
   onBack,
-  onComplete
+  onComplete,
+  onProgressUpdate
 }) => {
   const [progress, setProgress] = useState<ReadingProgress>({
     id: Date.now().toString(),
@@ -63,11 +65,17 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   const updateCurrentPage = () => {
     const page = parseInt(currentPageInput);
     if (page >= 0 && page <= progress.totalPages) {
-      setProgress(prev => ({
-        ...prev,
+      const newProgress = {
+        ...progress,
         currentPage: page,
         lastReadDate: new Date()
-      }));
+      };
+      setProgress(newProgress);
+      
+      // 실시간으로 진행 상태를 데이터베이스에 저장
+      if (onProgressUpdate) {
+        onProgressUpdate(bookData.id, page, progress.totalPages, progress.notes);
+      }
     }
   };
   const addNote = () => {
@@ -80,10 +88,17 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
       content: newNoteContent.trim(),
       createdAt: new Date()
     };
+    const updatedNotes = [...progress.notes, newNote].sort((a, b) => a.page - b.page);
     setProgress(prev => ({
       ...prev,
-      notes: [...prev.notes, newNote].sort((a, b) => a.page - b.page)
+      notes: updatedNotes
     }));
+    
+    // 메모 추가 시에도 데이터베이스에 저장
+    if (onProgressUpdate) {
+      onProgressUpdate(bookData.id, progress.currentPage, progress.totalPages, updatedNotes);
+    }
+    
     setNewNoteContent('');
     setNewNotePage('');
     setIsAddingNote(false);

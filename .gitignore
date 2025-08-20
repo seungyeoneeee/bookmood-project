@@ -12,13 +12,76 @@ dist
 dist-ssr
 *.local
 
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+
+# Testing
+/coverage
+*.lcov
+.nyc_output
+junit.xml
+
+# Cache directories
+.cache
+.parcel-cache
+.eslintcache
+.stylelintcache
+.vite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*~
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+.temp/
+temp/
+
+# Package manager locks (선택사항 - 팀 정책에 따라)
+# package-lock.json
+# yarn.lock
+
+# Database and backup files
+*.db
+*.sqlite
+*.sqlite3
+backup/
+*.bak
+
+# Build and deployment
+build/
+out/
+.vercel
+.netlify
+
+# Scripts output (임시 스크립트 결과 파일들)
+scripts/output/
+scripts/temp/
+*.cjs.temp
+
+# Supabase (필요시)
+# supabase/.env

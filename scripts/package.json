@@ -1,0 +1,19 @@
+{
+  "name": "bookmood-batch-scripts",
+  "version": "1.0.0",
+  "description": "BookMood 배치 스크립트",
+  "type": "module",
+  "scripts": {
+    "sync-books": "node batch-book-sync.js",
+    "sync-books:dev": "node --inspect batch-book-sync.js",
+    "sync-books-rls": "node bypass-rls-sync.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0"
+  }
+}

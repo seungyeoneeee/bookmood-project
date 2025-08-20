@@ -270,10 +270,10 @@ const BookSearchAndFilter: React.FC<BookSearchAndFilterProps> = ({
     filtered.sort((a, b) => {
       switch (sortType) {
         case 'relevance':
-          if (selectedFilterEmotions.length === 0) return 0;
+          { if (selectedFilterEmotions.length === 0) return 0;
           const aScore = selectedFilterEmotions.reduce((sum, emotion) => sum + (a.emotionScores?.[emotion] || 0), 0);
           const bScore = selectedFilterEmotions.reduce((sum, emotion) => sum + (b.emotionScores?.[emotion] || 0), 0);
-          return bScore - aScore;
+          return bScore - aScore; }
         case 'rating':
           return (b.averageRating || 0) - (a.averageRating || 0);
         case 'readers':
