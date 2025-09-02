@@ -17,7 +17,7 @@ dotenv.config({ path: '../.env' });
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 // 알라딘 API 설정 (.env 파일에서 읽어오기)
-const ALADIN_API_KEY = process.env.VITE_ALADIN_API_KEY;
+const ALADIN_API_KEY = process.env.VITE_ALADIN_API_KEY || process.env.ALADIN_API_KEY;
 const ALADIN_BASE_URL = 'http://www.aladin.co.kr/ttb/api/ItemList.aspx';
 
 console.log('🔧 환경변수 확인:', {
@@ -26,13 +26,31 @@ console.log('🔧 환경변수 확인:', {
   aladinApiKey: ALADIN_API_KEY ? '설정됨' : '없음'
 });
 
+console.log('🔍 디버그 정보:', {
+  'GitHub Actions 환경': process.env.GITHUB_ACTIONS || 'false',
+  '사용 가능한 env 키들': Object.keys(process.env).filter(key => 
+    key.includes('SUPABASE') || key.includes('ALADIN') || key.includes('VITE')
+  )
+});
+
 if (!supabaseUrl || !supabaseKey) {
   console.error('❌ Supabase 환경변수가 설정되지 않았습니다.');
+  console.log('📋 필요한 GitHub Secrets:');
+  console.log('  - VITE_SUPABASE_URL');
+  console.log('  - VITE_SUPABASE_ANON_KEY'); 
+  console.log('  - ALADIN_API_KEY');
+  console.log('');
+  console.log('🔧 현재 상태:', {
+    supabaseUrl: supabaseUrl || '❌ 없음',
+    supabaseKey: supabaseKey || '❌ 없음', 
+    aladinApiKey: ALADIN_API_KEY || '❌ 없음'
+  });
   process.exit(1);
 }
 
 if (!ALADIN_API_KEY) {
-  console.error('❌ 알라딘 API 키가 설정되지 않았습니다. VITE_ALADIN_API_KEY를 확인해주세요.');
+  console.error('❌ 알라딘 API 키가 설정되지 않았습니다.');
+  console.log('💡 GitHub Secrets에서 ALADIN_API_KEY를 확인해주세요.');
   process.exit(1);
 }
 
