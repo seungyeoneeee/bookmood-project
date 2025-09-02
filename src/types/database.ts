@@ -103,8 +103,13 @@ export interface UpdateLibraryItemInput {
 
 export interface CreateReviewInput {
   isbn13: string;
+  user_id?: string;
   read_date?: string;
   memo: string;
+  // 🆕 감성 분석 기능을 위한 추가 필드들 (배열로 수정)
+  emotions?: string[];
+  mood_summary?: string;
+  rating?: number;
 }
 
 export interface UpdateReviewInput {

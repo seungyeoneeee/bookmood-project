@@ -589,7 +589,7 @@ const EmotionFilterPage: React.FC<EmotionFilterPageProps> = ({
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   onClick={() => handleBookClick(book)}
-                  className="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                  className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer hover:border-gray-300"
                 >
                   <div className="flex space-x-4">
                     <img 
@@ -601,8 +601,8 @@ const EmotionFilterPage: React.FC<EmotionFilterPageProps> = ({
                       }}
                     />
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-800 mb-1 line-clamp-2">{book.title}</h3>
-                      <p className="text-gray-600 text-sm mb-2">{book.author}</p>
+                      <h3 className="font-semibold text-gray-800 mb-1.5 line-clamp-2 leading-snug">{book.title}</h3>
+                      <p className="text-gray-600 text-sm mb-3 font-medium">{book.author}</p>
                       
                       <div className="flex items-center space-x-3 mb-3">
                         {rating && (
@@ -640,24 +640,48 @@ const EmotionFilterPage: React.FC<EmotionFilterPageProps> = ({
                         </div>
                       )}
 
-                      {/* Actions */}
-                      <div className="flex items-center justify-between">
-                        <div className="text-xs text-gray-500">
-                          {book.publisher} • {publishYear}
+                      {/* Category & Publisher Info */}
+                      <div className="space-y-2">
+                        {/* Category Tag */}
+                        {book.category_name && (
+                          <div className="flex items-center">
+                            <span className="inline-flex items-center px-2.5 py-1 bg-gradient-to-r from-[#A8B5E8]/20 to-[#B5D4C8]/20 text-[#6366F1] text-xs font-medium rounded-full border border-[#A8B5E8]/30">
+                              {book.category_name}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Publisher & Year + Wishlist */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3 text-xs text-gray-500">
+                            {book.publisher && (
+                              <div className="flex items-center space-x-1">
+                                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                                <span>{book.publisher}</span>
+                              </div>
+                            )}
+                            {publishYear && (
+                              <div className="flex items-center space-x-1">
+                                <Calendar className="w-3 h-3 text-gray-400" />
+                                <span>{publishYear}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onWishlistToggle?.(book);
+                            }}
+                            className={`flex-shrink-0 p-2 rounded-full transition-all duration-200 ${
+                              wishlistBooks.includes(book.isbn13)
+                                ? 'bg-red-100 text-red-500 scale-110' 
+                                : 'bg-gray-100 text-gray-400 hover:bg-gray-200 hover:scale-105'
+                            }`}
+                          >
+                            <Heart className={`w-4 h-4 ${wishlistBooks.includes(book.isbn13) ? 'fill-current' : ''}`} />
+                          </button>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onWishlistToggle?.(book);
-                          }}
-                          className={`p-2 rounded-full transition-colors ${
-                            wishlistBooks.includes(book.isbn13)
-                              ? 'bg-red-100 text-red-500' 
-                              : 'bg-gray-100 text-gray-400 hover:bg-gray-200'
-                          }`}
-                        >
-                          <Heart className={`w-4 h-4 ${wishlistBooks.includes(book.isbn13) ? 'fill-current' : ''}`} />
-                        </button>
                       </div>
                     </div>
                   </div>

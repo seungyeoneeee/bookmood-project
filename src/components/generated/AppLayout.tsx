@@ -10,7 +10,7 @@ interface User {
   email: string;
   avatar?: string;
 }
-type ViewType = 'login' | 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter' | 'reading-progress';
+type ViewType = 'login' | 'home' | 'search' | 'archive' | 'mood-detail' | 'settings' | 'wishlist' | 'emotion-stats' | 'emotion-filter' | 'reading-progress' | 'completed';
 interface AppLayoutProps {
   children: React.ReactNode;
   currentView: ViewType;
@@ -41,6 +41,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({
     label: '찜한책',
     icon: Heart,
     color: '#F4E4B8'
+  }, {
+    id: 'completed',
+    label: '내도서관',
+    icon: Book,
+    color: '#D4B5E8'
   }, {
     id: 'settings',
     label: '설정',
@@ -80,7 +85,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                       initial={{ opacity: 0, y: -20 }} 
                       animate={{ opacity: 1, y: 0 }} 
                       transition={{ delay: index * 0.1 }} 
-                      onClick={() => onViewChange(item.id as ViewType)} 
+                      onClick={() => {
+                        if (item.id === 'completed') {
+                          window.location.href = '/completed';
+                        } else {
+                          onViewChange(item.id as ViewType);
+                        }
+                      }} 
                       className={`
                         relative flex items-center space-x-2 px-4 py-2.5 rounded-xl 
                         transition-all duration-300 ease-in-out group
@@ -174,7 +185,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({
                     initial={{ opacity: 0, y: 20 }} 
                     animate={{ opacity: 1, y: 0 }} 
                     transition={{ delay: index * 0.1 }} 
-                    onClick={() => onViewChange(item.id as ViewType)} 
+                    onClick={() => {
+                      if (item.id === 'completed') {
+                        window.location.href = '/completed';
+                      } else {
+                        onViewChange(item.id as ViewType);
+                      }
+                    }} 
                     className={`
                       relative flex flex-col items-center space-y-1 px-3 py-2 rounded-xl 
                       transition-all duration-300 ease-in-out group min-w-0 flex-1

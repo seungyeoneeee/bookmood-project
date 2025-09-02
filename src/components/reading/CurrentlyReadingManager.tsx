@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, BookOpen, Search, Clock, BarChart3, Calendar, Star, Heart, CheckCircle, PlayCircle, PauseCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import SearchInput from '../common/SearchInput';
+import * as libraryApi from '../../api/library';
 
 export interface ReadingBook {
   id: string;
@@ -28,25 +29,31 @@ interface CurrentlyReadingManagerProps {
   onBookSelect?: (book: ReadingBook) => void;
   readingBooks?: ReadingBook[];
   onReadingUpdate?: () => void;
+  user?: { id: string };
 }
 
 const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
   onBack,
   onBookSelect,
   readingBooks: externalReadingBooks = [],
-  onReadingUpdate
+  onReadingUpdate,
+  user
 }) => {
   const navigate = useNavigate();
   
   // State
   const [localReadingBooks, setLocalReadingBooks] = useState<ReadingBook[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortType, setSortType] = useState<'recent' | 'progress' | 'title' | 'started'>('recent');
   const [filterStatus, setFilterStatus] = useState<'all' | 'reading' | 'paused'>('all');
 
   // 외부에서 받은 읽고 있는 책 데이터 사용
   useEffect(() => {
+    setIsLoading(true);
     setLocalReadingBooks(externalReadingBooks);
+    // 데이터 로딩이 완료되면 로딩 상태 해제
+    setTimeout(() => setIsLoading(false), 100);
   }, [externalReadingBooks]);
 
   // Filtered and sorted books
@@ -97,6 +104,61 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
   const handleContinueReading = (book: ReadingBook, e: React.MouseEvent) => {
     e.stopPropagation();
     navigate(`/books/${book.id}/progress`);
+  };
+
+  // 상태 토글 함수
+  const handleToggleStatus = async (book: ReadingBook, e: React.MouseEvent) => {
+    e.stopPropagation(); // 부모 클릭 이벤트 방지
+    
+    const originalBook = book;
+    const newStatus = book.status === 'reading' ? 'paused' : 'reading';
+    
+    console.log(`📖 책 상태 변경 시작: ${book.title} -> ${newStatus}`);
+    
+    if (!user?.id) {
+      console.warn('❌ 사용자 인증 정보 없음');
+      return;
+    }
+    
+    try {
+      // 1. 로컬 상태 먼저 업데이트 (즉시 UI 반영)
+      setLocalReadingBooks(prev => prev.map(b => 
+        b.id === book.id ? { ...b, status: newStatus } : b
+      ));
+      
+      // 2. API 호출 - 데이터베이스 업데이트
+      const { data: libraryItem } = await libraryApi.getLibraryItemByIsbn(book.id, user.id);
+      if (!libraryItem) {
+        throw new Error('해당 책의 라이브러리 아이템을 찾을 수 없음');
+      }
+      
+      const updateResult = await libraryApi.updateLibraryItem(libraryItem.id, { 
+        shelf_status: newStatus 
+      });
+      
+      if (updateResult.error) {
+        throw updateResult.error;
+      }
+      
+      console.log(`✅ 데이터베이스 업데이트 완료: ${book.title} -> ${newStatus}`);
+      
+      // 3. 전체 목록 새로고침 - 서버에서 최신 데이터 가져오기
+      if (onReadingUpdate) {
+        await onReadingUpdate();
+        console.log('📚 전체 목록 새로고침 완료');
+      }
+      
+    } catch (error) {
+      console.error('❌ 상태 변경 실패:', error);
+      
+      // 4. 실패 시 원래 상태로 롤백
+      setLocalReadingBooks(prev => prev.map(b => 
+        b.id === book.id ? originalBook : b
+      ));
+      
+      // 사용자에게 알림
+      alert(`상태 변경에 실패했습니다: ${error instanceof Error ? error.message : String(error)}`);
+    }
   };
 
   const handleViewStats = (book: ReadingBook, e: React.MouseEvent) => {
@@ -209,7 +271,7 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
               <span className="text-sm text-gray-700 font-medium">정렬:</span>
               <select
                 value={sortType}
-                onChange={(e) => setSortType(e.target.value as any)}
+                onChange={(e) => setSortType(e.target.value as 'recent' | 'progress' | 'title' | 'started')}
                 className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#A8B5E8] w-full sm:w-auto"
               >
                 <option value="recent">최근 읽은 순</option>
@@ -221,8 +283,16 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
           </div>
         </div>
 
-        {/* Reading List */}
-        {filteredBooks.length > 0 ? (
+        {/* Loading State */}
+        {isLoading ? (
+          <div className="flex justify-center items-center py-16">
+            <div className="w-8 h-8 border-2 border-[#A8B5E8] border-t-transparent rounded-full animate-spin"></div>
+            <span className="ml-3 text-gray-600">읽고 있는 책을 불러오는 중...</span>
+          </div>
+        ) : (
+          <>
+            {/* Reading List */}
+            {filteredBooks.length > 0 ? (
           <div className="space-y-4">
             {filteredBooks.map((book, index) => (
               <motion.div
@@ -291,6 +361,21 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
                       
                       <div className="flex items-center space-x-2">
                         <button
+                          onClick={(e) => handleToggleStatus(book, e)}
+                          className={`p-1.5 rounded-lg transition-colors ${
+                            book.status === 'reading'
+                              ? 'bg-green-100 text-green-600 hover:bg-green-200'
+                              : 'bg-yellow-100 text-yellow-600 hover:bg-yellow-200'
+                          }`}
+                          title={book.status === 'reading' ? '일시 정지' : '읽기 재개'}
+                        >
+                          {book.status === 'reading' ? (
+                            <PauseCircle className="w-4 h-4" />
+                          ) : (
+                            <PlayCircle className="w-4 h-4" />
+                          )}
+                        </button>
+                        <button
                           onClick={(e) => handleViewStats(book, e)}
                           className="p-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors"
                         >
@@ -344,6 +429,8 @@ const CurrentlyReadingManager: React.FC<CurrentlyReadingManagerProps> = ({
               </button>
             </div>
           </div>
+        )}
+          </>
         )}
       </div>
     </motion.div>

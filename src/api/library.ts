@@ -134,8 +134,8 @@ export async function addLibraryItem(input: CreateLibraryItemInput) {
     if (existingItem) {
       // 2. 기존 레코드가 있으면 업데이트
       console.log('🔄 기존 레코드 업데이트 중...');
+      // is_wishlist는 업데이트할 수 없음 (CreateLibraryItemInput에만 존재)
       return await updateLibraryItem(existingItem.id, {
-        is_wishlist: input.is_wishlist,
         shelf_status: input.shelf_status,
         progress: input.progress,
         started_at: input.started_at,
@@ -185,7 +185,7 @@ async function getCurrentUserId(): Promise<string> {
 // 도서관 아이템 수정
 export async function updateLibraryItem(id: string, input: UpdateLibraryItemInput) {
   try {
-    const updateData: any = {
+    const updateData: Record<string, string | number | boolean> = {
       ...input,
       updated_at: new Date().toISOString(),
     };
@@ -229,7 +229,7 @@ export async function removeFromLibrary(id: string) {
   }
 }
 
-// 읽고 있는 책 목록
+// 읽고 있는 책 목록 (reading + paused 포함)
 export async function getCurrentlyReading(userId?: string) {
   try {
     let query = supabase
@@ -239,7 +239,7 @@ export async function getCurrentlyReading(userId?: string) {
         book:book_external!library_items_isbn13_fkey(*)
       `)
       .eq('is_wishlist', false) // 🆕 실제 읽고 있는 책만
-      .eq('shelf_status', 'reading')
+      .in('shelf_status', ['reading', 'paused']) // 🆕 읽는 중과 잠시 멈춤 모두 포함
       .order('updated_at', { ascending: false });
 
     if (userId) {
@@ -256,10 +256,34 @@ export async function getCurrentlyReading(userId?: string) {
   }
 }
 
-// 완료한 책 목록
+// 🆕 완독한 책 목록 조회
 export async function getCompletedBooks(userId?: string) {
-  return getLibraryItems(userId, 'completed');
+  try {
+    let query = supabase
+      .from('library_items')
+      .select(`
+        *,
+        book:book_external!library_items_isbn13_fkey(*)
+      `)
+      .eq('is_wishlist', false)
+      .eq('shelf_status', 'completed')
+      .order('finished_at', { ascending: false });
+
+    if (userId) {
+      query = query.eq('user_id', userId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error fetching completed books:', error);
+    return { data: null, error };
+  }
 }
+
+// (중복 제거됨 - 위에 더 자세한 구현이 있음)
 
 // 읽고 싶은 책 목록 (위시리스트)
 export async function getWishlist(userId?: string) {

@@ -58,23 +58,86 @@ export async function getReviewByIsbn(isbn13: string, userId?: string) {
 // 리뷰 작성
 export async function createReview(input: CreateReviewInput) {
   try {
+    console.log('🔍 리뷰 생성 시작:', input);
+
+    // 현재 인증된 사용자 확인
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    console.log('👤 현재 사용자:', user?.id);
+
+    if (authError || !user) {
+      throw new Error('사용자 인증이 필요합니다.');
+    }
+
+    // user_id 필수 확인 및 설정
+    const userId = input.user_id || user.id;
+    if (!userId) {
+      throw new Error('사용자 ID가 필요합니다.');
+    }
+
+    // 기본 리뷰 데이터 구성
+    const insertData = {
+      user_id: userId, // 필수 필드
+      isbn13: input.isbn13,
+      read_date: input.read_date || new Date().toISOString(),
+      memo: input.memo,
+    };
+
+    console.log('💾 저장할 데이터:', insertData);
+
     const { data, error } = await supabase
       .from('reviews')
-      .insert({
-        isbn13: input.isbn13,
-        read_date: input.read_date,
-        memo: input.memo,
-      })
+      .insert(insertData)
       .select(`
         *,
         book:book_external!reviews_isbn13_fkey(*)
       `)
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error('❌ 리뷰 저장 실패:', error);
+      // RLS 정책 에러 확인
+      if (error.message?.includes('row-level security') || error.code === '42501') {
+        throw new Error('리뷰 작성 권한이 없습니다. 로그인 상태를 확인해주세요.');
+      }
+      throw error;
+    }
+
+    console.log('✅ 리뷰 저장 성공:', data);
+
+    // 📊 감정 데이터가 있으면 별도 테이블에 저장
+    if (data && input.emotions && Array.isArray(input.emotions) && input.emotions.length > 0) {
+      try {
+        console.log('💭 감정 데이터 저장 중:', input.emotions);
+        
+        const emotionInserts = input.emotions
+          .filter(emotion => emotion && emotion.trim()) // 빈 값 제거
+          .map((emotion: string) => ({
+            review_id: data.id,
+            emotion: emotion.trim(),
+            score: 1, // 기본 점수
+            source: 'ai' // AI 분석 결과
+          }));
+
+        if (emotionInserts.length > 0) {
+          const { error: emotionError } = await supabase
+            .from('review_emotions')
+            .insert(emotionInserts);
+          
+          if (emotionError) {
+            console.warn('감정 데이터 저장 실패:', emotionError);
+          } else {
+            console.log('✅ 감정 데이터 저장 성공');
+          }
+        }
+      } catch (emotionError) {
+        console.warn('감정 데이터 저장 예외:', emotionError);
+        // 감정 저장 실패해도 리뷰는 성공으로 처리
+      }
+    }
+
     return { data, error: null };
   } catch (error) {
-    console.error('Error creating review:', error);
+    console.error('❌ createReview 예외:', error);
     return { data: null, error };
   }
 }

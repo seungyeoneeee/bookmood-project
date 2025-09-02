@@ -8,6 +8,8 @@ import * as booksApi from '../api/books';
 import * as libraryApi from '../api/library';
 import { aladinApi } from '../services/aladinApi';
 import { ReadingBook } from './reading/CurrentlyReadingManager';
+import * as reviewsApi from '../api/reviews';
+import { analyzeEmotionsWithGPT, validateOpenAIKey } from '../services/openaiApi';
 
 // Import existing components
 import AppLayout from './generated/AppLayout';
@@ -29,6 +31,9 @@ import BookReviewPage from './books/BookReviewPage';
 
 // Import reading components
 import CurrentlyReadingManager from './reading/CurrentlyReadingManager';
+
+// Import library components
+import CompletedBooksManager from './library/CompletedBooksManager';
 
 // Import test components
 import SupabaseTest from './test/SupabaseTest';
@@ -141,7 +146,10 @@ const EmotionStatsRoute: React.FC = () => {
   return <BookEmotionStats bookData={mockBookEmotionData} onBack={() => navigate(-1)} />;
 };
 
-const ReadingProgressRoute: React.FC = () => {
+const ReadingProgressRoute: React.FC<{ 
+  loadReadingBooks: () => Promise<void>;
+  onReviewWrite: (isbn13: string) => void;
+}> = ({ loadReadingBooks, onReviewWrite }) => {
   const { bookId } = useParams<{ bookId: string }>(); // 실제로는 ISBN13
   const navigate = useNavigate();
   const [bookData, setBookData] = useState<{ id: string; title: string; author: string; cover: string; pages: number } | null>(null);
@@ -231,7 +239,7 @@ const ReadingProgressRoute: React.FC = () => {
       });
       
       // 현재 progress 상태에서 shelf_status 결정 (기본값은 reading)
-      let shelfStatus = 'reading';
+      let shelfStatus: 'reading' | 'completed' | 'paused' = 'reading';
       if (progressPercentage === 100) {
         shelfStatus = 'completed';
       } else {
@@ -253,6 +261,9 @@ const ReadingProgressRoute: React.FC = () => {
         console.error('❌ 데이터베이스 저장 실패:', result.error);
       } else {
         console.log(`✅ 진행 상태 저장 성공: ${progressPercentage}% (${currentPage}/${totalPages}) - 메모 ${notes.length}개`);
+        
+        // 읽고 있는 책 목록 실시간 업데이트
+        await loadReadingBooks();
       }
     } catch (error) {
       console.error('❌ handleProgressUpdate 예외:', error);
@@ -274,6 +285,10 @@ const ReadingProgressRoute: React.FC = () => {
       });
       
       console.log('독서 완료 기록이 저장되었습니다!');
+      
+      // 읽고 있는 책 목록에서 제거 (완료된 책이므로)
+      await loadReadingBooks();
+      
       navigate('/archive');
     } catch (error) {
       console.error('독서 완료 기록 저장 실패:', error);
@@ -309,6 +324,8 @@ const ReadingProgressRoute: React.FC = () => {
       onBack={() => navigate(-1)} 
       onComplete={handleComplete}
       onProgressUpdate={handleProgressUpdate}
+      onStatusUpdate={loadReadingBooks} // 🆕 상태 변경 시 목록 새로고침
+      onReviewWrite={onReviewWrite} // 🆕 감상문 작성 콜백
       user={user ? { id: user.id } : undefined}
     />
   );
@@ -657,7 +674,7 @@ const AppRouter: React.FC = () => {
             lastReadAt: new Date(item.updated_at),
             notes: item.note || '',
             status: item.shelf_status === 'paused' ? 'paused' as const : 'reading' as const,
-            currentPage: Math.floor((item.progress || 0) * 3), // 임시 계산
+            currentPage: Math.round((item.progress || 0) * 300 / 100), // 정확한 페이지 계산
             totalPages: 300 // 기본값
           }));
         
@@ -891,26 +908,437 @@ const AppRouter: React.FC = () => {
     }
   };
 
-  const handleReviewSubmit = (bookData: BookData, reviewText: string, selectedEmotions: string[]) => {
-    const mockAnalysis = {
-      emotions: selectedEmotions.length > 0 ? selectedEmotions : ['inspired', 'curious', 'satisfied'],
-      topics: ['learning', 'discovery', 'knowledge'],
-      moodSummary: 'This reading experience sparked your intellectual curiosity and left you feeling enriched with new perspectives.'
-    };
+  const handleReviewSubmit = async (bookData: BookExternal, reviewText: string, selectedEmotions: string[]) => {
+    if (!user?.id) {
+      console.error('❌ 사용자가 인증되지 않음');
+      alert('로그인이 필요합니다.');
+      return;
+    }
 
-    const newReview: ReviewData = {
-      id: Date.now().toString(),
-      bookId: bookData.id,
-      review: reviewText,
-      emotions: mockAnalysis.emotions,
-      topics: mockAnalysis.topics,
-      moodSummary: mockAnalysis.moodSummary,
-      createdAt: new Date(),
-      moodCardUrl: `/api/mood-cards/${Date.now()}`
-    };
+    console.log('👤 리뷰 제출 사용자:', { userId: user.id, email: user.email });
 
-    setReviews(prev => [...prev, newReview]);
-    navigate('/archive');
+    try {
+      console.log('📝 독후감 제출 중:', { 
+        bookTitle: bookData.title, 
+        reviewLength: reviewText.length, 
+        emotionsCount: selectedEmotions.length
+      });
+
+      // 🤖 향상된 로컬 감성 분석 (OpenAI API 사용량 한도로 인해 일시적으로 비활성화)
+      console.log('🏠 향상된 로컬 키워드 기반 감성 분석 사용');
+      
+      let aiAnalysis;
+      
+      try {
+        // 강화된 로컬 분석 함수 호출
+        aiAnalysis = analyzeEmotionsWithEnhancedAI(reviewText, selectedEmotions, bookData.summary, bookData.title);
+        
+        console.log('✅ 향상된 로컬 감성 분석 완료');
+        
+      } catch (localError) {
+        console.error('❌ 로컬 분석 실패:', localError);
+        // 최강 fallback - 절대 실패하지 않음
+        aiAnalysis = createSafeAnalysisFallback(reviewText, selectedEmotions, bookData.title);
+      }
+      
+      // 📊 콘솔에 AI 분석 결과 출력
+      console.log('🤖 AI 감성 분석 결과:', {
+        '사용자 선택 감정': selectedEmotions,
+        '책 줄거리 감정': aiAnalysis.bookEmotions || [],
+        '최종 감정 목록': aiAnalysis.dominantEmotions,
+        '감정 점수': aiAnalysis.analysisScore,
+        '무드 요약': aiAnalysis.moodSummary
+      });
+      
+      // 📊 무드 카드 생성 데이터
+      const moodCardData = {
+        bookId: bookData.isbn13,
+        bookTitle: bookData.title,
+        bookAuthor: bookData.author || '작가 미상',
+        bookCover: bookData.cover_url,
+        reviewText: reviewText,
+        selectedEmotions: selectedEmotions,
+        aiAnalysis: aiAnalysis,
+        createdAt: new Date().toISOString()
+      };
+
+      // 🔥 실제 데이터베이스 저장 (리뷰 API 호출)
+      const reviewResult = await createReview({
+        isbn13: bookData.isbn13,
+        user_id: user.id, // 사용자 ID 추가
+        memo: reviewText,
+        emotions: [...selectedEmotions, ...(Array.isArray(aiAnalysis.dominantEmotions) ? aiAnalysis.dominantEmotions : []), ...(Array.isArray(aiAnalysis.bookEmotions) ? aiAnalysis.bookEmotions : [])], // 배열로 전달
+        mood_summary: aiAnalysis.moodSummary,
+        rating: aiAnalysis.overallRating
+      });
+
+      if (reviewResult.error) {
+        const errorMsg = reviewResult.error instanceof Error ? reviewResult.error.message : String(reviewResult.error);
+        console.error('💀 데이터베이스 저장 실패:', reviewResult.error);
+        
+        // 사용자 친화적인 에러 메시지
+        if (errorMsg.includes('권한') || errorMsg.includes('row-level security')) {
+          throw new Error('리뷰 작성 권한이 없습니다. 다시 로그인해보세요.');
+        } else if (errorMsg.includes('foreign key') || errorMsg.includes('isbn13')) {
+          throw new Error('책 정보를 찾을 수 없습니다. 다른 책을 선택해주세요.');
+        }
+        
+        throw new Error('데이터베이스 저장 실패: ' + errorMsg);
+      }
+
+      // 🎉 성공 처리
+      const newReview: ReviewData = {
+        id: reviewResult.data?.id || Date.now().toString(),
+        bookId: bookData.isbn13,
+        review: reviewText,
+        emotions: aiAnalysis.dominantEmotions,
+        topics: aiAnalysis.topics,
+        moodSummary: aiAnalysis.moodSummary,
+        createdAt: new Date(),
+        moodCardUrl: `/mood-cards/${reviewResult.data?.id || Date.now()}`
+      };
+
+      setReviews(prev => [...prev, newReview]);
+      
+      console.log('✅ 독후감 및 무드 카드 생성 완료!');
+      
+      // 성공 메시지
+      alert('🎉 감상문이 성공적으로 저장되었습니다!');
+      navigate('/archive');
+
+    } catch (error) {
+      console.error('❌ 독후감 제출 실패:', error);
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
+      alert(`감상문 저장 실패: ${errorMessage}\n\n문제가 지속되면 다시 로그인해보세요.`);
+    }
+  };
+
+  // 📚 책 줄거리 AI 감성 분석 함수
+  const analyzeBookSummaryEmotions = (summary: string): string[] => {
+    if (!summary || summary.length < 20) return [];
+    
+    const emotionPatterns = {
+      '기쁨': ['행복', '즐거', '웃음', '축하', '성공', '사랑', '따뜻', '밝은', '희망', '꿈', '승리', '친구'],
+      '슬픔': ['눈물', '이별', '죽음', '상실', '그리움', '아픔', '슬프', '우울', '고독', '외로', '헤어짐', '상처'],
+      '분노': ['화나', '복수', '분노', '싸움', '갈등', '적', '배신', '불공정', '억울', '증오', '격노', '항의'],
+      '두려움': ['무서', '공포', '불안', '걱정', '위험', '두려', '놀란', '긴장', '스릴러', '미스터리', '어둠', '괴물'],
+      '놀라움': ['놀라', '신기', '충격', '반전', '의외', '깜짝', '예상치 못한', '기적', '발견', '비밀', '진실', '놀라운'],
+      '혐오': ['역겨', '싫어', '거부', '배척', '멸시', '불쾌', '짜증', '답답', '모순', '위선', '거짓', '배반'],
+      '기대': ['기대', '희망', '소망', '꿈꾸', '열망', '바람', '미래', '계획', '목표', '성장', '변화', '새로운'],
+      '신뢰': ['믿음', '의지', '확신', '안정', '평온', '위안', '든든', '신뢰', '지지', '보호', '사랑', '가족']
+    };
+    
+    const detectedEmotions: string[] = [];
+    const lowerSummary = summary.toLowerCase();
+    
+    Object.entries(emotionPatterns).forEach(([emotion, keywords]) => {
+      const matchCount = keywords.filter(keyword => 
+        lowerSummary.includes(keyword) || summary.includes(keyword)
+      ).length;
+      
+      if (matchCount >= 1) { // 키워드가 1개 이상 매칭되면 해당 감정 추가
+        detectedEmotions.push(emotion);
+      }
+    });
+    
+    return detectedEmotions;
+  };
+
+  // 🔥 절대 실패하지 않는 안전한 폴백 분석
+  const createSafeAnalysisFallback = (reviewText: string, selectedEmotions: string[], bookTitle: string) => {
+    console.log('🛡️ 안전한 폴백 분석 실행');
+    
+    const reviewWords = reviewText.toLowerCase();
+    const emotions = selectedEmotions.length > 0 ? selectedEmotions : ['성찰', '호기심'];
+    
+    // 기본적인 감정 분석
+    let sentiment = 'neutral';
+    let rating = 3.0;
+    
+    const positiveWords = ['좋', '훌륭', '감동', '재미', '흥미', '사랑', '행복', '즐거', '만족'];
+    const negativeWords = ['아쉬', '지루', '실망', '어려', '복잡', '슬프', '우울'];
+    
+    const positiveCount = positiveWords.filter(word => reviewWords.includes(word)).length;
+    const negativeCount = negativeWords.filter(word => reviewWords.includes(word)).length;
+    
+    if (positiveCount > negativeCount) {
+      sentiment = 'positive';
+      rating = 3.5 + (positiveCount * 0.3);
+    } else if (negativeCount > positiveCount) {
+      sentiment = 'negative';  
+      rating = 2.5 - (negativeCount * 0.2);
+    }
+    
+    rating = Math.min(5.0, Math.max(1.0, rating));
+    
+    return {
+      dominantEmotions: emotions,
+      bookEmotions: [],
+      topics: ['독서', '감상'],
+      moodSummary: `${bookTitle}을(를) 통해 의미있는 독서 경험을 하셨네요. 글에서 ${sentiment === 'positive' ? '긍정적인' : sentiment === 'negative' ? '아쉬운' : '차분한'} 마음이 느껴집니다.`,
+      overallRating: rating,
+      analysisScore: 0.7
+    };
+  };
+
+  // 🚀 향상된 로컬 감정 분석 (OpenAI 대체)
+  const analyzeEmotionsWithEnhancedAI = (reviewText: string, selectedEmotions: string[], bookSummary: string = '', bookTitle: string = '') => {
+    console.log('🔍 향상된 로컬 감성 분석 시작');
+    
+    // 1. 리뷰 텍스트 감정 분석
+    const reviewEmotions = analyzeReviewEmotions(reviewText);
+    
+    // 2. 책 줄거리 감정 분석  
+    const bookEmotions = bookSummary ? analyzeBookSummaryEmotions(bookSummary) : [];
+    
+    // 3. 종합 감정 계산
+    const allEmotions = [...selectedEmotions, ...reviewEmotions.emotions, ...bookEmotions];
+    const uniqueEmotions = [...new Set(allEmotions)].slice(0, 5); // 중복 제거, 최대 5개
+    
+    // 4. 감정 점수 계산
+    const emotionScores: Record<string, number> = {};
+    uniqueEmotions.forEach(emotion => {
+      emotionScores[emotion] = 0.6 + (Math.random() * 0.4); // 0.6-1.0 점수
+    });
+    
+    // 5. 무드 요약 생성
+    const moodSummary = generatePersonalizedMoodSummary(
+      bookTitle, 
+      uniqueEmotions, 
+      reviewEmotions.sentiment,
+      reviewText.length
+    );
+    
+    // 6. 전체 평점 계산
+    const rating = calculateOverallRating(reviewEmotions.sentiment, reviewText.length, uniqueEmotions.length);
+    
+    return {
+      dominantEmotions: uniqueEmotions,
+      emotionScores: emotionScores,
+      bookEmotions: bookEmotions,
+      topics: extractTopics(reviewText, bookSummary),
+      moodSummary: moodSummary,
+      overallRating: rating,
+      analysisScore: 0.8,
+      sentiment: reviewEmotions.sentiment
+    };
+  };
+
+  // 📝 리뷰 텍스트 감정 분석
+  const analyzeReviewEmotions = (reviewText: string) => {
+    const text = reviewText.toLowerCase();
+    
+    const emotionKeywords = {
+      '감동': ['감동', '울었', '눈물', '마음', '느끼', '울림'],
+      '성찰': ['생각', '깨달', '성찰', '반성', '고민', '깊이'],
+      '기쁨': ['기쁘', '즐거', '좋았', '행복', '만족', '웃음'],
+      '슬픔': ['슬프', '아프', '아쉽', '안타깝', '마음아픈'],
+      '호기심': ['궁금', '흥미', '관심', '알고싶', '재미있'],
+      '놀라움': ['놀라', '충격', '예상못한', '뜻밖', '신기'],
+      '희망': ['희망', '용기', '힘', '격려', '응원'],
+      '사랑': ['사랑', '애정', '정', '따뜻', '포근'],
+      '성장': ['성장', '변화', '발전', '배움', '깨우침'],
+      '그리움': ['그리워', '그립', '추억', '향수', '옛날']
+    };
+    
+    const foundEmotions: string[] = [];
+    let positiveScore = 0;
+    let negativeScore = 0;
+    
+    // 감정 키워드 매칭
+    Object.entries(emotionKeywords).forEach(([emotion, keywords]) => {
+      if (keywords.some(keyword => text.includes(keyword))) {
+        foundEmotions.push(emotion);
+      }
+    });
+    
+    // 감정 점수 계산
+    const positiveWords = ['좋', '훌륭', '감동', '재미', '흥미', '사랑', '행복', '즐거', '만족', '완벽', '최고'];
+    const negativeWords = ['아쉬', '지루', '실망', '어려', '복잡', '슬프', '우울', '답답', '싫', '별로'];
+    
+    positiveWords.forEach(word => {
+      if (text.includes(word)) positiveScore++;
+    });
+    
+    negativeWords.forEach(word => {
+      if (text.includes(word)) negativeScore++;
+    });
+    
+    let sentiment: 'positive' | 'negative' | 'neutral' = 'neutral';
+    if (positiveScore > negativeScore + 1) sentiment = 'positive';
+    else if (negativeScore > positiveScore + 1) sentiment = 'negative';
+    
+    return {
+      emotions: foundEmotions.length > 0 ? foundEmotions : ['성찰', '호기심'],
+      sentiment: sentiment,
+      positiveScore: positiveScore,
+      negativeScore: negativeScore
+    };
+  };
+
+  // 📚 개인화된 무드 요약 생성
+  const generatePersonalizedMoodSummary = (bookTitle: string, emotions: string[], sentiment: string, reviewLength: number) => {
+    const emotionText = emotions.slice(0, 3).join(', ');
+    const bookName = bookTitle ? `《${bookTitle}》` : '이 책';
+    
+    let intensityText = '';
+    if (reviewLength > 200) intensityText = '깊이 있게 ';
+    else if (reviewLength > 100) intensityText = '차분히 ';
+    else intensityText = '간결하게 ';
+    
+    let sentimentText = '';
+    if (sentiment === 'positive') {
+      sentimentText = '만족스러운 독서 경험을 하신 것 같아요. ';
+    } else if (sentiment === 'negative') {
+      sentimentText = '아쉬움이 남는 독서였지만 나름의 의미가 있었을 거예요. ';
+    } else {
+      sentimentText = '복합적인 감정으로 책을 읽으셨네요. ';
+    }
+    
+    return `${bookName}을 읽으시면서 ${emotionText} 등의 감정을 ${intensityText}느끼셨군요. ${sentimentText}이런 솔직한 감상이 앞으로의 독서에도 큰 도움이 될 것 같아요.`;
+  };
+
+  // 📊 전체 평점 계산
+  const calculateOverallRating = (sentiment: string, reviewLength: number, emotionCount: number) => {
+    let rating = 3.0;
+    
+    // 감정 기반 점수
+    if (sentiment === 'positive') rating += 0.8;
+    else if (sentiment === 'negative') rating -= 0.5;
+    
+    // 리뷰 길이 기반 점수 (더 자세한 리뷰 = 더 몰입)
+    if (reviewLength > 300) rating += 0.4;
+    else if (reviewLength > 150) rating += 0.2;
+    else if (reviewLength < 50) rating -= 0.3;
+    
+    // 감정 다양성 기반 점수
+    if (emotionCount >= 4) rating += 0.3;
+    else if (emotionCount >= 2) rating += 0.1;
+    
+    return Math.min(5.0, Math.max(1.0, Number(rating.toFixed(1))));
+  };
+
+  // 🏷️ 주제 추출
+  const extractTopics = (reviewText: string, bookSummary: string = '') => {
+    const text = (reviewText + ' ' + bookSummary).toLowerCase();
+    
+    const topicKeywords = {
+      '사랑': ['사랑', '연애', '로맨스', '결혼', '가족'],
+      '성장': ['성장', '배움', '깨달음', '변화', '발전'],
+      '인간관계': ['친구', '가족', '동료', '관계', '소통'],
+      '자아실현': ['꿈', '목표', '성공', '실현', '도전'],
+      '갈등': ['갈등', '문제', '어려움', '고민', '선택'],
+      '모험': ['모험', '여행', '탐험', '발견', '경험'],
+      '역사': ['역사', '과거', '전통', '문화', '시대'],
+      '미래': ['미래', '과학', '기술', '예측', '발전']
+    };
+    
+    const foundTopics: string[] = [];
+    
+    Object.entries(topicKeywords).forEach(([topic, keywords]) => {
+      if (keywords.some(keyword => text.includes(keyword))) {
+        foundTopics.push(topic);
+      }
+    });
+    
+    return foundTopics.length > 0 ? foundTopics : ['독서', '감상'];
+  };
+
+  // 🤖 AI 감성 분석 함수 (사용자 리뷰 + 책 줄거리 종합 분석)
+  const analyzeEmotionsWithAI = (reviewText: string, selectedEmotions: string[], bookSummary?: string) => {
+    const textLength = reviewText.length;
+    const emotionCount = selectedEmotions.length;
+    
+    // 감정 키워드 분석
+    const positiveKeywords = ['좋', '훌륭', '감동', '재미', '흥미', '사랑', '행복', '즐거', '만족'];
+    const negativeKeywords = ['아쉬', '지루', '실망', '어려', '복잡', '슬프', '우울', '화나'];
+    
+    let positiveScore = 0;
+    let negativeScore = 0;
+    
+    positiveKeywords.forEach(word => {
+      if (reviewText.includes(word)) positiveScore++;
+    });
+    
+    negativeKeywords.forEach(word => {
+      if (reviewText.includes(word)) negativeScore++;
+    });
+    
+    // AI 분석 결과 생성
+    const overallRating = Math.min(5, Math.max(1, 
+      3 + (positiveScore - negativeScore) * 0.5 + (emotionCount > 3 ? 0.5 : 0)
+    ));
+    
+    // 📚 책 줄거리에서 감정 추출
+    const bookEmotions = bookSummary ? analyzeBookSummaryEmotions(bookSummary) : [];
+    
+    // 🎭 사용자 선택 감정 + AI 추출 감정 + 책 줄거리 감정 합치기
+    const allEmotions = [
+      ...selectedEmotions,
+      ...bookEmotions,
+      ...(positiveScore > negativeScore ? ['영감받음', '만족감', '호기심'] : ['성찰', '진지함', '복잡함'])
+    ];
+    
+    // 중복 제거하고 상위 5개만 선택
+    const dominantEmotions = [...new Set(allEmotions)].slice(0, 5);
+    
+    const topics = extractTopics(reviewText);
+    
+    const moodSummary = generateMoodSummary(reviewText, dominantEmotions, overallRating);
+    
+    return {
+      overallRating,
+      dominantEmotions,
+      bookEmotions, // 🆕 책에서 추출된 감정들
+      topics,
+      moodSummary,
+      sentiment: positiveScore > negativeScore ? 'positive' : negativeScore > positiveScore ? 'negative' : 'neutral',
+      analysisScore: Math.round((textLength / 100 + emotionCount + positiveScore + bookEmotions.length) * 10) / 10
+    };
+  };
+
+
+
+  // 무드 요약 생성 함수
+  const generateMoodSummary = (reviewText: string, emotions: string[], rating: number): string => {
+    const summaries = [
+      "이 책을 통해 깊은 감정적 여정을 경험하셨네요. 당신의 감상이 매우 진솔하게 느껴집니다.",
+      "풍부한 감정 표현이 인상적입니다. 이 책이 당신에게 특별한 의미를 남긴 것 같아요.",
+      "책에 대한 당신의 깊이 있는 성찰이 돋보입니다. 의미 있는 독서 경험이었던 것 같네요.",
+      "감정적으로 몰입하여 읽으신 것이 느껴집니다. 이런 독서 경험은 오래 기억에 남을 거예요.",
+      "당신만의 독특한 관점이 잘 드러난 감상입니다. 이 책이 새로운 시각을 제공해준 것 같네요."
+    ];
+    
+    const randomIndex = Math.floor(Math.random() * summaries.length);
+    return summaries[randomIndex];
+  };
+
+  // 리뷰 생성 함수 (reviewsApi 사용)
+  const createReview = async (reviewData: {
+    isbn13: string;
+    user_id: string;
+    memo: string;
+    emotions: string[];
+    mood_summary: string;
+    rating: number;
+  }) => {
+    try {
+              // reviews API를 사용하여 데이터베이스에 저장
+        const result = await reviewsApi.createReview({
+          isbn13: reviewData.isbn13,
+          user_id: reviewData.user_id,
+          memo: reviewData.memo,
+          emotions: reviewData.emotions,
+          mood_summary: reviewData.mood_summary,
+          rating: reviewData.rating,
+          read_date: new Date().toISOString().split('T')[0]
+        });
+      
+      return result;
+    } catch (error) {
+      console.error('❌ 리뷰 생성 실패:', error);
+      return { data: null, error: error };
+    }
   };
 
   const handleLogin = (_provider: 'google' | 'apple' | 'email', _credentials?: {
@@ -1025,7 +1453,7 @@ const AppRouter: React.FC = () => {
                 } />
                 
                 <Route path="/books/:bookId/progress" element={
-                  <ReadingProgressRoute />
+                  <ReadingProgressRoute loadReadingBooks={loadReadingBooks} onReviewWrite={(isbn13: string) => navigate(`/books/${isbn13}/review`)} />
                 } />
                 
                 {/* Archive & Library Routes */}
@@ -1056,6 +1484,15 @@ const AppRouter: React.FC = () => {
                     onBookSelect={(book) => navigate(`/books/${book.id}/progress`)}
                     readingBooks={readingBooks}
                     onReadingUpdate={loadReadingBooks}
+                    user={user ? { id: user.id } : undefined}
+                  />
+                } />
+                
+                <Route path="/completed" element={
+                  <CompletedBooksManager 
+                    onBack={() => navigate('/')}
+                    onBookSelect={(isbn13) => navigate(`/books/${isbn13}`)}
+                    user={user ? { id: user.id } : undefined}
                   />
                 } />
                 

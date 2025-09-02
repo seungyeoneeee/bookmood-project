@@ -314,48 +314,44 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
 
         <div className="space-y-6">
           {/* Book Cover & Basic Info */}
-          <div className="bg-white border border-gray-200 rounded-3xl p-8 shadow-sm">
-                        <div className="text-center mb-6">
+          <div className="bg-white border border-gray-100 rounded-xl p-6">
+            <div className="text-center">
               <img 
                 src={book.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop'} 
                 alt={book.title}
-                className="w-40 h-56 object-cover rounded-2xl shadow-xl mx-auto mb-6" 
+                className="w-32 h-44 object-cover rounded-lg mx-auto mb-4 border border-gray-100" 
               />
-              <h1 className="text-2xl font-bold text-gray-800 mb-2 leading-tight">
+              <h1 className="text-xl font-bold text-gray-900 mb-1 leading-snug">
                 {book.title}
               </h1>
-              <p className="text-gray-600 text-lg font-medium mb-4">{book.author || '작가 미상'}</p>
+              <p className="text-gray-600 mb-4">{book.author || '작가 미상'}</p>
               
-              <div className="flex items-center justify-center space-x-6 mb-6">
+              <div className="flex items-center justify-center gap-4 mb-4">
                 {book.customer_review_rank && book.customer_review_rank > 0 && (
-                  <div className="flex items-center bg-[#F4E4B8]/20 px-3 py-2 rounded-full">
-                    <Star className="w-4 h-4 text-[#F4E4B8] fill-current mr-2" />
-                    <span className="text-sm font-semibold text-gray-700">{(book.customer_review_rank / 2).toFixed(1)}/5</span>
+                  <div className="flex items-center gap-1">
+                    <span className="text-yellow-500">★</span>
+                    <span className="text-sm font-medium text-gray-700">{(book.customer_review_rank / 2).toFixed(1)}</span>
                   </div>
                 )}
                 {book.category_name && (
-                  <div className="bg-[#B5D4C8]/20 px-3 py-2 rounded-full">
-                    <span className="text-sm font-semibold text-gray-700">{book.category_name}</span>
-                  </div>
+                  <span className="text-sm text-gray-500">{book.category_name}</span>
                 )}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
               {book.pub_date && (
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                  <Calendar className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-500 mb-1">출간일</p>
-                  <p className="text-sm font-semibold text-gray-800">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500 mb-1">출간일</p>
+                  <p className="font-medium text-gray-900">
                     {new Date(book.pub_date).getFullYear()}년
                   </p>
                 </div>
               )}
               {book.price_sales && (
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                  <BookOpen className="w-5 h-5 text-gray-600 mx-auto mb-1" />
-                  <p className="text-xs text-gray-500 mb-1">판매가</p>
-                  <p className="text-sm font-semibold text-gray-800">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="text-gray-500 mb-1">판매가</p>
+                  <p className="font-medium text-gray-900">
                     {book.price_sales.toLocaleString()}원
                     {book.price_standard && book.price_standard !== book.price_sales && (
                       <span className="text-xs text-gray-400 line-through ml-1">
@@ -368,7 +364,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
             </div>
 
             {book.publisher && (
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <p className="text-sm text-gray-500">출판사</p>
                 <p className="text-gray-700 font-medium">{book.publisher}</p>
               </div>
@@ -376,14 +372,13 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
 
             {/* Aladin Link */}
             {book.aladin_link && (
-              <div className="text-center mb-6">
+              <div className="text-center">
                 <a 
                   href={book.aladin_link} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-4 py-2 bg-[#A8B5E8]/10 text-[#A8B5E8] rounded-xl text-sm font-medium hover:bg-[#A8B5E8]/20 transition-colors"
+                  className="inline-block px-4 py-2 bg-blue-50 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-100 transition-colors"
                 >
-                  <BookOpen className="w-4 h-4 mr-2" />
                   알라딘에서 보기
                 </a>
               </div>
@@ -392,9 +387,8 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
 
           {/* Description */}
           {book.summary && (
-            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <BookOpen className="w-5 h-5 mr-2" />
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 책 소개
               </h3>
               <p className="text-gray-700 leading-relaxed text-sm">
@@ -403,21 +397,21 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
             </div>
           )}
 
-          {/* 📊 Reading Status */}
+          {/* Reading Status */}
           {libraryItem && (
-            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 mb-6">
+            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-blue-800">
-                  {getBookStatus() === 'wishlist' && '❤️ 찜한 책'}
-                  {getBookStatus() === 'reading' && '📚 읽고 있는 책'}
-                  {getBookStatus() === 'completed' && '✅ 완료한 책'}
+                <span className="text-sm font-medium text-gray-800">
+                  {getBookStatus() === 'wishlist' && '찜한 책'}
+                  {getBookStatus() === 'reading' && '읽고 있는 책'}
+                  {getBookStatus() === 'completed' && '완료한 책'}
                 </span>
                 {libraryItem.progress !== undefined && (
-                  <span className="text-sm text-blue-600">{libraryItem.progress}%</span>
+                  <span className="text-sm text-gray-600">{libraryItem.progress}%</span>
                 )}
               </div>
               {libraryItem.progress !== undefined && libraryItem.progress > 0 && (
-                <div className="w-full bg-blue-200 rounded-full h-2">
+                <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${libraryItem.progress}%` }}
@@ -436,30 +430,27 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 case 'wishlist':
                   return (
                     <>
-                      <div className="flex space-x-3">
+                      <div className="flex gap-3">
                         <button 
                           onClick={() => onStartReading?.(book)} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                         >
-                          <Play className="w-5 h-5" />
-                          <span>읽기 시작</span>
+                          읽기 시작
                         </button>
                         
                         <button 
                           onClick={handleProceedToReview} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
                         >
-                          <Sparkles className="w-5 h-5" />
-                          <span>감상문 작성</span>
+                          감상문 작성
                         </button>
                       </div>
                       
                       <button 
                         onClick={() => onWishlistToggle?.(book)} 
-                        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-red-400 to-red-500 text-white"
+                        className="w-full py-3 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors"
                       >
-                        <Heart className="w-5 h-5 fill-current" />
-                        <span>위시리스트에서 제거</span>
+                        위시리스트에서 제거
                       </button>
                     </>
                   );
@@ -467,30 +458,27 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 case 'reading':
                   return (
                     <>
-                      <div className="flex space-x-3">
+                      <div className="flex gap-3">
                         <button 
                           onClick={() => navigate(`/books/${book.isbn13}/progress`)} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                         >
-                          <BookOpen className="w-5 h-5" />
-                          <span>이어서 읽기</span>
+                          이어서 읽기
                         </button>
                         
                         <button 
                           onClick={() => setShowProgressModal(true)} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
                         >
-                          <Activity className="w-5 h-5" />
-                          <span>진행률 업데이트</span>
+                          진행률 업데이트
                         </button>
                       </div>
                       
                       <button 
                         onClick={handleCompleteBook}
-                        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-green-400 to-green-500 text-white"
+                        className="w-full py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
                       >
-                        <CheckCircle className="w-5 h-5" />
-                        <span>독서 완료</span>
+                        독서 완료
                       </button>
                     </>
                   );
@@ -498,30 +486,27 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 case 'completed':
                   return (
                     <>
-                      <div className="flex space-x-3">
+                      <div className="flex gap-3">
                         <button 
                           onClick={handleRestartReading} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                         >
-                          <RotateCcw className="w-5 h-5" />
-                          <span>다시 읽기</span>
+                          다시 읽기
                         </button>
                         
                         <button 
                           onClick={handleProceedToReview} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
                         >
-                          <Edit className="w-5 h-5" />
-                          <span>리뷰 수정</span>
+                          리뷰 수정
                         </button>
                       </div>
                       
                       <button 
                         onClick={handleRemoveFromLibrary}
-                        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-gray-400 to-gray-500 text-white"
+                        className="w-full py-3 bg-white border border-gray-300 text-gray-600 rounded-lg font-medium hover:bg-gray-50 transition-colors"
                       >
-                        <Trash2 className="w-5 h-5" />
-                        <span>읽은 책에서 제거</span>
+                        읽은 책에서 제거
                       </button>
                     </>
                   );
@@ -529,30 +514,27 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 default: // normal
                   return (
                     <>
-                      <div className="flex space-x-3">
+                      <div className="flex gap-3">
                         <button 
                           onClick={() => onStartReading?.(book)} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
                         >
-                          <Play className="w-5 h-5" />
-                          <span>읽기 시작</span>
+                          읽기 시작
                         </button>
                         
                         <button 
                           onClick={handleProceedToReview} 
-                          className="flex-1 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+                          className="flex-1 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
                         >
-                          <Sparkles className="w-5 h-5" />
-                          <span>감상문 작성</span>
+                          감상문 작성
                         </button>
                       </div>
                       
                       <button 
                         onClick={() => onWishlistToggle?.(book)} 
-                        className="w-full py-4 rounded-2xl font-medium flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-all bg-gradient-to-r from-[#F4E4B8] to-[#F0E4B8] text-white"
+                        className="w-full py-3 bg-white border border-red-300 text-red-600 rounded-lg font-medium hover:bg-red-50 transition-colors"
                       >
-                        <Heart className="w-5 h-5" />
-                        <span>위시리스트에 추가</span>
+                        위시리스트에 추가
                       </button>
                     </>
                   );
@@ -597,13 +579,13 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 <div className="flex space-x-3">
                   <button
                     onClick={() => setShowProgressModal(false)}
-                    className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-xl font-medium"
+                    className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-lg font-medium"
                   >
                     취소
                   </button>
                   <button
                     onClick={handleProgressUpdate}
-                    className="flex-1 py-3 bg-[#A8B5E8] text-white rounded-xl font-medium"
+                    className="flex-1 py-3 bg-blue-600 text-white rounded-lg font-medium"
                   >
                     업데이트
                   </button>
@@ -614,7 +596,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
 
           {/* Additional Info */}
           {book.isbn13 && (
-            <div className="bg-gray-50 rounded-2xl p-4">
+            <div className="bg-gray-50 rounded-lg p-4">
               <div className="text-center">
                 <p className="text-xs text-gray-500 mb-1">ISBN13</p>
                 <p className="text-sm font-mono text-gray-700">{book.isbn13}</p>

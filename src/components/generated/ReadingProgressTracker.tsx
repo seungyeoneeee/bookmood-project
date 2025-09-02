@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Edit3, Save, X, Plus, Trash2, Clock, Target, Calendar, Play, Pause } from 'lucide-react';
+import { ArrowLeft, BookOpen, Edit3, Save, X, Plus, Trash2, Clock, Target, Calendar, Play, Pause, Sparkles } from 'lucide-react';
 import * as libraryApi from '../../api/library';
 export interface ReadingProgress {
   id: string;
@@ -35,6 +35,8 @@ interface ReadingProgressTrackerProps {
   onBack: () => void;
   onComplete?: (progress: ReadingProgress) => void;
   onProgressUpdate?: (isbn13: string, currentPage: number, totalPages: number, notes: ReadingNote[]) => void;
+  onStatusUpdate?: () => void; // 🆕 상태 변경 알림 콜백
+  onReviewWrite?: (isbn13: string) => void; // 🆕 감상문 작성 콜백
   user?: { id: string };
 }
 const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
@@ -42,6 +44,8 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
   onBack,
   onComplete,
   onProgressUpdate,
+  onStatusUpdate,
+  onReviewWrite,
   user
 }) => {
   const [progress, setProgress] = useState<ReadingProgress>({
@@ -110,6 +114,9 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
             status: libraryItem.shelf_status === 'paused' ? 'paused' : 'reading'
           }));
           
+          // currentPageInput도 함께 업데이트
+          setCurrentPageInput(currentPage.toString());
+          
           console.log(`📚 진행 상태 복원됨: ${currentPage}/${bookData.pages} (${libraryItem.progress}%) - 메모 ${notes.length}개`);
         } else {
           console.log('📖 새로운 책 읽기 시작');
@@ -160,6 +167,11 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
           console.error('❌ 상태 변경 저장 실패:', result.error);
         } else {
           console.log(`✅ 읽기 상태 변경 저장 성공: ${newStatus}`);
+          
+          // 🆕 부모 컴포넌트에 상태 변경 알림
+          if (onStatusUpdate) {
+            onStatusUpdate();
+          }
         }
       }
     } catch (error) {
@@ -175,6 +187,9 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
         lastReadDate: new Date()
       };
       setProgress(newProgress);
+      
+      // currentPageInput과 동기화 - 입력값이 그대로 반영되도록
+      setCurrentPageInput(page.toString());
       
       // 실시간으로 진행 상태를 데이터베이스에 저장
       console.log('🔄 페이지 업데이트 중:', { page, totalPages: progress.totalPages, notesCount: progress.notes.length });
@@ -506,19 +521,47 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
           </div>
         </div>
 
-        {/* Complete Reading Button */}
-        {progressPercentage === 100 && <motion.div initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} className="mt-6">
-            <button onClick={() => onComplete?.(progress)} className="w-full py-4 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-2xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center space-x-2">
-              <BookOpen className="w-5 h-5" />
-              <span>독서 완료하기</span>
+        {/* Action Buttons */}
+        <div className="mt-6 space-y-3">
+          {/* 완료 버튼 (100%일 때만) */}
+          {progressPercentage === 100 && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <button 
+                onClick={() => onComplete?.(progress)} 
+                className="w-full py-4 bg-gradient-to-r from-green-400 to-green-500 text-white rounded-2xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center space-x-2"
+              >
+                <BookOpen className="w-5 h-5" />
+                <span>독서 완료하기</span>
+              </button>
+            </motion.div>
+          )}
+          
+          {/* 감상문 작성 버튼 (항상 표시) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }} 
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: progressPercentage === 100 ? 0.1 : 0 }}
+          >
+            <button 
+              onClick={() => onReviewWrite?.(bookData.id)} 
+              className="w-full py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium shadow-lg hover:shadow-xl transition-shadow flex items-center justify-center space-x-2"
+            >
+              <Sparkles className="w-5 h-5" />
+              <span>{progressPercentage === 100 ? '완독 감상문 작성' : '중간 감상 남기기'}</span>
             </button>
-          </motion.div>}
+          </motion.div>
+          
+          {/* 설명 텍스트 */}
+          <p className="text-center text-gray-500 text-sm px-4">
+            {progressPercentage === 100 
+              ? '🎉 완독하셨네요! 감상문을 작성하고 나만의 무드 카드를 만들어보세요.'
+              : '📝 독서 중이라도 언제든 감상을 남길 수 있어요.'
+            }
+          </p>
+        </div>
       </div>
       )}
     </motion.div>

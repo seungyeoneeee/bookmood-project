@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Send, Loader2, Smile, Frown, Meh, Zap, Coffee, Flame, Droplets, Sun, Moon, Cloud, Rainbow, Snowflake, Leaf, Mountain, Waves, Star, Heart } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import * as booksApi from '../../api/books';
+import { BookExternal } from '../../types/database';
 
 interface BookData {
   id: string;
@@ -12,7 +14,7 @@ interface BookData {
 }
 
 interface BookReviewPageProps {
-  onReviewSubmit: (bookData: BookData, reviewText: string, selectedEmotions: string[]) => void;
+  onReviewSubmit: (bookData: BookExternal, reviewText: string, selectedEmotions: string[]) => void;
   onBack: () => void;
 }
 
@@ -34,33 +36,34 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
   const [reviewText, setReviewText] = useState('');
   const [selectedEmotions, setSelectedEmotions] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [book, setBook] = useState<BookExternal | null>(null);
+  const [isLoadingBook, setIsLoadingBook] = useState(true);
 
-  // Mock book data - in real app, fetch based on bookId
-  const mockBooks: { [key: string]: BookData } = {
-    '1': {
-      id: '1',
-      title: '달러구트 꿈 백화점',
-      author: '이미예',
-      cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-      description: '잠들어야만 입장할 수 있는 신비한 꿈 백화점에서 벌어지는 따뜻하고 환상적인 이야기.'
-    },
-    '2': {
-      id: '2',
-      title: '아몬드',
-      author: '손원평',
-      cover: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=300&h=450&fit=crop',
-      description: '감정을 느끼지 못하는 소년 윤재의 성장 이야기를 통해 인간의 감정과 공감에 대해 탐구하는 소설.'
-    },
-    '3': {
-      id: '3',
-      title: '미드나이트 라이브러리',
-      author: '맷 헤이그',
-      cover: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=450&fit=crop',
-      description: '무한한 가능성의 도서관에서 펼쳐지는 인생의 선택에 대한 철학적 이야기.'
-    }
-  };
+  // 실제 책 데이터 불러오기
+  useEffect(() => {
+    const loadBookData = async () => {
+      if (!bookId) return;
+      
+      setIsLoadingBook(true);
+      try {
+        // 1. 데이터베이스에서 먼저 조회
+        const { data: dbBook } = await booksApi.getBookByIsbn(bookId);
+        
+        if (dbBook) {
+          setBook(dbBook);
+        } else {
+          // 2. 데이터베이스에 없으면 알라딘 API 조회 (필요시)
+          console.warn('책 데이터를 찾을 수 없습니다:', bookId);
+        }
+      } catch (error) {
+        console.error('책 데이터 로딩 실패:', error);
+      } finally {
+        setIsLoadingBook(false);
+      }
+    };
 
-  const book = mockBooks[bookId || '1'];
+    loadBookData();
+  }, [bookId]);
 
   // Emotion categories
   const emotionCategories: EmotionCategory[] = [
@@ -131,25 +134,63 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
   };
 
   const handleSubmit = async () => {
-    if (!reviewText.trim()) {
-      alert('리뷰를 작성해주세요.');
+    if (!reviewText.trim() || reviewText.length < 30) {
+      alert('감상문을 30자 이상 작성해주세요.');
+      return;
+    }
+
+    if (!book) {
+      alert('책 정보를 불러올 수 없습니다.');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Mock AI processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // AI 감성 분석 시뮬레이션 (2초 딜레이)
+      await new Promise(resolve => setTimeout(resolve, 2500));
       
       onReviewSubmit(book, reviewText, selectedEmotions);
+      
+      // 성공 알림
+      alert('🎉 무드 카드가 생성되었습니다!\n아카이브에서 확인해보세요.');
     } catch (error) {
       console.error('리뷰 제출 실패:', error);
-      alert('리뷰 제출에 실패했습니다. 다시 시도해주세요.');
+      const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';
+      alert(`리뷰 제출에 실패했습니다: ${errorMessage}\n잠시 후 다시 시도해주세요.`);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // 로딩 상태 처리
+  if (isLoadingBook) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        className="min-h-screen"
+      >
+        <div className="px-4 md:px-0">
+          <div className="flex items-center justify-between mb-8">
+            <button 
+              onClick={onBack} 
+              className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-800">감상문 작성</h1>
+            <div className="w-10" />
+          </div>
+          
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-2 border-[#A8B5E8] border-t-transparent rounded-full animate-spin" />
+            <span className="ml-3 text-gray-600">책 정보를 불러오는 중...</span>
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
 
   if (!book) {
     return (
@@ -158,14 +199,28 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
         animate={{ opacity: 1 }} 
         className="min-h-screen"
       >
-        <div className="max-w-sm mx-auto text-center py-20">
-          <h3 className="text-lg font-medium text-gray-800 mb-2">책을 찾을 수 없습니다</h3>
-          <button
-            onClick={onBack}
-            className="px-6 py-3 bg-[#A8B5E8] text-white rounded-xl font-medium"
-          >
-            돌아가기
-          </button>
+        <div className="px-4 md:px-0">
+          <div className="flex items-center justify-between mb-8">
+            <button 
+              onClick={onBack} 
+              className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
+            </button>
+            <h1 className="text-xl font-bold text-gray-800">감상문 작성</h1>
+            <div className="w-10" />
+          </div>
+          
+          <div className="max-w-sm mx-auto text-center py-20">
+            <h3 className="text-lg font-medium text-gray-800 mb-2">책을 찾을 수 없습니다</h3>
+            <p className="text-gray-600 mb-4">해당 책의 정보를 불러올 수 없습니다.</p>
+            <button
+              onClick={onBack}
+              className="px-6 py-3 bg-[#A8B5E8] text-white rounded-xl font-medium"
+            >
+              돌아가기
+            </button>
+          </div>
         </div>
       </motion.div>
     );
@@ -195,14 +250,14 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
         <div className="bg-white border border-gray-200 rounded-2xl p-4 mb-6 shadow-sm">
           <div className="flex space-x-4">
             <img 
-              src={book.cover} 
+              src={book.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop'} 
               alt={book.title}
               className="w-16 h-22 object-cover rounded-xl flex-shrink-0"
             />
             <div className="flex-1 min-w-0">
               <h3 className="font-semibold text-gray-800 mb-1">{book.title}</h3>
-              <p className="text-gray-600 text-sm mb-2">{book.author}</p>
-              <p className="text-gray-500 text-xs leading-relaxed">{book.description}</p>
+              <p className="text-gray-600 text-sm mb-2">{book.author || '작가 미상'}</p>
+              <p className="text-gray-500 text-xs leading-relaxed">{book.summary || '이 책에 대한 감상을 자유롭게 적어보세요.'}</p>
             </div>
           </div>
         </div>
@@ -270,10 +325,12 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
               className="w-full p-4 rounded-2xl border-0 focus:outline-none resize-none text-gray-800 placeholder-gray-400"
             />
             <div className="px-4 pb-4">
-              <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>최소 50자 이상 작성해주세요</span>
-                <span className={`${reviewText.length >= 50 ? 'text-green-600' : 'text-gray-400'}`}>
-                  {reviewText.length}/50
+              <div className="flex items-center justify-between text-sm">
+                <span className={reviewText.length >= 30 ? 'text-green-600' : 'text-orange-500'}>
+                  {reviewText.length < 30 ? '최소 30자 이상 작성해주세요' : '✅ 충분한 길이입니다!'}
+                </span>
+                <span className={`${reviewText.length >= 30 ? 'text-green-600 font-medium' : 'text-gray-400'}`}>
+                  {reviewText.length}/30
                 </span>
               </div>
             </div>
@@ -284,7 +341,7 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
         <div className="space-y-4">
           <button
             onClick={handleSubmit}
-            disabled={reviewText.length < 50 || isSubmitting}
+            disabled={reviewText.length < 30 || isSubmitting}
             className="w-full py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium shadow-lg hover:shadow-xl transition-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
           >
             {isSubmitting ? (
