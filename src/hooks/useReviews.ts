@@ -37,7 +37,7 @@ export function useReviews() {
     const { data, error: createError } = await reviewsApi.createReview(input);
     
     if (createError) {
-      return { success: false, error: createError.message || '리뷰 작성 중 오류가 발생했습니다.' };
+      return { success: false, error: (createError as any)?.message || '리뷰 작성 중 오류가 발생했습니다.' };
     }
 
     if (data) {
@@ -51,7 +51,7 @@ export function useReviews() {
     const { data, error: updateError } = await reviewsApi.updateReview(id, input);
     
     if (updateError) {
-      return { success: false, error: updateError.message || '리뷰 수정 중 오류가 발생했습니다.' };
+      return { success: false, error: (updateError as any)?.message || '리뷰 수정 중 오류가 발생했습니다.' };
     }
 
     if (data) {
@@ -65,7 +65,7 @@ export function useReviews() {
     const { error: deleteError } = await reviewsApi.deleteReview(id);
     
     if (deleteError) {
-      return { success: false, error: deleteError.message || '리뷰 삭제 중 오류가 발생했습니다.' };
+      return { success: false, error: (deleteError as any)?.message || '리뷰 삭제 중 오류가 발생했습니다.' };
     }
 
     setReviews(prev => prev.filter(review => review.id !== id));
@@ -76,7 +76,7 @@ export function useReviews() {
     const { data, error: updateError } = await reviewsApi.updateReviewEmotions(reviewId, emotions);
     
     if (updateError) {
-      return { success: false, error: updateError.message || '감정 업데이트 중 오류가 발생했습니다.' };
+      return { success: false, error: (updateError as any)?.message || '감정 업데이트 중 오류가 발생했습니다.' };
     }
 
     // 로컬 상태 업데이트
@@ -93,7 +93,7 @@ export function useReviews() {
     const { data, error: updateError } = await reviewsApi.updateReviewTopics(reviewId, topics);
     
     if (updateError) {
-      return { success: false, error: updateError.message || '주제 업데이트 중 오류가 발생했습니다.' };
+      return { success: false, error: (updateError as any)?.message || '주제 업데이트 중 오류가 발생했습니다.' };
     }
 
     // 로컬 상태 업데이트

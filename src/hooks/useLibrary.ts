@@ -37,7 +37,7 @@ export function useLibrary() {
     const { data, error: addError } = await libraryApi.addToLibrary(input);
     
     if (addError) {
-      return { success: false, error: addError.message || '도서관에 추가하는 중 오류가 발생했습니다.' };
+      return { success: false, error: (addError as any)?.message || '도서관에 추가하는 중 오류가 발생했습니다.' };
     }
 
     if (data) {
@@ -51,7 +51,7 @@ export function useLibrary() {
     const { data, error: updateError } = await libraryApi.updateLibraryItem(id, input);
     
     if (updateError) {
-      return { success: false, error: updateError.message || '업데이트 중 오류가 발생했습니다.' };
+      return { success: false, error: (updateError as any)?.message || '업데이트 중 오류가 발생했습니다.' };
     }
 
     if (data) {
@@ -65,7 +65,7 @@ export function useLibrary() {
     const { error: removeError } = await libraryApi.removeFromLibrary(id);
     
     if (removeError) {
-      return { success: false, error: removeError.message || '삭제 중 오류가 발생했습니다.' };
+      return { success: false, error: (removeError as any)?.message || '삭제 중 오류가 발생했습니다.' };
     }
 
     setItems(prev => prev.filter(item => item.id !== id));
@@ -161,6 +161,12 @@ export function useLibraryStats() {
     thisMonth: number;
     averageRating: number;
     favoriteGenres: string[];
+    total?: number;
+    reading?: number;
+    completed?: number;
+    want_to_read?: number;
+    paused?: number;
+    dropped?: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
