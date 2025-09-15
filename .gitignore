@@ -85,3 +85,4 @@ scripts/temp/
 
 # Supabase (필요시)
 # supabase/.env
+.env*.local

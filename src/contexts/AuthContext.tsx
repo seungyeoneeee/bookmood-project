@@ -90,13 +90,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
       });
-      return { error };
+      
+      if (error) {
+        console.error('로그인 오류:', error);
+        return { error };
+      }
+      
+      console.log('로그인 성공:', data);
+      return { error: null };
     } catch (error) {
-      console.error('로그인 오류:', error);
+      console.error('로그인 예외:', error);
       return { error: error as AuthError };
     }
   };
