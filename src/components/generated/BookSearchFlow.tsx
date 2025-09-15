@@ -444,7 +444,7 @@ const BookSearchFlow: React.FC<BookSearchFlowProps> = ({
                 책 소개
               </h3>
               <p className="text-gray-700 leading-relaxed text-sm">
-                {selectedBook.description}
+                {selectedBook.description?.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') || ''}
               </p>
             </div>
 

@@ -228,7 +228,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                     {/* Summary */}
                     {book.summary && (
                       <p className="text-xs text-gray-500 mb-3 line-clamp-2">
-                        {book.summary}
+                        {book.summary?.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') || ''}
                       </p>
                     )}
 

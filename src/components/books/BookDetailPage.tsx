@@ -392,7 +392,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                 책 소개
               </h3>
               <p className="text-gray-700 leading-relaxed text-sm">
-                {book.summary}
+                {book.summary?.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') || ''}
               </p>
             </div>
           )}

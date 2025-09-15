@@ -152,8 +152,7 @@ const BookReviewPage: React.FC<BookReviewPageProps> = ({
       
       onReviewSubmit(book, reviewText, selectedEmotions);
       
-      // 성공 알림
-      alert('🎉 무드 카드가 생성되었습니다!\n아카이브에서 확인해보세요.');
+      // 성공 알림은 AppRouter에서 처리하므로 여기서는 제거
     } catch (error) {
       console.error('리뷰 제출 실패:', error);
       const errorMessage = error instanceof Error ? error.message : '알 수 없는 오류가 발생했습니다.';

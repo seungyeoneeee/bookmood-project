@@ -610,6 +610,44 @@ const AppRouter: React.FC = () => {
     } : null;
   }, [authUser]);
 
+  // 리뷰 로딩 함수
+  const loadReviews = useCallback(async () => {
+    if (!user) return;
+
+    try {
+      console.log('📚 리뷰 로딩 시작...');
+      console.log('👤 현재 사용자 ID:', user.id);
+      const { data: reviewsData, error } = await reviewsApi.getReviewsByUser(user.id);
+      
+      if (error) {
+        console.error('❌ 리뷰 로딩 실패:', error);
+        return;
+      }
+
+      if (reviewsData && reviewsData.length > 0) {
+        // 데이터베이스 리뷰를 ReviewData 형식으로 변환
+        const formattedReviews: ReviewData[] = reviewsData.map(review => ({
+          id: review.id,
+          bookId: review.isbn13,
+          review: review.memo || '',
+          emotions: [], // review_emotions 테이블에서 별도로 가져와야 함
+          topics: [], // review_topics 테이블에서 별도로 가져와야 함
+          moodSummary: '', // 추후 추가
+          createdAt: new Date(review.created_at),
+          moodCardUrl: `/mood-cards/${review.id}`
+        }));
+
+        setReviews(formattedReviews);
+        console.log('✅ 리뷰 로딩 완료:', formattedReviews.length, '개');
+      } else {
+        console.log('📝 저장된 리뷰가 없습니다.');
+        setReviews([]);
+      }
+    } catch (error) {
+      console.error('❌ 리뷰 로딩 예외:', error);
+    }
+  }, [user]);
+
   // 위시리스트 로딩 함수
   const loadWishlistBooks = useCallback(async () => {
     if (!user) return;
@@ -690,7 +728,8 @@ const AppRouter: React.FC = () => {
   useEffect(() => {
     loadWishlistBooks();
     loadReadingBooks();
-  }, [loadWishlistBooks, loadReadingBooks]);
+    loadReviews(); // 리뷰도 함께 로드
+  }, [loadWishlistBooks, loadReadingBooks, loadReviews]);
 
   // 현재 경로에 따른 뷰 타입 결정
   const getCurrentView = () => {
@@ -707,28 +746,7 @@ const AppRouter: React.FC = () => {
   };
 
   // Mock data for demonstration
-  const mockReviews: ReviewData[] = [
-    {
-      id: '1',
-      bookId: '1',
-      review: 'This book made me feel deeply contemplative about life and relationships.',
-      emotions: ['contemplative', 'melancholic', 'hopeful'],
-      topics: ['relationships', 'philosophy', 'growth'],
-      moodSummary: 'A profound journey through human connections that left you feeling both introspective and optimistic about the future.',
-      createdAt: new Date('2024-01-15'),
-      moodCardUrl: '/api/mood-cards/1'
-    },
-    {
-      id: '2',
-      bookId: '2',
-      review: 'An exhilarating adventure that kept me on the edge of my seat!',
-      emotions: ['excited', 'anxious', 'thrilled'],
-      topics: ['adventure', 'mystery', 'suspense'],
-      moodSummary: 'A heart-pounding experience that awakened your sense of adventure and left you craving more excitement.',
-      createdAt: new Date('2024-01-20'),
-      moodCardUrl: '/api/mood-cards/2'
-    }
-  ];
+  // mock 데이터 제거 - 실제 데이터베이스에서만 불러옴
 
   const handleViewChange = (view: string) => {
     navigate(`/${view === 'home' ? '' : view}`);
@@ -1004,6 +1022,9 @@ const AppRouter: React.FC = () => {
       setReviews(prev => [...prev, newReview]);
       
       console.log('✅ 독후감 및 무드 카드 생성 완료!');
+      
+      // 리뷰 목록 새로고침 (데이터베이스에서 최신 데이터 가져오기)
+      await loadReviews();
       
       // 성공 메시지
       alert('🎉 감상문이 성공적으로 저장되었습니다!');
@@ -1361,7 +1382,7 @@ const AppRouter: React.FC = () => {
     }
   };
 
-  const currentReviews = reviews.length > 0 ? reviews : mockReviews;
+  const currentReviews = reviews; // mock 데이터 제거, 실제 데이터만 사용
 
   // 인증 상태 로딩 중
   if (loading) {
