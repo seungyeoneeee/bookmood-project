@@ -3,6 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Container, Theme } from './settings/types';
 import AppRouter from './components/AppRouter';
 import { AuthProvider } from './contexts/AuthContext';
+import { MockAuthProvider } from './contexts/MockAuthContext';
 
 const theme: Theme = 'light';
 const container: Container = 'none';

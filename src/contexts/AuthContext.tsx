@@ -90,6 +90,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      // 직접 로그인 시도 (콜백 없이)
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password
@@ -100,7 +101,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return { error };
       }
       
-      console.log('로그인 성공:', data);
+      // 로그인 성공 시 수동으로 상태 업데이트
+      if (data.user && data.session) {
+        setUser(data.user);
+        setSession(data.session);
+        console.log('로그인 성공:', data.user.email);
+      }
+      
       return { error: null };
     } catch (error) {
       console.error('로그인 예외:', error);

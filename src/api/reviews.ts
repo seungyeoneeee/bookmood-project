@@ -83,6 +83,13 @@ export async function createReview(input: CreateReviewInput) {
     };
 
     console.log('💾 저장할 데이터:', insertData);
+    console.log('🔍 입력 데이터 검증:', {
+      userId: userId,
+      userIdType: typeof userId,
+      isbn13: input.isbn13,
+      isbn13Type: typeof input.isbn13,
+      memo: input.memo ? input.memo.substring(0, 50) + '...' : null
+    });
 
     const { data, error } = await supabase
       .from('reviews')

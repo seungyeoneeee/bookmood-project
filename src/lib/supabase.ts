@@ -19,8 +19,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
-    detectSessionInUrl: false, // URL 감지 비활성화
-    flowType: 'implicit' // PKCE 대신 implicit 플로우 사용
+    detectSessionInUrl: false,
+    flowType: 'implicit',
+    storage: typeof window !== 'undefined' ? window.localStorage : undefined
   }
 });
 

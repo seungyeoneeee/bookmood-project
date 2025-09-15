@@ -916,6 +916,9 @@ const AppRouter: React.FC = () => {
     }
 
     console.log('👤 리뷰 제출 사용자:', { userId: user.id, email: user.email });
+    console.log('📚 책 정보:', { isbn13: bookData.isbn13, title: bookData.title });
+    console.log('📝 리뷰 내용:', { length: reviewText.length, preview: reviewText.substring(0, 50) });
+    console.log('😊 선택된 감정:', selectedEmotions);
 
     try {
       console.log('📝 독후감 제출 중:', { 
