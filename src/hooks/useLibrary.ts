@@ -156,17 +156,17 @@ export function useLibraryByStatus(shelfStatus: ShelfStatus) {
 export function useLibraryStats() {
   const { user } = useAuth();
   const [stats, setStats] = useState<{
-    totalBooks: number;
-    thisYear: number;
-    thisMonth: number;
-    averageRating: number;
-    favoriteGenres: string[];
-    total?: number;
-    reading?: number;
-    completed?: number;
-    want_to_read?: number;
-    paused?: number;
-    dropped?: number;
+    total: number;
+    reading: number;
+    completed: number;
+    want_to_read: number;
+    paused: number;
+    dropped: number;
+    totalBooks?: number;
+    thisYear?: number;
+    thisMonth?: number;
+    averageRating?: number;
+    favoriteGenres?: string[];
   } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

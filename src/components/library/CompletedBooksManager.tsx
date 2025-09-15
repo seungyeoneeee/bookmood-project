@@ -199,7 +199,7 @@ const CompletedBooksManager: React.FC<CompletedBooksManagerProps> = ({
               <span className="text-sm font-semibold text-gray-600 whitespace-nowrap">이달</span>
             </div>
             <p className="text-2xl font-bold mb-1 text-[#C7759C] min-h-[32px] flex items-center">
-              {isLoading ? '···' : `${stats.thisMonth}권`}
+              {isLoading ? '···' : `${stats?.thisMonth || 0}권`}
             </p>
             <p className="text-xs text-gray-500">현재 진행중</p>
           </div>
