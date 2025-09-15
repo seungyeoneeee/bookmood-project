@@ -15,26 +15,12 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Supabase 클라이언트 생성
-// 배포 환경 감지
-const getRedirectUrl = () => {
-  if (typeof window === 'undefined') return undefined;
-  
-  // Vercel 배포 환경인지 확인
-  if (window.location.hostname.includes('vercel.app')) {
-    return window.location.origin;
-  }
-  
-  // 로컬 개발 환경
-  return window.location.origin;
-};
-
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: true,
-    flowType: 'pkce',
-    redirectTo: getRedirectUrl()
+    flowType: 'pkce'
   }
 });
 
