@@ -18,7 +18,7 @@ export function useReviews() {
     const { data, error: fetchError } = await reviewsApi.getReviews(user.id);
     
     if (fetchError) {
-      setError(fetchError.message || '리뷰를 가져오는 중 오류가 발생했습니다.');
+      setError((fetchError as any)?.message || '리뷰를 가져오는 중 오류가 발생했습니다.');
       setReviews([]);
     } else {
       setReviews(data || []);
@@ -135,7 +135,7 @@ export function useReview(isbn13?: string) {
       const { data, error: fetchError } = await reviewsApi.getReviewByIsbn(isbn13, user.id);
       
       if (fetchError) {
-        setError(fetchError.message || '리뷰를 가져오는 중 오류가 발생했습니다.');
+        setError((fetchError as any)?.message || '리뷰를 가져오는 중 오류가 발생했습니다.');
         setReview(null);
       } else {
         setReview(data);
@@ -170,7 +170,7 @@ export function useEmotionStats() {
       const { data, error: fetchError } = await reviewsApi.getEmotionStats(user.id);
       
       if (fetchError) {
-        setError(fetchError.message || '감정 통계를 가져오는 중 오류가 발생했습니다.');
+        setError((fetchError as any)?.message || '감정 통계를 가져오는 중 오류가 발생했습니다.');
         setStats([]);
       } else {
         setStats(data || []);

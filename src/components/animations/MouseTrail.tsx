@@ -12,7 +12,7 @@ export const MouseTrail: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    let frameId: number;
+    let frameId: number | undefined;
     let lastTime = 0;
     const throttleDelay = 16; // ~60fps
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, X, Smile, Frown, Meh, Zap, Coffee, Flame, Droplets, Sun, Moon, Cloud, Rainbow, Snowflake, Leaf, Mountain, Waves, Star, User, Heart, Filter, Book } from 'lucide-react';
+import { ArrowLeft, X, Smile, Frown, Meh, Zap, Coffee, Flame, Droplets, Sun, Moon, Cloud, Rainbow, Snowflake, Leaf, Mountain, Waves, Star, User, Heart, Filter, Book, Calendar } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { BookExternal } from '../../types/database';
 import * as booksApi from '../../api/books';
@@ -323,7 +323,7 @@ const EmotionFilterPage: React.FC<EmotionFilterPageProps> = ({
         filtered = filtered.filter(book => {
           // ID 기반 매칭
           if (category.aladinId && Array.isArray(category.aladinId)) {
-            if (category.aladinId.includes(book.category_id)) {
+            if (book.category_id && category.aladinId.includes(book.category_id)) {
               return true;
             }
           }

@@ -55,7 +55,7 @@ export async function saveBook(book: BookExternal) {
     // 새로 저장 (item_id를 안전하게 처리)
     const insertData = {
       isbn13: book.isbn13,
-      item_id: book.item_id ? (typeof book.item_id === 'number' ? book.item_id : parseInt(book.item_id.toString())) : null,
+      item_id: book.item_id ? (typeof book.item_id === 'number' ? book.item_id : parseInt(String(book.item_id))) : null,
       title: book.title,
       author: book.author,
       publisher: book.publisher,
@@ -285,13 +285,14 @@ function getMockBooks(query: string): Partial<BookExternal>[] {
   ];
 
   // 무한스크롤 테스트를 위해 더 많은 mock 데이터 생성
-  const extendedData = [];
+  const extendedData: BookExternal[] = [];
   for (let i = 0; i < 50; i++) {
+    const baseBook = mockData[i % mockData.length];
     extendedData.push({
-      ...mockData[i % mockData.length],
+      ...baseBook,
       isbn13: `978895442924${i}`,
       item_id: 123456 + i,
-      title: `${mockData[i % mockData.length].title} ${i + 1}`,
+      title: `${baseBook.title} ${i + 1}`,
     });
   }
 

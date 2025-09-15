@@ -18,7 +18,7 @@ export function useLibrary() {
     const { data, error: fetchError } = await libraryApi.getLibraryItems(user.id);
     
     if (fetchError) {
-      setError(fetchError.message || '도서관 정보를 가져오는 중 오류가 발생했습니다.');
+      setError((fetchError as any)?.message || '도서관 정보를 가져오는 중 오류가 발생했습니다.');
       setItems([]);
     } else {
       setItems(data || []);
@@ -99,7 +99,7 @@ export function useLibraryItem(isbn13?: string) {
       const { data, error: fetchError } = await libraryApi.getLibraryItemByIsbn(isbn13, user.id);
       
       if (fetchError) {
-        setError(fetchError.message || '도서관 아이템을 가져오는 중 오류가 발생했습니다.');
+        setError((fetchError as any)?.message || '도서관 아이템을 가져오는 중 오류가 발생했습니다.');
         setItem(null);
       } else {
         setItem(data);
@@ -134,7 +134,7 @@ export function useLibraryByStatus(shelfStatus: ShelfStatus) {
       const { data, error: fetchError } = await libraryApi.getLibraryItems(user.id, shelfStatus);
       
       if (fetchError) {
-        setError(fetchError.message || '도서 목록을 가져오는 중 오류가 발생했습니다.');
+        setError((fetchError as any)?.message || '도서 목록을 가져오는 중 오류가 발생했습니다.');
         setItems([]);
       } else {
         setItems(data || []);
@@ -155,7 +155,13 @@ export function useLibraryByStatus(shelfStatus: ShelfStatus) {
 
 export function useLibraryStats() {
   const { user } = useAuth();
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{
+    totalBooks: number;
+    thisYear: number;
+    thisMonth: number;
+    averageRating: number;
+    favoriteGenres: string[];
+  } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -169,7 +175,7 @@ export function useLibraryStats() {
       const { data, error: fetchError } = await libraryApi.getLibraryStats(user.id);
       
       if (fetchError) {
-        setError(fetchError.message || '통계를 가져오는 중 오류가 발생했습니다.');
+        setError((fetchError as any)?.message || '통계를 가져오는 중 오류가 발생했습니다.');
         setStats(null);
       } else {
         setStats(data);

@@ -315,7 +315,7 @@ export async function getEmotionStats(userId?: string) {
 
     // 사용자별 필터링
     const filteredData = userId 
-      ? data?.filter(item => item.reviews?.user_id === userId)
+      ? data?.filter(item => item.reviews && item.reviews.length > 0 && item.reviews[0].user_id === userId)
       : data;
 
     // 감정별 통계 계산

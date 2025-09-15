@@ -18,6 +18,7 @@ const SupabaseTest: React.FC = () => {
     auth: 'testing'
   });
   const [testEmail, setTestEmail] = useState('');
+  const [books, setBooks] = useState<any[]>([]);
   const [testPassword, setTestPassword] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
