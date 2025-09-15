@@ -97,6 +97,12 @@ const CompletedBooksManager: React.FC<CompletedBooksManagerProps> = ({
     thisYear: completedBooks.filter(book => 
       new Date(book.finishedAt).getFullYear() === new Date().getFullYear()
     ).length,
+    thisMonth: completedBooks.filter(book => {
+      const bookDate = new Date(book.finishedAt);
+      const now = new Date();
+      return bookDate.getFullYear() === now.getFullYear() && 
+             bookDate.getMonth() === now.getMonth();
+    }).length,
     averageRating: completedBooks.length > 0 
       ? completedBooks.reduce((sum, book) => sum + (book.rating || 0), 0) / completedBooks.length 
       : 0,
