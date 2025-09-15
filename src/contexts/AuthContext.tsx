@@ -77,6 +77,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          redirectTo: window.location.origin
+        }
       });
       return { error };
     } catch (error) {
@@ -90,6 +93,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          redirectTo: window.location.origin
+        }
       });
       return { error };
     } catch (error) {
