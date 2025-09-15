@@ -617,6 +617,17 @@ const AppRouter: React.FC = () => {
     try {
       console.log('📚 리뷰 로딩 시작...');
       console.log('👤 현재 사용자 ID:', user.id);
+      
+      // 임시: 모든 사용자의 리뷰를 불러와서 디버깅
+      const { data: allReviews, error: allError } = await reviewsApi.getAllReviews();
+      console.log('🔍 모든 리뷰:', allReviews?.length || 0, '개');
+      if (allReviews && allReviews.length > 0) {
+        console.log('📝 모든 리뷰 목록:');
+        allReviews.forEach((review, index) => {
+          console.log(`   ${index + 1}. 사용자: ${review.user_id}, ISBN: ${review.isbn13}, 메모: ${review.memo?.substring(0, 30)}...`);
+        });
+      }
+      
       const { data: reviewsData, error } = await reviewsApi.getReviewsByUser(user.id);
       
       if (error) {

@@ -1,6 +1,22 @@
 import { supabase } from '../lib/supabase';
 import { Review, CreateReviewInput, UpdateReviewInput, ReviewEmotion, ReviewTopic } from '../types/database';
 
+// 모든 리뷰 조회 (디버깅용)
+export async function getAllReviews() {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error fetching all reviews:', error);
+    return { data: null, error };
+  }
+}
+
 // 사용자의 리뷰 목록 조회
 export async function getReviews(userId?: string) {
   try {
