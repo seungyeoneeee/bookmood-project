@@ -220,8 +220,6 @@ const ReadingProgressRoute: React.FC<{
   }, [bookId]);
 
   const handleProgressUpdate = async (isbn13: string, currentPage: number, totalPages: number, notes: { page: number; content: string }[]) => {
-    console.log('📊 handleProgressUpdate 호출됨:', { isbn13, currentPage, totalPages, notesCount: notes.length, user: user?.id });
-    
     if (!user) {
       console.warn('❌ 사용자가 인증되지 않음');
       return;
@@ -230,13 +228,6 @@ const ReadingProgressRoute: React.FC<{
     try {
       const progressPercentage = Math.round((currentPage / totalPages) * 100);
       const notesText = notes.map(note => `[${note.page}p] ${note.content}`).join('\n');
-      
-      console.log('💾 저장할 데이터:', {
-        isbn13,
-        progressPercentage,
-        notesText: notesText.length > 0 ? `${notesText.substring(0, 50)}...` : '(메모 없음)',
-        notesCount: notes.length
-      });
       
       // 현재 progress 상태에서 shelf_status 결정 (기본값은 reading)
       let shelfStatus: 'reading' | 'completed' | 'paused' = 'reading';
@@ -260,8 +251,6 @@ const ReadingProgressRoute: React.FC<{
       if (result.error) {
         console.error('❌ 데이터베이스 저장 실패:', result.error);
       } else {
-        console.log(`✅ 진행 상태 저장 성공: ${progressPercentage}% (${currentPage}/${totalPages}) - 메모 ${notes.length}개`);
-        
         // 읽고 있는 책 목록 실시간 업데이트
         await loadReadingBooks();
       }
@@ -284,7 +273,6 @@ const ReadingProgressRoute: React.FC<{
         note: `총 ${progress.notes.length}개의 메모 작성`
       });
       
-      console.log('독서 완료 기록이 저장되었습니다!');
       
       // 읽고 있는 책 목록에서 제거 (완료된 책이므로)
       await loadReadingBooks();
@@ -615,20 +603,8 @@ const AppRouter: React.FC = () => {
     if (!user) return;
 
     try {
-      console.log('📚 리뷰 로딩 시작...');
-      console.log('👤 현재 사용자 ID:', user.id);
-      
-      // 임시: 모든 사용자의 리뷰를 불러와서 디버깅
-      const { data: allReviews, error: allError } = await reviewsApi.getAllReviews();
-      console.log('🔍 모든 리뷰:', allReviews?.length || 0, '개');
-      if (allReviews && allReviews.length > 0) {
-        console.log('📝 모든 리뷰 목록:');
-        allReviews.forEach((review, index) => {
-          console.log(`   ${index + 1}. 사용자: ${review.user_id}, ISBN: ${review.isbn13}, 메모: ${review.memo?.substring(0, 30)}...`);
-        });
-      }
-      
-      const { data: reviewsData, error } = await reviewsApi.getReviewsByUser(user.id);
+      // 현재 사용자의 리뷰만 가져오기
+      const { data: reviewsData, error } = await reviewsApi.getReviews(user.id);
       
       if (error) {
         console.error('❌ 리뷰 로딩 실패:', error);
@@ -641,17 +617,15 @@ const AppRouter: React.FC = () => {
           id: review.id,
           bookId: review.isbn13,
           review: review.memo || '',
-          emotions: [], // review_emotions 테이블에서 별도로 가져와야 함
-          topics: [], // review_topics 테이블에서 별도로 가져와야 함
-          moodSummary: '', // 추후 추가
+          emotions: review.emotions ? review.emotions.map((e: any) => e.emotion) : [],
+          topics: review.topics ? review.topics.map((t: any) => t.topic) : [],
+          moodSummary: review.memo ? review.memo.substring(0, 100) + '...' : 'AI 분석 결과',
           createdAt: new Date(review.created_at),
           moodCardUrl: `/mood-cards/${review.id}`
         }));
 
         setReviews(formattedReviews);
-        console.log('✅ 리뷰 로딩 완료:', formattedReviews.length, '개');
       } else {
-        console.log('📝 저장된 리뷰가 없습니다.');
         setReviews([]);
       }
     } catch (error) {
@@ -690,7 +664,6 @@ const AppRouter: React.FC = () => {
           }));
         
         setWishlistBooks(wishlist);
-        console.log(`📚 위시리스트 로딩 완료: ${wishlist.length}권`);
       }
     } catch (error) {
       console.error('위시리스트 로딩 실패:', error);
@@ -728,7 +701,6 @@ const AppRouter: React.FC = () => {
           }));
         
         setReadingBooks(readingList);
-        console.log(`📖 읽고 있는 책 로딩 완료: ${readingList.length}권`);
       }
     } catch (error) {
       console.error('읽고 있는 책 로딩 실패:', error);
@@ -780,12 +752,10 @@ const AppRouter: React.FC = () => {
     const bookIsbn = 'id' in book ? book.id : book.isbn13;
     
     try {
-      console.log('📚 읽기 시작 처리:', { user: user.id, book: book.title, isbn: bookIsbn });
       
       // 먼저 책 정보가 데이터베이스에 있는지 확인하고 없으면 저장
       const { data: existingBook } = await booksApi.getBookByIsbn(bookIsbn);
       if (!existingBook) {
-        console.log('💾 책 정보 저장 중...');
         const bookToSave = 'id' in book ? {
           isbn13: book.id,
           title: book.title,
@@ -802,7 +772,6 @@ const AppRouter: React.FC = () => {
       }
       
       // 읽기 시작 데이터 저장/업데이트
-      console.log('📖 읽기 시작 데이터 저장 중...');
       const { data: libraryResult, error: libraryError } = await libraryApi.addLibraryItem({
         isbn13: bookIsbn,
         is_wishlist: false, // 📚 읽기 시작하면 위시리스트에서 실제 읽기로 변경
@@ -816,7 +785,6 @@ const AppRouter: React.FC = () => {
         throw libraryError;
       }
       
-      console.log('✅ 읽기 시작 데이터 저장 성공:', libraryResult);
       
       // 읽고 있는 책 목록 새로고침
       loadReadingBooks();
@@ -834,13 +802,11 @@ const AppRouter: React.FC = () => {
     const bookId = 'id' in book ? book.id : book.isbn13;
     // 읽고 있는 책 목록 새로고침
     loadReadingBooks();
-    console.log('Book completed:', bookId);
   };
 
   const handleProgressUpdate = (book: BookExternal, progress: number) => {
     // 읽고 있는 책 목록 새로고침
     loadReadingBooks();
-    console.log('Progress updated:', book.isbn13, progress);
   };
 
   const handleWishlistToggle = async (book: BookExternal) => {
@@ -950,6 +916,25 @@ const AppRouter: React.FC = () => {
     console.log('😊 선택된 감정:', selectedEmotions);
 
     try {
+      // 🔍 중복 감상문 체크
+      console.log('🔍 중복 감상문 체크 중...');
+      const { data: existingReview, error: checkError } = await reviewsApi.getReviewByUserAndIsbn(user.id, bookData.isbn13);
+      
+      if (checkError) {
+        console.error('❌ 중복 체크 실패:', checkError);
+        alert('기존 감상문 확인 중 오류가 발생했습니다.');
+        return;
+      }
+      
+      if (existingReview) {
+        console.log('⚠️ 이미 이 책에 대한 감상문이 존재합니다:', existingReview);
+        alert('⚠️ 이미 이 책에 대한 감상문을 작성하셨습니다.\n하나의 책에는 하나의 감상문만 작성할 수 있습니다.');
+        navigate('/archive');
+        return;
+      }
+      
+      console.log('✅ 중복 체크 통과 - 새 감상문 작성 가능');
+
       console.log('📝 독후감 제출 중:', { 
         bookTitle: bookData.title, 
         reviewLength: reviewText.length, 
@@ -1000,6 +985,7 @@ const AppRouter: React.FC = () => {
         user_id: user.id, // 사용자 ID 추가
         memo: reviewText,
         emotions: [...selectedEmotions, ...(Array.isArray(aiAnalysis.dominantEmotions) ? aiAnalysis.dominantEmotions : []), ...(Array.isArray(aiAnalysis.bookEmotions) ? aiAnalysis.bookEmotions : [])], // 배열로 전달
+        topics: Array.isArray(aiAnalysis.topics) ? aiAnalysis.topics : [], // 주제 데이터 추가
         mood_summary: aiAnalysis.moodSummary,
         rating: aiAnalysis.overallRating
       });
@@ -1393,7 +1379,7 @@ const AppRouter: React.FC = () => {
     }
   };
 
-  const currentReviews = reviews; // mock 데이터 제거, 실제 데이터만 사용
+  const currentReviews = reviews; // 데이터베이스에서 불러온 실제 데이터만 사용
 
   // 인증 상태 로딩 중
   if (loading) {
