@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Star, Calendar, BookOpen, Heart, Sparkles, BarChart3, User, Clock, Play, RotateCcw, CheckCircle, Edit, Trash2, Activity } from 'lucide-react';
+import { ArrowLeft, Star, Calendar, BookOpen, Heart, Sparkles, BarChart3, User, Clock, Play, RotateCcw, CheckCircle, Edit, Trash2, Activity, MessageSquare } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBook } from '../../hooks/useBooks';
-import { BookExternal, LibraryItem } from '../../types/database';
+import { BookExternal, LibraryItem, Review } from '../../types/database';
 import { aladinApi } from '../../services/aladinApi';
 import * as libraryApi from '../../api/library';
+import * as reviewsApi from '../../api/reviews';
 
 
 
@@ -37,6 +38,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
   const [libraryItem, setLibraryItem] = useState<LibraryItem | null>(null);
   const [progressInput, setProgressInput] = useState<number>(0);
   const [showProgressModal, setShowProgressModal] = useState(false);
+  const [userReview, setUserReview] = useState<Review | null>(null);
   const searchAttempted = useRef<Set<string>>(new Set()); // 이미 검색한 ISBN 추적
   
   // 먼저 데이터베이스에서 조회
@@ -59,6 +61,22 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
     };
 
     loadLibraryStatus();
+  }, [bookId, user?.id]);
+
+  // 📝 사용자의 감상문 로딩
+  useEffect(() => {
+    const loadUserReview = async () => {
+      if (bookId && user?.id) {
+        try {
+          const { data } = await reviewsApi.getReviewByIsbn(bookId, user.id);
+          setUserReview(data);
+        } catch (error) {
+          console.error('감상문 조회 실패:', error);
+        }
+      }
+    };
+
+    loadUserReview();
   }, [bookId, user?.id]);
 
   // 알라딘 API 검색 함수 메모이제이션
@@ -421,6 +439,65 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
             </div>
           )}
 
+          {/* 감상문 타임라인 */}
+          {userReview && (
+            <div className="bg-white border border-gray-100 rounded-xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-[#A8B5E8] to-[#B5D4C8] rounded-full flex items-center justify-center mr-3">
+                  <MessageSquare className="w-4 h-4 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">내 감상문</h3>
+              </div>
+              
+              <div className="space-y-4">
+                {/* 감상문 작성일 */}
+                <div className="flex items-center text-sm text-gray-600">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span>{new Date(userReview.created_at).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}</span>
+                </div>
+                
+                {/* 감상문 내용 */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                    {userReview.memo}
+                  </p>
+                </div>
+                
+                {/* 감정 태그 */}
+                {userReview.emotions && userReview.emotions.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {userReview.emotions.map((emotion, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gradient-to-r from-[#A8B5E8] to-[#B5D4C8] text-white text-xs rounded-full"
+                      >
+                        {emotion.emotion}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                {/* 주제 키워드 */}
+                {userReview.topics && userReview.topics.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {userReview.topics.map((topic, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gray-200 text-gray-700 text-xs rounded-full"
+                      >
+                        #{topic.keyword}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Action Buttons - 상태별 다른 버튼 */}
           <div className="space-y-3">
             {(() => {
@@ -498,7 +575,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                           onClick={handleProceedToReview} 
                           className="flex-1 py-3 bg-gray-600 text-white rounded-lg font-medium hover:bg-gray-700 transition-colors"
                         >
-                          리뷰 수정
+                          {userReview ? '감상문 수정' : '감상문 쓰기'}
                         </button>
                       </div>
                       

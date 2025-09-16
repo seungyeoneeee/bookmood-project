@@ -17,6 +17,46 @@ export async function getAllReviews() {
   }
 }
 
+// 감정과 주제 데이터를 포함한 모든 리뷰 조회
+export async function getReviewsWithEmotionsAndTopics() {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select(`
+        *,
+        emotions:review_emotions(emotion, score),
+        topics:review_topics(topic, score)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error fetching reviews with emotions and topics:', error);
+    return { data: null, error };
+  }
+}
+
+// 사용자와 ISBN으로 특정 리뷰 조회 (중복 체크용)
+export async function getReviewByUserAndIsbn(userId: string, isbn13: string) {
+  try {
+    const { data, error } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('isbn13', isbn13)
+      .single();
+
+    if (error && error.code !== 'PGRST116') { // PGRST116은 "no rows returned" 에러
+      throw error;
+    }
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error fetching review by user and ISBN:', error);
+    return { data: null, error };
+  }
+}
+
 // 사용자의 리뷰 목록 조회
 export async function getReviews(userId?: string) {
   try {
@@ -106,6 +146,8 @@ export async function createReview(input: CreateReviewInput) {
       isbn13Type: typeof input.isbn13,
       memo: input.memo ? input.memo.substring(0, 50) + '...' : null
     });
+    
+    console.log('🚀 Supabase insert 시작...');
 
     const { data, error } = await supabase
       .from('reviews')
@@ -118,6 +160,12 @@ export async function createReview(input: CreateReviewInput) {
 
     if (error) {
       console.error('❌ 리뷰 저장 실패:', error);
+      console.error('❌ 오류 상세 정보:', {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint
+      });
       // RLS 정책 에러 확인
       if (error.message?.includes('row-level security') || error.code === '42501') {
         throw new Error('리뷰 작성 권한이 없습니다. 로그인 상태를 확인해주세요.');
@@ -126,6 +174,7 @@ export async function createReview(input: CreateReviewInput) {
     }
 
     console.log('✅ 리뷰 저장 성공:', data);
+    console.log('✅ 저장된 리뷰 ID:', data?.id);
 
     // 📊 감정 데이터가 있으면 별도 테이블에 저장
     if (data && input.emotions && Array.isArray(input.emotions) && input.emotions.length > 0) {
@@ -155,6 +204,37 @@ export async function createReview(input: CreateReviewInput) {
       } catch (emotionError) {
         console.warn('감정 데이터 저장 예외:', emotionError);
         // 감정 저장 실패해도 리뷰는 성공으로 처리
+      }
+    }
+
+    // 📊 주제 데이터가 있으면 별도 테이블에 저장
+    if (data && input.topics && Array.isArray(input.topics) && input.topics.length > 0) {
+      try {
+        console.log('📝 주제 데이터 저장 중:', input.topics);
+        
+        const topicInserts = input.topics
+          .filter(topic => topic && topic.trim()) // 빈 값 제거
+          .map((topic: string) => ({
+            review_id: data.id,
+            topic: topic.trim(),
+            score: 1, // 기본 점수
+            source: 'ai' // AI 분석 결과
+          }));
+
+        if (topicInserts.length > 0) {
+          const { error: topicError } = await supabase
+            .from('review_topics')
+            .insert(topicInserts);
+          
+          if (topicError) {
+            console.warn('주제 데이터 저장 실패:', topicError);
+          } else {
+            console.log('✅ 주제 데이터 저장 성공');
+          }
+        }
+      } catch (topicError) {
+        console.warn('주제 데이터 저장 예외:', topicError);
+        // 주제 저장 실패해도 리뷰는 성공으로 처리
       }
     }
 

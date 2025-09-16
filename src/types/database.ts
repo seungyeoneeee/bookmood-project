@@ -108,6 +108,7 @@ export interface CreateReviewInput {
   memo: string;
   // 🆕 감성 분석 기능을 위한 추가 필드들 (배열로 수정)
   emotions?: string[];
+  topics?: string[]; // 주제 데이터 추가
   mood_summary?: string;
   rating?: number;
 }

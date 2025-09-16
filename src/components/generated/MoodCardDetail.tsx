@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, Share2, Heart, Calendar, Tag, Sparkles, Copy, Check, Twitter, Facebook, Instagram } from 'lucide-react';
+import { ArrowLeft, Download, Share2, Heart, Calendar, Tag, Sparkles, Copy, Check, Twitter, Facebook, Instagram, BookOpen, User, Star } from 'lucide-react';
+import { useBook } from '../../hooks/useBooks';
 interface ReviewData {
   id: string;
   bookId: string;
@@ -22,6 +23,9 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  // 책 정보 로딩
+  const { book, loading: bookLoading } = useBook(review.bookId);
   const handleDownload = async () => {
     setIsDownloading(true);
     // Mock download process
@@ -89,77 +93,134 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
   }} animate={{
     opacity: 1,
     y: 0
-  }} className="min-h-screen">
+  }} className="min-h-screen bg-gray-50">
       <div className="px-4 md:px-0">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <button onClick={onBack} className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center hover:bg-gray-200 transition-colors">
+        <div className="flex items-center justify-between mb-6">
+          <button onClick={onBack} className="w-10 h-10 bg-white rounded-xl flex items-center justify-center hover:bg-gray-50 transition-colors shadow-sm">
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <h1 className="text-xl font-bold text-gray-800">무드 카드</h1>
           <div className="w-10" />
         </div>
 
-        {/* Main Mood Card */}
-        <motion.div initial={{
-        opacity: 0,
-        scale: 0.9
-      }} animate={{
-        opacity: 1,
-        scale: 1
-      }} transition={{
-        delay: 0.2
-      }} className="mb-8">
-          <div className="aspect-square rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl" style={{
-          background: getEmotionGradient()
-        }}>
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-4 right-4 w-32 h-32 border border-white/20 rounded-full" />
-              <div className="absolute bottom-8 left-8 w-24 h-24 border border-white/20 rounded-full" />
-              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 border border-white/10 rounded-full" />
-            </div>
-
-            {/* Content */}
-            <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <div className="flex items-center space-x-2 mb-4">
-                  <Heart className="w-6 h-6" />
-                  <span className="text-sm font-medium opacity-90">BookMood</span>
+        {/* 책 정보 섹션 */}
+        {book && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100"
+          >
+            <div className="flex space-x-4">
+              <img 
+                src={book.cover_url || book.cover} 
+                alt={book.title}
+                className="w-20 h-28 object-cover rounded-xl shadow-sm flex-shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-gray-900 mb-1 line-clamp-2">
+                  {book.title}
+                </h2>
+                <p className="text-gray-600 text-sm mb-3 flex items-center">
+                  <User className="w-4 h-4 mr-1" />
+                  {book.author}
+                </p>
+                
+                <div className="flex items-center space-x-4 text-sm text-gray-500">
+                  {book.publisher && (
+                    <span className="flex items-center">
+                      <BookOpen className="w-4 h-4 mr-1" />
+                      {book.publisher}
+                    </span>
+                  )}
+                  {book.pub_date && (
+                    <span className="flex items-center">
+                      <Calendar className="w-4 h-4 mr-1" />
+                      {book.pub_date}
+                    </span>
+                  )}
                 </div>
                 
-                <div className="mb-6">
-                  <p className="text-sm opacity-75 mb-2">
-                    {review.createdAt.toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                  </p>
-                </div>
+                {book.customer_review_rank && (
+                  <div className="flex items-center mt-3">
+                    <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                    <span className="text-sm text-gray-600">
+                      평점 {book.customer_review_rank}/10
+                    </span>
+                  </div>
+                )}
               </div>
+            </div>
+          </motion.div>
+        )}
 
-              <div className="space-y-4">
-                <blockquote className="text-lg font-medium leading-relaxed">
-                  "{review.moodSummary}"
-                </blockquote>
-
-                <div className="flex flex-wrap gap-2">
-                  {review.emotions.slice(0, 3).map((emotion, index) => <span key={index} className="px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm rounded-full">
-                      {emotion}
-                    </span>)}
-                </div>
+        {/* 감상문 카드 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#A8B5E8] to-[#B5D4C8] rounded-full flex items-center justify-center">
+                <Heart className="w-4 h-4 text-white" />
               </div>
+              <h3 className="text-lg font-semibold text-gray-900">감상문</h3>
+            </div>
+            <div className="text-sm text-gray-500">
+              {review.createdAt.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </div>
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-4 mb-4">
+            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+              {review.review}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {review.emotions.map((emotion, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gradient-to-r from-[#A8B5E8] to-[#B5D4C8] text-white text-xs rounded-full font-medium"
+              >
+                {emotion}
+              </span>
+            ))}
+          </div>
+        </motion.div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 opacity-75" />
-                  <span className="text-xs opacity-75">AI 생성</span>
-                </div>
-                <div className="text-xs opacity-75">
-                  #{review.id.slice(0, 8)}
-                </div>
-              </div>
+        {/* AI 요약 카드 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="bg-gradient-to-br from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-2xl p-6 mb-6 border border-[#A8B5E8]/20"
+        >
+          <div className="flex items-center mb-4">
+            <div className="w-8 h-8 bg-gradient-to-br from-[#A8B5E8] to-[#B5D4C8] rounded-full flex items-center justify-center mr-3">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900">AI 감정 요약</h3>
+          </div>
+          
+          <blockquote className="text-gray-700 italic text-lg leading-relaxed border-l-4 border-[#A8B5E8] pl-4">
+            "{review.moodSummary}"
+          </blockquote>
+          
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#A8B5E8]/20">
+            <div className="flex items-center text-sm text-gray-500">
+              <Sparkles className="w-4 h-4 mr-1" />
+              AI 생성
+            </div>
+            <div className="text-xs text-gray-400">
+              #{review.id.slice(0, 8)}
             </div>
           </div>
         </motion.div>
@@ -211,97 +272,54 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
           </div>
         </div>
 
-        {/* Details */}
-        <div className="space-y-6">
-          {/* Metadata */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Calendar className="w-5 h-5 mr-2" />
-              독서 정보
-            </h2>
+        {/* 주제 키워드 */}
+        {review.topics && review.topics.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100"
+          >
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-[#B5D4C8] to-[#A8D4C8] rounded-full flex items-center justify-center mr-3">
+                <Tag className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">주제 키워드</h3>
+            </div>
             
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">날짜</p>
-                <p className="text-gray-800">
-                  {review.createdAt.toLocaleDateString('ko-KR', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-                </p>
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {review.topics.map((topic, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-full font-medium flex items-center"
+                >
+                  <Tag className="w-3 h-3 mr-1" />
+                  {topic}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">감지된 감정</p>
-                <div className="flex flex-wrap gap-2">
-                  {review.emotions.map((emotion, index) => <span key={index} className="px-3 py-1 text-sm bg-[#A8B5E8]/20 text-[#A8B5E8] rounded-full font-medium border border-[#A8B5E8]/30">
-                      {emotion}
-                    </span>)}
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">주제</p>
-                <div className="flex flex-wrap gap-2">
-                  {review.topics.map((topic, index) => <span key={index} className="px-3 py-1 text-sm bg-[#B5D4C8]/20 text-[#B5D4C8] rounded-full font-medium flex items-center border border-[#B5D4C8]/30">
-                      <Tag className="w-3 h-3 mr-1" />
-                      {topic}
-                    </span>)}
-                </div>
-              </div>
+        {/* 통계 */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="bg-gradient-to-r from-[#A8B5E8]/10 to-[#B5D4C8]/10 rounded-2xl p-6 mb-6 border border-[#A8B5E8]/20"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">감상문 통계</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[#A8B5E8]">{review.emotions.length}</p>
+              <p className="text-sm text-gray-600">감지된 감정</p>
+            </div>
+            <div className="text-center">
+              <p className="text-2xl font-bold text-[#B5D4C8]">{review.topics.length}</p>
+              <p className="text-sm text-gray-600">주제 키워드</p>
             </div>
           </div>
-
-          {/* AI Analysis */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-              <Sparkles className="w-5 h-5 mr-2" />
-              AI 감정 분석
-            </h3>
-            
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-2">생성된 요약</p>
-                <blockquote className="text-gray-800 italic border-l-4 border-[#A8B5E8] pl-4 py-2 bg-[#A8B5E8]/10 rounded-r-xl">
-                  "{review.moodSummary}"
-                </blockquote>
-              </div>
-
-              <div className="pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-500">
-                  이 분석은 AI를 사용하여 당신의 독서 경험의 감정적 본질을 포착했습니다.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Original Review */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">원본 감상문</h3>
-            <div className="prose prose-sm max-w-none">
-              <p className="text-gray-700 leading-relaxed">
-                {review.review}
-              </p>
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div className="bg-gradient-to-r from-[#A8B5E8]/20 to-[#B5D4C8]/20 border border-gray-200 rounded-2xl p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">무드 카드 통계</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#A8B5E8]">{review.emotions.length}</p>
-                <p className="text-sm text-gray-600">감정</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-[#B5D4C8]">{review.topics.length}</p>
-                <p className="text-sm text-gray-600">주제</p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Click outside to close share menu */}
