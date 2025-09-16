@@ -206,7 +206,7 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
           </button>
           <div className="text-center">
             <h1 className="text-xl font-bold text-gray-800">내 아카이브</h1>
-            <p className="text-gray-600 text-sm">{reviews.length}개의 감정 기록</p>
+            <p className="text-gray-600 text-sm">{reviews.length}개의 감상문</p>
           </div>
           <div className="w-10" />
         </div>
@@ -330,7 +330,7 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-800 mb-2">기록이 없습니다</h3>
             <p className="text-gray-600 text-sm">
-              {selectedFilter ? '필터를 조정해보세요' : '첫 번째 책 리뷰를 작성해보세요'}
+              {selectedFilter ? '필터를 조정해보세요' : '첫 번째 감상문을 작성해보세요'}
             </p>
           </motion.div>}
       </div>
