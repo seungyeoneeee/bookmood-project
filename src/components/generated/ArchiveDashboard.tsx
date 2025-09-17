@@ -162,7 +162,7 @@ const ArchiveDashboard: React.FC<ArchiveDashboardProps> = ({
   const renderMoodCard = (review: ReviewData, index: number) => (
     <motion.div 
       key={review.id} 
-      ref={el => cardRefs.current[review.id] = el}
+      ref={el => { cardRefs.current[review.id] = el; }}
       initial={{
         opacity: 0,
         y: 20

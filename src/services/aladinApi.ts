@@ -34,8 +34,8 @@ interface AladinBook {
   adult: boolean;
   fixedPrice: boolean;
   customerReviewRank: number;
-  subInfo?: any;
-  seriesInfo?: any;
+  subInfo?: Record<string, unknown>;
+  seriesInfo?: Record<string, unknown>;
   fullDescription?: string; // 상세 설명에서 페이지 수 추출 가능
 }
 
@@ -269,19 +269,19 @@ class AladinApiService {
       isbn13: aladinBook.isbn13,
       item_id: aladinBook.itemId,
       title: aladinBook.title || '',
-      author: aladinBook.author || null,
-      publisher: aladinBook.publisher || null,
-      pub_date: aladinBook.pubDate ? this.parseDate(aladinBook.pubDate) : null,
-      cover_url: aladinBook.cover || null,
+      author: aladinBook.author || undefined,
+      publisher: aladinBook.publisher || undefined,
+      pub_date: aladinBook.pubDate ? this.parseDate(aladinBook.pubDate) || undefined : undefined,
+      cover_url: aladinBook.cover || undefined,
       category_id: toSmallInt(aladinBook.categoryId),
-      category_name: aladinBook.categoryName || null,
+      category_name: aladinBook.categoryName || undefined,
       price_standard: toSmallInt(aladinBook.priceStandard),
       price_sales: toSmallInt(aladinBook.priceSales),
       customer_review_rank: toSmallInt(aladinBook.customerReviewRank),
       aladin_link: `https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${aladinBook.itemId}`,
-      summary: aladinBook.description || null,
+      summary: aladinBook.description || undefined,
       page_count: extractedPageCount, // 🆕 실제 페이지 수만 (기본값 없음)
-      raw: aladinBook, // 원본 데이터 보관
+      raw: aladinBook as unknown as Record<string, unknown>, // 원본 데이터 보관
       fetched_at: new Date().toISOString()
     };
   }

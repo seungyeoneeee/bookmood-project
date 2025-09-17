@@ -80,7 +80,7 @@ export function useRealtimeBookSearch() {
         setBooks([]);
         setTotalFound(0);
       } else {
-        setBooks(data || []);
+        setBooks((data as BookExternal[]) || []);
         setTotalFound(found || 0);
       }
     } catch (error) {

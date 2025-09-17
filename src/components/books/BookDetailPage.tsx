@@ -94,7 +94,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
       
       if (response.item && response.item.length > 0) {
         const transformedBook = aladinApi.transformToBookExternal(response.item[0]);
-        setAladinBook(transformedBook);
+        setAladinBook(transformedBook as BookExternal);
         return;
       }
     } catch (error) {
@@ -114,7 +114,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
         const exactMatch = response.item.find(item => item.isbn13 === isbn);
         if (exactMatch) {
           const transformedBook = aladinApi.transformToBookExternal(exactMatch);
-          setAladinBook(transformedBook);
+          setAladinBook(transformedBook as BookExternal);
         }
       }
     } catch (error) {
