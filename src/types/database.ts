@@ -13,6 +13,7 @@ export interface BookExternal {
   customer_review_rank?: number | null;
   aladin_link?: string;
   summary?: string;
+  page_count?: number | null; // 🆕 실제 페이지 수
   raw?: Record<string, unknown>;
   fetched_at?: string;
 }

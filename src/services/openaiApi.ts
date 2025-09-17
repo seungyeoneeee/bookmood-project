@@ -20,6 +20,15 @@ export interface EmotionAnalysisResult {
   recommendedBooks?: string[]; // 🆕 추천 도서
 }
 
+// 🆕 책 줄거리 감정 분석 결과
+export interface BookEmotionAnalysis {
+  emotions: Record<string, number>; // 감정별 점수 (0-1)
+  dominantEmotions: string[]; // 주요 감정들
+  themes: string[]; // 주요 테마
+  mood: 'uplifting' | 'melancholic' | 'intense' | 'peaceful' | 'mysterious' | 'romantic' | 'adventurous';
+  readingExperience: string; // 독서 경험 설명
+}
+
 /**
  * 사용자 감상문과 책 줄거리를 종합 분석하여 감정을 추출
  */
@@ -210,6 +219,283 @@ function getFallbackAnalysis(
     themes: ['독서', '성찰'],
     rating: 3.0 + (positiveScore - negativeScore) * 0.5
   };
+}
+
+/**
+ * 책 줄거리를 분석해서 감정 점수 추출
+ * @param bookTitle 책 제목
+ * @param bookSummary 책 줄거리
+ * @param author 저자
+ * @param genre 장르
+ * @returns 감정 분석 결과
+ */
+export async function analyzeBookEmotions(
+  bookTitle: string,
+  bookSummary: string,
+  author?: string,
+  genre?: string
+): Promise<BookEmotionAnalysis> {
+  
+  // API 키 유효성 검사
+  if (!validateOpenAIKey()) {
+    console.warn('⚠️ OpenAI API 키가 유효하지 않음');
+    return getFallbackBookEmotions(bookTitle, bookSummary, genre);
+  }
+
+  // 사용량 한도 체크 및 OpenAI 상태 확인
+  const now = Date.now();
+  const lastRequest = localStorage.getItem('lastBookAnalysisRequest');
+  const lastOpenAIError = localStorage.getItem('lastOpenAIError');
+  
+  // 최근에 OpenAI 에러가 있었다면 폴백 사용
+  if (lastOpenAIError) {
+    const errorTime = parseInt(lastOpenAIError);
+    if (now - errorTime < 30000) { // 30초 동안 폴백 사용
+      console.warn('⚠️ OpenAI 에러로 인해 폴백 시스템 사용중');
+      return getFallbackBookEmotions(bookTitle, bookSummary, genre);
+    } else {
+      localStorage.removeItem('lastOpenAIError'); // 30초 지났으면 에러 기록 삭제
+    }
+  }
+  
+  if (lastRequest && now - parseInt(lastRequest) < 5000) {
+    console.warn('⚡ 책 분석 요청 간격 제한 (5초)');
+    return getFallbackBookEmotions(bookTitle, bookSummary, genre);
+  }
+
+  try {
+    localStorage.setItem('lastBookAnalysisRequest', now.toString());
+    
+    const prompt = `다음 책의 줄거리를 분석해서 독자가 느낄 수 있는 감정들을 점수로 매겨주세요.
+
+**책 정보:**
+- 제목: ${bookTitle}
+- 저자: ${author || '미상'}
+- 장르: ${genre || '일반'}
+- 줄거리: ${bookSummary || '줄거리 없음'}
+
+**분석 요청:**
+1. 다음 감정들에 대해 0-1 점수로 평가: 행복, 슬픔, 흥미, 평온, 영감, 긴장, 로맨스, 모험, 성찰, 유머
+2. 이 책의 주요 감정 3개 선택
+3. 주요 테마/키워드 3-5개
+4. 전체적인 분위기 (uplifting/melancholic/intense/peaceful/mysterious/romantic/adventurous 중 선택)
+5. 독서 경험을 한 줄로 요약
+
+**응답 형식 (JSON):**
+{
+  "emotions": {
+    "행복": 0.7,
+    "슬픔": 0.3,
+    "흥미": 0.8,
+    "평온": 0.4,
+    "영감": 0.6,
+    "긴장": 0.5,
+    "로맨스": 0.2,
+    "모험": 0.3,
+    "성찰": 0.7,
+    "유머": 0.1
+  },
+  "dominantEmotions": ["흥미", "영감", "행복"],
+  "themes": ["성장", "우정", "꿈", "도전", "희망"],
+  "mood": "uplifting",
+  "readingExperience": "마음을 따뜻하게 해주는 감동적인 성장 이야기"
+}`;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo',
+      messages: [
+        {
+          role: 'system',
+          content: '당신은 책과 문학 감정 분석 전문가입니다. 책의 내용을 바탕으로 독자가 경험할 수 있는 감정들을 정확하게 분석해주세요.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 800
+    });
+
+    const result = response.choices[0]?.message?.content;
+    if (!result) {
+      throw new Error('No response from OpenAI');
+    }
+
+    // JSON 파싱 시도
+    try {
+      const parsedResult = JSON.parse(result);
+      
+      // 결과 검증 및 정규화
+      const normalizedResult: BookEmotionAnalysis = {
+        emotions: parsedResult.emotions || {},
+        dominantEmotions: Array.isArray(parsedResult.dominantEmotions) ? parsedResult.dominantEmotions.slice(0, 5) : [],
+        themes: Array.isArray(parsedResult.themes) ? parsedResult.themes.slice(0, 5) : [],
+        mood: ['uplifting', 'melancholic', 'intense', 'peaceful', 'mysterious', 'romantic', 'adventurous'].includes(parsedResult.mood) 
+          ? parsedResult.mood 
+          : 'peaceful',
+        readingExperience: typeof parsedResult.readingExperience === 'string' 
+          ? parsedResult.readingExperience.substring(0, 200)
+          : '흥미로운 독서 경험을 선사하는 책'
+      };
+
+      console.log('✅ AI 책 감정 분석 완료:', bookTitle);
+      return normalizedResult;
+      
+    } catch (parseError) {
+      console.warn('❌ AI 응답 JSON 파싱 실패:', parseError);
+      return getFallbackBookEmotions(bookTitle, bookSummary, genre);
+    }
+
+  } catch (error) {
+    console.error('❌ OpenAI 책 감정 분석 실패:', error);
+    
+    // OpenAI 에러 시간 기록 (일시적으로 폴백 시스템 사용하기 위해)
+    localStorage.setItem('lastOpenAIError', Date.now().toString());
+    
+    // 에러 종류별 사용자 친화적 메시지
+    const apiError = error as { status?: number };
+    if (apiError.status === 429) {
+      console.warn('⚠️ OpenAI API 사용량 한도 초과 - 폴백 시스템으로 전환');
+    } else if (apiError.status === 401) {
+      console.warn('⚠️ OpenAI API 키 문제 - 폴백 시스템으로 전환');
+    } else {
+      console.warn('⚠️ OpenAI API 연결 문제 - 폴백 시스템으로 전환');
+    }
+    
+    return getFallbackBookEmotions(bookTitle, bookSummary, genre);
+  }
+}
+
+/**
+ * AI 분석 실패 시 폴백 감정 분석 (강화된 버전)
+ */
+function getFallbackBookEmotions(bookTitle: string, bookSummary: string, genre?: string): BookEmotionAnalysis {
+  const title = bookTitle.toLowerCase();
+  const summary = (bookSummary || '').toLowerCase();
+  const genreStr = (genre || '').toLowerCase();
+  const combinedText = `${title} ${summary} ${genreStr}`;
+  
+  console.log('🔄 키워드 기반 폴백 감정 분석 시작:', bookTitle.substring(0, 20) + '...');
+  
+  // 기본 감정 점수
+  const emotions: Record<string, number> = {
+    '행복': 0.3,
+    '슬픔': 0.2,
+    '흥미': 0.5,
+    '평온': 0.3,
+    '영감': 0.4,
+    '긴장': 0.2,
+    '로맨스': 0.1,
+    '모험': 0.2,
+    '성찰': 0.4,
+    '유머': 0.2
+  };
+  
+  // 강화된 키워드 분석
+  const emotionKeywords = {
+    '행복': ['행복', '기쁨', '즐거', '웃음', '밝', '희망', '따뜻', '상쾌', '활기', '유쾌', '달콤', '사랑스러운'],
+    '슬픔': ['슬픔', '눈물', '아픔', '이별', '상실', '비극', '애도', '그리움', '아련', '쓸쓸', '멜랑콜리', '우울'],
+    '흥미': ['흥미', '재미', '신기', '놀라', '호기심', '궁금', '매력', '스릴', '신비', '흥분', '관심', '집중'],
+    '평온': ['평온', '고요', '안정', '힐링', '휴식', '차분', '평화', '조용', '고즈넉', '여유', '편안', '따스'],
+    '영감': ['영감', '깨달음', '통찰', '지혜', '성장', '동기', '희망', '꿈', '비전', '각성', '계시', '발견'],
+    '긴장': ['긴장', '스릴', '서스펜스', '미스터리', '추리', '범죄', '액션', '위험', '모험', '전투', '갈등'],
+    '로맨스': ['사랑', '로맨스', '연애', '결혼', '데이트', '연인', '애정', '로맨틱', '달콤', '키스', '결혼'],
+    '모험': ['모험', '여행', '탐험', '도전', '여정', '탐사', '발견', '용기', '모험가', '원정', '탐구'],
+    '성찰': ['성찰', '철학', '사색', '명상', '깊이', '의미', '인생', '생각', '고민', '반성', '내면', '진리'],
+    '유머': ['유머', '웃음', '코미디', '재미', '농담', '유쾌', '익살', '풍자', '해학', '위트', '재치']
+  };
+  
+  // 각 감정별로 키워드 매칭 점수 계산
+  Object.entries(emotionKeywords).forEach(([emotion, keywords]) => {
+    let score = emotions[emotion];
+    let matchCount = 0;
+    
+    keywords.forEach(keyword => {
+      if (combinedText.includes(keyword)) {
+        matchCount++;
+        if (title.includes(keyword)) score += 0.3;
+        else if (summary.includes(keyword)) score += 0.2;
+        else if (genreStr.includes(keyword)) score += 0.1;
+      }
+    });
+    
+    // 매칭된 키워드가 많을수록 보너스
+    if (matchCount > 1) score += matchCount * 0.1;
+    
+    emotions[emotion] = Math.min(score, 1.0);
+  });
+  
+  // 장르별 특별 처리
+  const genreAdjustments = {
+    '로맨': { '로맨스': 0.9, '행복': 0.7, '슬픔': 0.4 },
+    '추리': { '긴장': 0.8, '흥미': 0.9, '성찰': 0.6 },
+    '미스터리': { '긴장': 0.8, '흥미': 0.9 },
+    '판타지': { '모험': 0.8, '흥미': 0.7, '영감': 0.6 },
+    '호러': { '긴장': 0.9, '슬픔': 0.3 },
+    '코미디': { '유머': 0.9, '행복': 0.8 },
+    '드라마': { '슬픔': 0.7, '성찰': 0.6 },
+    '자기계발': { '영감': 0.9, '성찰': 0.8, '평온': 0.6 },
+    '에세이': { '성찰': 0.8, '평온': 0.7, '영감': 0.6 },
+    '여행': { '모험': 0.8, '평온': 0.6, '흥미': 0.7 },
+    '요리': { '행복': 0.7, '평온': 0.6 },
+    '역사': { '흥미': 0.7, '성찰': 0.6 },
+    '과학': { '흥미': 0.8, '영감': 0.6 }
+  };
+  
+  Object.entries(genreAdjustments).forEach(([genreKeyword, adjustments]) => {
+    if (genreStr.includes(genreKeyword)) {
+      Object.entries(adjustments).forEach(([emotion, score]) => {
+        emotions[emotion] = Math.max(emotions[emotion], score);
+      });
+    }
+  });
+  
+  // 상위 3개 감정 찾기
+  const sortedEmotions = Object.entries(emotions)
+    .sort(([,a], [,b]) => b - a)
+    .slice(0, 3)
+    .map(([emotion]) => emotion);
+  
+  // 테마 결정
+  let themes: string[] = [];
+  if (genreStr.includes('소설') || genreStr.includes('문학')) {
+    themes = ['인간관계', '성장', '삶', '감정'];
+  } else if (genreStr.includes('자기계발')) {
+    themes = ['성장', '동기부여', '목표달성', '자아계발'];
+  } else if (genreStr.includes('경제') || genreStr.includes('경영')) {
+    themes = ['성공', '전략', '리더십', '투자'];
+  } else if (genreStr.includes('과학') || genreStr.includes('기술')) {
+    themes = ['혁신', '발견', '미래', '지식'];
+  } else {
+    themes = ['학습', '성찰', '지식', '통찰'];
+  }
+  
+  // 분위기 결정
+  let mood: BookEmotionAnalysis['mood'];
+  if (emotions['행복'] > 0.6) mood = 'uplifting';
+  else if (emotions['슬픔'] > 0.6) mood = 'melancholic';
+  else if (emotions['긴장'] > 0.6) mood = 'intense';
+  else if (emotions['로맨스'] > 0.6) mood = 'romantic';
+  else if (emotions['모험'] > 0.6) mood = 'adventurous';
+  else if (emotions['평온'] > 0.5) mood = 'peaceful';
+  else mood = 'peaceful';
+  
+  const result = {
+    emotions,
+    dominantEmotions: sortedEmotions,
+    themes,
+    mood,
+    readingExperience: `${sortedEmotions.join(', ')}을 느낄 수 있는 의미 있는 독서 (키워드 기반 분석)`
+  };
+  
+  console.log('✅ 폴백 감정 분석 완료:', { 
+    dominantEmotions: sortedEmotions, 
+    mood,
+    topScores: sortedEmotions.map(e => `${e}:${emotions[e].toFixed(2)}`).join(', ')
+  });
+  
+  return result;
 }
 
 /**

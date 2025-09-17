@@ -203,24 +203,47 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
 
   // 📊 진행률 업데이트
   const handleProgressUpdate = async () => {
-    if (!libraryItem || !user?.id) return;
+    if (!user?.id || !bookId) return;
     
     try {
       const updatedProgress = Math.min(Math.max(progressInput, 0), 100);
       
-      await libraryApi.updateLibraryItem(libraryItem.id, {
-        progress: updatedProgress,
-        shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
-        finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
-      });
-      
-      // 상태 업데이트
-      setLibraryItem(prev => prev ? {
-        ...prev,
-        progress: updatedProgress,
-        shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
-        finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
-      } : null);
+      if (libraryItem) {
+        // 기존 라이브러리 아이템이 있으면 업데이트
+        await libraryApi.updateLibraryItem(libraryItem.id, {
+          progress: updatedProgress,
+          shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
+          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
+        });
+        
+        // 상태 업데이트
+        setLibraryItem(prev => prev ? {
+          ...prev,
+          progress: updatedProgress,
+          shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
+          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
+        } : null);
+      } else {
+        // 라이브러리 아이템이 없으면 새로 생성 (찜한 책에서 처음 진행률 기록하는 경우)
+        console.log('💾 새로운 읽기 기록 생성:', { bookId, progress: updatedProgress });
+        
+        const { data: newLibraryItem, error } = await libraryApi.addLibraryItem({
+          isbn13: bookId,
+          is_wishlist: false, // 읽기 시작하면 위시리스트에서 제거
+          shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
+          progress: updatedProgress,
+          started_at: new Date().toISOString().split('T')[0],
+          finished_at: updatedProgress === 100 ? new Date().toISOString().split('T')[0] : undefined
+        });
+        
+        if (error) {
+          console.error('❌ 새로운 읽기 기록 생성 실패:', error);
+          throw error;
+        }
+        
+        console.log('✅ 새로운 읽기 기록 생성 성공:', newLibraryItem);
+        setLibraryItem(newLibraryItem);
+      }
       
       setShowProgressModal(false);
       
@@ -229,6 +252,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
       }
     } catch (error) {
       console.error('Error updating progress:', error);
+      alert('진행률 저장에 실패했습니다. 다시 시도해주세요.');
     }
   };
 

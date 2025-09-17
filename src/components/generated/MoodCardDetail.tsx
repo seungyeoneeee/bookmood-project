@@ -114,7 +114,7 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
           >
             <div className="flex space-x-4">
               <img 
-                src={book.cover_url || book.cover} 
+                src={book.cover_url} 
                 alt={book.title}
                 className="w-20 h-28 object-cover rounded-xl shadow-sm flex-shrink-0"
               />

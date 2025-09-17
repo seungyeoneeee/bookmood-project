@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useNavigate, useParams, useLocation } from 're
 import { motion, AnimatePresence } from 'framer-motion';
 import { Book, Heart, TrendingUp, User, Search, BookOpen } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { BookExternal } from '../types/database';
+import { BookExternal, CreateReviewInput } from '../types/database';
 import * as booksApi from '../api/books';
 import * as libraryApi from '../api/library';
 import { aladinApi } from '../services/aladinApi';
@@ -172,7 +172,7 @@ const ReadingProgressRoute: React.FC<{
             title: dbBook.title,
             author: dbBook.author || '작가 미상',
             cover: dbBook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-            pages: 300 // 기본값 (알라딘 API에 페이지 수 없음)
+            pages: dbBook.page_count || 280 // 🆕 실제 페이지 수 또는 기본값
           });
         } else {
           // 2. 데이터베이스에 없으면 알라딘 API에서 조회
@@ -184,12 +184,14 @@ const ReadingProgressRoute: React.FC<{
           
           if (response.item && response.item.length > 0) {
             const book = response.item[0];
+            // 알라딘 데이터를 BookExternal 형태로 변환해서 페이지 수 추출
+            const bookExternal = aladinApi.transformToBookExternal(book);
             setBookData({
               id: book.isbn13,
               title: book.title,
               author: book.author || '작가 미상',
               cover: book.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-              pages: 300 // 기본값
+              pages: bookExternal.page_count || 280 // 🆕 카테고리별 추정 페이지 수
             });
           } else {
             // 3. 아무것도 없으면 기본값
@@ -198,7 +200,7 @@ const ReadingProgressRoute: React.FC<{
               title: 'ISBN: ' + bookId,
               author: '작가 미상',
               cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-              pages: 300
+              pages: 280 // 🆕 기본 페이지 수
             });
           }
         }
@@ -209,7 +211,7 @@ const ReadingProgressRoute: React.FC<{
           title: 'ISBN: ' + bookId,
           author: '작가 미상',
           cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-          pages: 300
+          pages: 280 // 🆕 기본 페이지 수
         });
       }
       
@@ -681,24 +683,27 @@ const AppRouter: React.FC = () => {
         // ReadingBook 타입으로 변환
         const readingList = libraryItems
           .filter(item => item.book) // book 정보가 있는 것만
-          .map(item => ({
-            id: item.book!.isbn13,
-            title: item.book!.title,
-            author: item.book!.author || '작가 미상',
-            cover: item.book!.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-            description: item.book!.summary || '',
-            rating: item.book!.customer_review_rank ? item.book!.customer_review_rank / 10 : undefined,
-            publishedYear: item.book!.pub_date ? new Date(item.book!.pub_date).getFullYear().toString() : undefined,
-            genre: item.book!.category_name,
-            pages: 300, // 기본값 (알라딘 API에 페이지 수 없음)
-            progress: item.progress || 0,
-            startedAt: new Date(item.started_at || item.created_at),
-            lastReadAt: new Date(item.updated_at),
-            notes: item.note || '',
-            status: item.shelf_status === 'paused' ? 'paused' as const : 'reading' as const,
-            currentPage: Math.round((item.progress || 0) * 300 / 100), // 정확한 페이지 계산
-            totalPages: 300 // 기본값
-          }));
+          .map(item => {
+            const totalPages = item.book!.page_count || 280; // 🆕 실제 페이지 수 또는 기본값
+            return {
+              id: item.book!.isbn13,
+              title: item.book!.title,
+              author: item.book!.author || '작가 미상',
+              cover: item.book!.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
+              description: item.book!.summary || '',
+              rating: item.book!.customer_review_rank ? item.book!.customer_review_rank / 10 : undefined,
+              publishedYear: item.book!.pub_date ? new Date(item.book!.pub_date).getFullYear().toString() : undefined,
+              genre: item.book!.category_name,
+              pages: totalPages, // 🆕 실제 페이지 수
+              progress: item.progress || 0,
+              startedAt: new Date(item.started_at || item.created_at),
+              lastReadAt: new Date(item.updated_at),
+              notes: item.note || '',
+              status: item.shelf_status === 'paused' ? 'paused' as const : 'reading' as const,
+              currentPage: Math.round((item.progress || 0) * totalPages / 100), // 🆕 실제 페이지 수 기반 계산
+              totalPages // 🆕 실제 페이지 수
+            };
+          });
         
         setReadingBooks(readingList);
       }
@@ -771,14 +776,24 @@ const AppRouter: React.FC = () => {
         }
       }
       
-      // 읽기 시작 데이터 저장/업데이트
-      const { data: libraryResult, error: libraryError } = await libraryApi.addLibraryItem({
+      // 기존 라이브러리 아이템 확인 (진행 상태 보존을 위해)
+      const { data: existingLibraryItem } = await libraryApi.getLibraryItemByIsbn(bookIsbn, user.id);
+      
+      // 기존 진행 상태 보존하면서 읽기 시작
+      const libraryData = {
         isbn13: bookIsbn,
         is_wishlist: false, // 📚 읽기 시작하면 위시리스트에서 실제 읽기로 변경
-        shelf_status: 'reading',
-        progress: 0,
-        started_at: new Date().toISOString().split('T')[0]
-      });
+        shelf_status: 'reading' as const,
+        progress: existingLibraryItem && !existingLibraryItem.is_wishlist 
+          ? existingLibraryItem.progress // 기존 진행률 보존
+          : 0, // 새로 시작하거나 찜목록에서 온 경우만 0
+        started_at: existingLibraryItem?.started_at 
+          ? existingLibraryItem.started_at 
+          : new Date().toISOString().split('T')[0],
+        note: existingLibraryItem?.note // 기존 노트도 보존
+      };
+      
+      const { data: libraryResult, error: libraryError } = await libraryApi.addLibraryItem(libraryData);
       
       if (libraryError) {
         console.error('❌ 읽기 시작 데이터 저장 실패:', libraryError);
@@ -980,7 +995,7 @@ const AppRouter: React.FC = () => {
       };
 
       // 🔥 실제 데이터베이스 저장 (리뷰 API 호출)
-      const reviewResult = await createReview({
+      const reviewData: CreateReviewInput = {
         isbn13: bookData.isbn13,
         user_id: user.id, // 사용자 ID 추가
         memo: reviewText,
@@ -988,7 +1003,9 @@ const AppRouter: React.FC = () => {
         topics: Array.isArray(aiAnalysis.topics) ? aiAnalysis.topics : [], // 주제 데이터 추가
         mood_summary: aiAnalysis.moodSummary,
         rating: aiAnalysis.overallRating
-      });
+      };
+
+      const reviewResult = await reviewsApi.createReview(reviewData);
 
       if (reviewResult.error) {
         const errorMsg = reviewResult.error instanceof Error ? reviewResult.error.message : String(reviewResult.error);
