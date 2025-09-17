@@ -1,4 +1,6 @@
 // 알라딘 Open API 서비스
+import { BookExternal } from '../types/database';
+
 interface AladinApiParams {
   query?: string;
   queryType?: 'Title' | 'Author' | 'Publisher' | 'Keyword' | 'ISBN' | 'Bestseller' | 'ItemNewAll' | 'ItemIdSearch';
@@ -116,7 +118,7 @@ class AladinApiService {
       searchTarget: params.searchTarget || 'Book',
       sort: params.sort || 'Accuracy',
       maxResults: params.maxResults || 20,
-      optResult: ['ratingInfo', 'description', 'fulldescription', 'authors', 'publisher']
+      optResult: ['ratingInfo', 'description', 'fulldescription', 'authors', 'publisher', 'subInfo']
     });
 
     return this.makeRequest(url);
@@ -129,7 +131,7 @@ class AladinApiService {
       queryType: 'Bestseller',
       searchTarget: params.searchTarget || 'Book',
       maxResults: params.maxResults || 50,
-      optResult: ['ratingInfo', 'description', 'authors', 'publisher']
+      optResult: ['ratingInfo', 'description', 'authors', 'publisher', 'subInfo']
     });
 
     return this.makeRequest(url);
@@ -142,7 +144,7 @@ class AladinApiService {
       queryType: 'ItemNewAll',
       searchTarget: params.searchTarget || 'Book',
       maxResults: params.maxResults || 50,
-      optResult: ['ratingInfo', 'description', 'authors', 'publisher']
+      optResult: ['ratingInfo', 'description', 'authors', 'publisher', 'subInfo']
     });
 
     return this.makeRequest(url);
@@ -156,7 +158,7 @@ class AladinApiService {
       categoryId,
       searchTarget: 'Book',
       maxResults: params.maxResults || 50,
-      optResult: ['ratingInfo', 'description', 'authors', 'publisher']
+      optResult: ['ratingInfo', 'description', 'authors', 'publisher', 'subInfo']
     });
 
     return this.makeRequest(url);
@@ -176,32 +178,64 @@ class AladinApiService {
   // 페이지 수 추출 함수
   private extractPageCount(aladinBook: AladinBook): number | null {
     try {
-      // 1. subInfo에서 페이지 수 추출 시도
+      console.log(`🔍 "${aladinBook.title}" 페이지 수 추출 시도...`);
+      
+      // 1. subInfo에서 페이지 수 추출 시도 (개선된 패턴)
       if (aladinBook.subInfo) {
-        // subInfo에 페이지 정보가 있다면
+        console.log('📋 subInfo:', aladinBook.subInfo);
         const subInfoStr = JSON.stringify(aladinBook.subInfo);
-        const pageMatch = subInfoStr.match(/(\d+)\s*페이지?|(\d+)\s*p/i);
-        if (pageMatch) {
-          const pageNum = parseInt(pageMatch[1] || pageMatch[2]);
-          if (pageNum > 0 && pageNum < 10000) return pageNum;
+        console.log('📋 subInfoStr:', subInfoStr);
+        
+        const patterns = [
+          /(\d+)\s*페이지/gi,
+          /(\d+)\s*p\b/gi,
+          /(\d+)\s*쪽/gi,
+          /페이지\s*:\s*(\d+)/gi,
+          /총\s*(\d+)\s*페이지/gi
+        ];
+        
+        for (const pattern of patterns) {
+          const match = subInfoStr.match(pattern);
+          if (match) {
+            const pageNum = parseInt(match[1]);
+            console.log(`✅ subInfo에서 페이지 수 발견: ${pageNum} (패턴: ${pattern})`);
+            if (pageNum > 0 && pageNum < 10000) return pageNum;
+          }
         }
+        console.log('❌ subInfo에서 페이지 수 추출 실패');
       }
       
       // 2. fullDescription에서 페이지 수 추출 시도
       if (aladinBook.fullDescription) {
-        const pageMatch = aladinBook.fullDescription.match(/(\d+)\s*페이지?|(\d+)\s*p/i);
-        if (pageMatch) {
-          const pageNum = parseInt(pageMatch[1] || pageMatch[2]);
-          if (pageNum > 0 && pageNum < 10000) return pageNum;
+        const patterns = [
+          /(\d+)\s*페이지/gi,
+          /(\d+)\s*p\b/gi,
+          /(\d+)\s*쪽/gi
+        ];
+        
+        for (const pattern of patterns) {
+          const match = aladinBook.fullDescription.match(pattern);
+          if (match) {
+            const pageNum = parseInt(match[1]);
+            if (pageNum > 0 && pageNum < 10000) return pageNum;
+          }
         }
       }
       
       // 3. description에서 페이지 수 추출 시도
       if (aladinBook.description) {
-        const pageMatch = aladinBook.description.match(/(\d+)\s*페이지?|(\d+)\s*p/i);
-        if (pageMatch) {
-          const pageNum = parseInt(pageMatch[1] || pageMatch[2]);
-          if (pageNum > 0 && pageNum < 10000) return pageNum;
+        const patterns = [
+          /(\d+)\s*페이지/gi,
+          /(\d+)\s*p\b/gi,
+          /(\d+)\s*쪽/gi
+        ];
+        
+        for (const pattern of patterns) {
+          const match = aladinBook.description.match(pattern);
+          if (match) {
+            const pageNum = parseInt(match[1]);
+            if (pageNum > 0 && pageNum < 10000) return pageNum;
+          }
         }
       }
       
@@ -212,52 +246,10 @@ class AladinApiService {
     }
   }
 
-  // 카테고리별 기본 페이지 수 추정
-  private getDefaultPageCount(categoryId: number | null, categoryName: string | null): number {
-    if (!categoryId && !categoryName) return 280; // 기본값
-    
-    // 카테고리 ID 기반 추정
-    if (categoryId) {
-      // 문학 (1~10000대)
-      if (categoryId >= 1 && categoryId <= 10000) return 320;
-      // 인문학 (10001~20000대)  
-      if (categoryId >= 10001 && categoryId <= 20000) return 350;
-      // 사회과학 (20001~30000대)
-      if (categoryId >= 20001 && categoryId <= 30000) return 380;
-      // 자연과학/기술 (30001~40000대)
-      if (categoryId >= 30001 && categoryId <= 40000) return 450;
-      // 예술 (40001~50000대)
-      if (categoryId >= 40001 && categoryId <= 50000) return 280;
-      // 언어학 (50001~60000대)
-      if (categoryId >= 50001 && categoryId <= 60000) return 300;
-      // 종교 (60001~70000대) 
-      if (categoryId >= 60001 && categoryId <= 70000) return 250;
-      // 철학 (70001~80000대)
-      if (categoryId >= 70001 && categoryId <= 80000) return 300;
-    }
-    
-    // 카테고리 이름 기반 추정
-    if (categoryName) {
-      const name = categoryName.toLowerCase();
-      if (name.includes('소설') || name.includes('문학')) return 320;
-      if (name.includes('에세이') || name.includes('시집')) return 200;
-      if (name.includes('경제') || name.includes('경영')) return 350;
-      if (name.includes('자기계발')) return 280;
-      if (name.includes('역사')) return 400;
-      if (name.includes('과학') || name.includes('기술')) return 450;
-      if (name.includes('예술') || name.includes('디자인')) return 250;
-      if (name.includes('요리')) return 200;
-      if (name.includes('여행')) return 280;
-      if (name.includes('아동') || name.includes('유아')) return 150;
-      if (name.includes('만화')) return 180;
-      if (name.includes('참고서') || name.includes('수험서')) return 500;
-    }
-    
-    return 280; // 최종 기본값
-  }
+  // 🔥 기본값 함수 제거됨 - 실제 데이터만 사용!
 
   // 알라딘 데이터를 book_external 스키마에 맞게 변환
-  transformToBookExternal(aladinBook: AladinBook): any {
+  transformToBookExternal(aladinBook: AladinBook): Partial<BookExternal> {
     // smallint 범위 체크 함수 (-32,768 ~ 32,767)
     const toSmallInt = (value: number | null | undefined): number | null => {
       if (value === null || value === undefined) return null;
@@ -268,9 +260,10 @@ class AladinApiService {
       return value;
     };
 
-    // 페이지 수 추출 시도, 실패하면 카테고리별 기본값 사용
+    // 페이지 수 추출 시도 - 기본값 사용하지 않음!
     const extractedPageCount = this.extractPageCount(aladinBook);
-    const pageCount = extractedPageCount || this.getDefaultPageCount(aladinBook.categoryId, aladinBook.categoryName);
+    
+    console.log(`📖 "${aladinBook.title}" 최종 페이지 수: ${extractedPageCount || 'null'} ${extractedPageCount ? '(추출됨)' : '(추출 실패 - null 저장)'}`);
 
     return {
       isbn13: aladinBook.isbn13,
@@ -287,7 +280,7 @@ class AladinApiService {
       customer_review_rank: toSmallInt(aladinBook.customerReviewRank),
       aladin_link: `https://www.aladin.co.kr/shop/wproduct.aspx?ItemId=${aladinBook.itemId}`,
       summary: aladinBook.description || null,
-      page_count: pageCount, // 🆕 실제 또는 추정 페이지 수
+      page_count: extractedPageCount, // 🆕 실제 페이지 수만 (기본값 없음)
       raw: aladinBook, // 원본 데이터 보관
       fetched_at: new Date().toISOString()
     };

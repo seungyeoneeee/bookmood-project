@@ -30,7 +30,7 @@ interface ReadingProgressTrackerProps {
     title: string;
     author: string;
     cover: string;
-    pages: number;
+    pages: number; // 🔄 일단 다시 required로 - 280 박아넣기
   };
   onBack: () => void;
   onComplete?: (progress: ReadingProgress) => void;
@@ -54,7 +54,7 @@ const ReadingProgressTracker: React.FC<ReadingProgressTrackerProps> = ({
     bookTitle: bookData.title,
     bookAuthor: bookData.author,
     bookCover: bookData.cover,
-    totalPages: bookData.pages,
+    totalPages: bookData.pages, // 🔄 일단 pages는 항상 있을 예정
     currentPage: 0,
     startDate: new Date(),
     lastReadDate: new Date(),

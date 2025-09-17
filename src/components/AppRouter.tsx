@@ -67,6 +67,7 @@ export interface ReviewData {
   id: string;
   bookId: string;
   review: string;
+  memo?: string; // 🆕 메모 필드 추가
   emotions: string[];
   topics: string[];
   moodSummary: string;
@@ -172,7 +173,7 @@ const ReadingProgressRoute: React.FC<{
             title: dbBook.title,
             author: dbBook.author || '작가 미상',
             cover: dbBook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-            pages: dbBook.page_count || 280 // 🆕 실제 페이지 수 또는 기본값
+            pages: dbBook.page_count || 280 // 🔄 일단 280으로 박아넣기
           });
         } else {
           // 2. 데이터베이스에 없으면 알라딘 API에서 조회
@@ -191,7 +192,7 @@ const ReadingProgressRoute: React.FC<{
               title: book.title,
               author: book.author || '작가 미상',
               cover: book.cover || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-              pages: bookExternal.page_count || 280 // 🆕 카테고리별 추정 페이지 수
+              pages: bookExternal.page_count || 280 // 🔄 일단 280으로 박아넣기
             });
           } else {
             // 3. 아무것도 없으면 기본값
@@ -200,7 +201,7 @@ const ReadingProgressRoute: React.FC<{
               title: 'ISBN: ' + bookId,
               author: '작가 미상',
               cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-              pages: 280 // 🆕 기본 페이지 수
+              pages: 280 // 🔄 일단 280으로 박아넣기
             });
           }
         }
@@ -211,7 +212,7 @@ const ReadingProgressRoute: React.FC<{
           title: 'ISBN: ' + bookId,
           author: '작가 미상',
           cover: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=300&h=450&fit=crop',
-          pages: 280 // 🆕 기본 페이지 수
+          pages: 280 // 🔄 일단 280으로 박아넣기
         });
       }
       
@@ -266,13 +267,14 @@ const ReadingProgressRoute: React.FC<{
 
     try {
       // library_items 테이블에 독서 완료 기록 저장
+      const notesText = progress.notes.map(note => `[${note.page}p] ${note.content}`).join('\n\n');
       await libraryApi.addLibraryItem({
         isbn13: bookId,
         is_wishlist: false,
         shelf_status: 'completed',
         progress: 100,
         finished_at: new Date().toISOString().split('T')[0],
-        note: `총 ${progress.notes.length}개의 메모 작성`
+        note: notesText || undefined
       });
       
       
@@ -619,8 +621,9 @@ const AppRouter: React.FC = () => {
           id: review.id,
           bookId: review.isbn13,
           review: review.memo || '',
-          emotions: review.emotions ? review.emotions.map((e: any) => e.emotion) : [],
-          topics: review.topics ? review.topics.map((t: any) => t.topic) : [],
+          memo: review.memo || undefined, // 🆕 메모 필드를 별도로 전달
+          emotions: review.emotions ? review.emotions.map((e: { emotion: string }) => e.emotion) : [],
+          topics: review.topics ? review.topics.map((t: { keyword: string }) => t.keyword) : [],
           moodSummary: review.memo ? review.memo.substring(0, 100) + '...' : 'AI 분석 결과',
           createdAt: new Date(review.created_at),
           moodCardUrl: `/mood-cards/${review.id}`
@@ -684,7 +687,7 @@ const AppRouter: React.FC = () => {
         const readingList = libraryItems
           .filter(item => item.book) // book 정보가 있는 것만
           .map(item => {
-            const totalPages = item.book!.page_count || 280; // 🆕 실제 페이지 수 또는 기본값
+            const totalPages = item.book!.page_count || 280; // 🔄 일단 280으로 박아넣기
             return {
               id: item.book!.isbn13,
               title: item.book!.title,
@@ -739,6 +742,30 @@ const AppRouter: React.FC = () => {
   const handleViewChange = (view: string) => {
     navigate(`/${view === 'home' ? '' : view}`);
   };
+
+  const handleDeleteReview = useCallback(async (reviewId: string) => {
+    if (!user?.id) {
+      console.error('❌ 사용자가 인증되지 않음');
+      return;
+    }
+
+    try {
+      console.log('🗑️ 리뷰 삭제 중:', reviewId);
+      const { error } = await reviewsApi.deleteReview(reviewId);
+      
+      if (error) {
+        console.error('❌ 리뷰 삭제 실패:', error);
+        throw error;
+      }
+
+      console.log('✅ 리뷰 삭제 성공:', reviewId);
+      // 리뷰 목록 새로고침
+      loadReviews();
+    } catch (error) {
+      console.error('❌ 리뷰 삭제 실패:', error);
+      alert(`리뷰 삭제 실패: ${error}`);
+    }
+  }, [user?.id, loadReviews]);
 
   const handleMoodCardSelect = (review: ReviewData) => {
     navigate(`/mood-cards/${review.id}`);
@@ -1500,6 +1527,7 @@ const AppRouter: React.FC = () => {
                     reviews={currentReviews}
                     onMoodCardSelect={handleMoodCardSelect}
                     onBack={() => navigate('/')}
+                    onDeleteReview={handleDeleteReview}
                   />
                 } />
                 

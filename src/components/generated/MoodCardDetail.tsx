@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Download, Share2, Heart, Calendar, Tag, Sparkles, Copy, Check, Twitter, Facebook, Instagram, BookOpen, User, Star } from 'lucide-react';
 import { useBook } from '../../hooks/useBooks';
+import { exportToPNG, exportToMarkdown, ExportableReview } from '../../lib/exportUtils';
 interface ReviewData {
   id: string;
   bookId: string;
   review: string;
+  memo?: string; // 🆕 메모 필드 추가
   emotions: string[];
   topics: string[];
   moodSummary: string;
@@ -21,16 +23,44 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
   onBack
 }) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showDownloadMenu, setShowDownloadMenu] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copied, setCopied] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   
   // 책 정보 로딩
   const { book, loading: bookLoading } = useBook(review.bookId);
+
   const handleDownload = async () => {
     setIsDownloading(true);
-    // Mock download process
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setIsDownloading(false);
+    try {
+      if (cardRef.current) {
+        const filename = `BookMood_${review.bookId}_${review.createdAt.toISOString().split('T')[0]}`;
+        await exportToPNG(cardRef.current, filename, {
+          scale: 2,
+          backgroundColor: '#f9fafb'
+        });
+      }
+    } catch (error) {
+      console.error('다운로드 실패:', error);
+      alert('이미지 저장에 실패했습니다.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleDownloadMarkdown = () => {
+    try {
+      const exportableReview: ExportableReview = {
+        ...review,
+        bookTitle: book?.title || `책 ${review.bookId}`,
+        bookAuthor: book?.author || '저자 정보 없음',
+      };
+      exportToMarkdown(exportableReview);
+    } catch (error) {
+      console.error('마크다운 다운로드 실패:', error);
+      alert('마크다운 저장에 실패했습니다.');
+    }
   };
   const handleCopyLink = async () => {
     try {
@@ -87,13 +117,16 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
       return `linear-gradient(135deg, ${colors[0]}, ${colors[1]}, ${colors[2]})`;
     }
   };
-  return <motion.div initial={{
-    opacity: 0,
-    y: 20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} className="min-h-screen bg-gray-50">
+  return <motion.div 
+    ref={cardRef}
+    initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="min-h-screen bg-gray-50"
+  >
       <div className="px-4 md:px-0">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -196,6 +229,29 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
           </div>
         </motion.div>
 
+        {/* 메모 카드 (메모가 있을 때만 표시) */}
+        {review.memo && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-2xl p-6 mb-6 shadow-sm border border-gray-100"
+          >
+            <div className="flex items-center space-x-2 mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-400 rounded-full flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">독서 메모</h3>
+            </div>
+            
+            <div className="bg-amber-50 rounded-xl p-4 border border-amber-100">
+              <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                {review.memo}
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {/* AI 요약 카드 */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -227,10 +283,47 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
 
         {/* Action Buttons */}
         <div className="flex space-x-3 mb-8">
-          <button onClick={handleDownload} disabled={isDownloading} className="flex-1 py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow">
-            <Download className="w-5 h-5" />
-            <span>{isDownloading ? '생성 중...' : '다운로드'}</span>
-          </button>
+          <div className="flex-1 relative">
+            <button 
+              onClick={() => setShowDownloadMenu(!showDownloadMenu)} 
+              disabled={isDownloading} 
+              className="w-full py-4 bg-gradient-to-r from-[#A8B5E8] to-[#8BB5E8] text-white rounded-2xl font-medium disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transition-shadow"
+            >
+              <Download className="w-5 h-5" />
+              <span>{isDownloading ? '생성 중...' : '다운로드'}</span>
+            </button>
+
+            {/* 다운로드 드롭다운 메뉴 */}
+            {showDownloadMenu && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-xl py-2 z-20"
+              >
+                <button
+                  onClick={() => {
+                    handleDownload();
+                    setShowDownloadMenu(false);
+                  }}
+                  disabled={isDownloading}
+                  className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-3 disabled:opacity-50"
+                >
+                  <Download className="w-5 h-5 text-[#A8B5E8]" />
+                  <span>PNG 이미지로 저장</span>
+                </button>
+                <button
+                  onClick={() => {
+                    handleDownloadMarkdown();
+                    setShowDownloadMenu(false);
+                  }}
+                  className="w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50 flex items-center space-x-3"
+                >
+                  <Download className="w-5 h-5 text-[#B5D4C8]" />
+                  <span>마크다운으로 저장</span>
+                </button>
+              </motion.div>
+            )}
+          </div>
 
           <div className="relative">
             <button onClick={() => setShowShareMenu(!showShareMenu)} className="px-6 py-4 bg-gradient-to-r from-[#B5D4C8] to-[#A8D4C8] text-white rounded-2xl font-medium flex items-center space-x-2 shadow-lg hover:shadow-xl transition-shadow">
@@ -322,8 +415,9 @@ const MoodCardDetail: React.FC<MoodCardDetailProps> = ({
         </motion.div>
       </div>
 
-      {/* Click outside to close share menu */}
+      {/* Click outside to close menus */}
       {showShareMenu && <div className="fixed inset-0 z-0" onClick={() => setShowShareMenu(false)} />}
+      {showDownloadMenu && <div className="fixed inset-0 z-0" onClick={() => setShowDownloadMenu(false)} />}
     </motion.div>;
 };
 export default MoodCardDetail;

@@ -37,6 +37,7 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
   const [isLoadingAladin, setIsLoadingAladin] = useState(false);
   const [libraryItem, setLibraryItem] = useState<LibraryItem | null>(null);
   const [progressInput, setProgressInput] = useState<number>(0);
+  const [memoInput, setMemoInput] = useState<string>('');
   const [showProgressModal, setShowProgressModal] = useState(false);
   const [userReview, setUserReview] = useState<Review | null>(null);
   const searchAttempted = useRef<Set<string>>(new Set()); // 이미 검색한 ISBN 추적
@@ -53,6 +54,9 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
           setLibraryItem(data);
           if (data?.progress) {
             setProgressInput(data.progress);
+          }
+          if (data?.note) {
+            setMemoInput(data.note);
           }
         } catch (error) {
           console.error('라이브러리 상태 조회 실패:', error);
@@ -213,7 +217,8 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
         await libraryApi.updateLibraryItem(libraryItem.id, {
           progress: updatedProgress,
           shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
-          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
+          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined,
+          note: memoInput.trim() || undefined
         });
         
         // 상태 업데이트
@@ -221,11 +226,12 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
           ...prev,
           progress: updatedProgress,
           shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
-          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined
+          finished_at: updatedProgress === 100 ? new Date().toISOString() : undefined,
+          note: memoInput.trim() || undefined
         } : null);
       } else {
         // 라이브러리 아이템이 없으면 새로 생성 (찜한 책에서 처음 진행률 기록하는 경우)
-        console.log('💾 새로운 읽기 기록 생성:', { bookId, progress: updatedProgress });
+        console.log('💾 새로운 읽기 기록 생성:', { bookId, progress: updatedProgress, memo: memoInput });
         
         const { data: newLibraryItem, error } = await libraryApi.addLibraryItem({
           isbn13: bookId,
@@ -233,7 +239,8 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
           shelf_status: updatedProgress === 100 ? 'completed' : 'reading',
           progress: updatedProgress,
           started_at: new Date().toISOString().split('T')[0],
-          finished_at: updatedProgress === 100 ? new Date().toISOString().split('T')[0] : undefined
+          finished_at: updatedProgress === 100 ? new Date().toISOString().split('T')[0] : undefined,
+          note: memoInput.trim() || undefined
         });
         
         if (error) {
@@ -460,6 +467,17 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                   />
                 </div>
               )}
+              {libraryItem.note && (
+                <div className="mt-3 p-3 bg-white rounded-lg border border-gray-200">
+                  <div className="flex items-start">
+                    <MessageSquare className="w-4 h-4 text-gray-500 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-gray-500 mb-1">내 메모</p>
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap">{libraryItem.note}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -675,6 +693,23 @@ const BookDetailPage: React.FC<BookDetailPageProps> = ({
                     <span>0%</span>
                     <span>100%</span>
                   </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    메모 (선택사항)
+                  </label>
+                  <textarea
+                    value={memoInput}
+                    onChange={(e) => setMemoInput(e.target.value.slice(0, 500))}
+                    placeholder="이 책에 대한 생각이나 메모를 남겨보세요..."
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#A8B5E8] focus:border-transparent resize-none"
+                    rows={3}
+                    maxLength={500}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {memoInput.length}/500자
+                  </p>
                 </div>
 
                 <div className="flex space-x-3">
